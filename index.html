@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>VPN Сервера</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    margin: 0; padding: 0; background: #0a1628; color: #cbd5e1; min-height: 100vh;
+  }
+  .header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+    padding: 20px 16px 16px; color: #fff;
+  }
+  .header h1 { font-size: 20px; margin: 0 0 4px; font-weight: 700; }
+  .header p { font-size: 12px; margin: 0; opacity: .8; }
+
+  .tabs {
+    display: flex; background: #0f1f3a; border-bottom: 1px solid #1e3a5f;
+    overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    flex: 0 0 auto; padding: 12px 16px; border: none; background: transparent;
+    color: #64748b; font-size: 13px; font-weight: 600; cursor: pointer;
+    border-bottom: 2px solid transparent; white-space: nowrap; transition: all .2s;
+  }
+  .tab-btn.active { color: #60a5fa; border-bottom-color: #3b82f6; }
+
+  .tab-content { display: none; padding: 16px; }
+  .tab-content.active { display: block; }
+
+  .card {
+    background: #111d33; border: 1px solid #1e3a5f; border-radius: 12px;
+    padding: 16px; margin-bottom: 14px;
+  }
+  .card h2 { font-size: 15px; margin: 0 0 6px; color: #93c5fd; font-weight: 600; }
+  .card .desc { font-size: 12px; color: #64748b; margin: 0 0 12px; line-height: 1.5; }
+
+  .btn {
+    display: block; width: 100%; padding: 14px; margin: 8px 0; border: none;
+    border-radius: 10px; font-size: 14px; font-weight: 600; color: #fff;
+    background: #1d4ed8; cursor: pointer; text-align: left; transition: background .15s;
+  }
+  .btn:active { background: #1e40af; }
+  .btn small { display: block; font-weight: 400; font-size: 11px; opacity: .75; margin-top: 3px; }
+  .btn.secondary { background: #1e293b; border: 1px solid #334155; }
+  .btn.secondary:active { background: #0f172a; }
+  .btn.danger { background: #7f1d1d; border: 1px solid #991b1b; }
+  .btn.danger:active { background: #991b1b; }
+
+  .input-group { display: flex; gap: 8px; margin-bottom: 10px; }
+  .input-group input {
+    flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #1e3a5f;
+    background: #0a1628; color: #e2e8f0; font-size: 13px; outline: none;
+  }
+  .input-group input::placeholder { color: #475569; }
+  .input-group button {
+    padding: 12px 16px; border: none; border-radius: 8px; background: #2563eb;
+    color: #fff; font-weight: 600; font-size: 13px; cursor: pointer;
+  }
+
+  .custom-item {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #0a1628; border: 1px solid #1e3a5f; border-radius: 8px;
+    padding: 10px 12px; margin-bottom: 8px;
+  }
+  .custom-item span { font-size: 12px; color: #94a3b8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; margin-right: 10px; }
+  .custom-item button {
+    padding: 6px 10px; border: none; border-radius: 6px; font-size: 11px;
+    font-weight: 600; cursor: pointer; background: #1d4ed8; color: #fff; flex-shrink: 0;
+  }
+  .custom-item button.del { background: #7f1d1d; margin-left: 6px; }
+
+  .empty { text-align: center; color: #475569; font-size: 13px; padding: 20px 0; }
+
+  .status {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: #1d4ed8; color: #fff; padding: 12px 24px; border-radius: 30px;
+    font-size: 13px; font-weight: 600; opacity: 0; transition: opacity .25s;
+    pointer-events: none; z-index: 99; box-shadow: 0 6px 20px rgba(0,0,0,.5);
+  }
+  .status.show { opacity: 1; }
+
+  .note { font-size: 12px; color: #64748b; line-height: 1.6; }
+  .note strong { color: #94a3b8; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>VPN Сервера</h1>
+  <p>Выберите клиент → скопируйте ссылку → вставьте в приложение</p>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('streisand')">Streisand</button>
+  <button class="tab-btn" onclick="switchTab('v2rayng')">v2rayNG</button>
+  <button class="tab-btn" onclick="switchTab('clash')">Clash</button>
+  <button class="tab-btn" onclick="switchTab('universal')">Универсальные</button>
+  <button class="tab-btn" onclick="switchTab('owner')">Владелец</button>
+  <button class="tab-btn" onclick="switchTab('help')">Помощь</button>
+</div>
+
+<!-- Streisand -->
+<div id="tab-streisand" class="tab-content active">
+  <div class="card">
+    <h2>Streisand (iOS)</h2>
+    <p class="desc">Специальная подписка с автопроверкой. Сервер выбирается автоматически.</p>
+    <button class="btn" onclick="copyUrl('https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/main/Export/Streisand/BLACK_all.txt','Streisand')">
+      Streisand — BLACK (основная)
+      <small>Скопировать ссылку для импорта</small>
+    </button>
+    <button class="btn secondary" onclick="copyUrl('https://raw.githack.com/igareck/vpn-configs-for-russia/main/Export/Streisand/BLACK_all.txt','Streisand (зеркало)')">
+      Streisand — зеркало GitHack
+      <small>Если основной GitHub недоступен</small>
+    </button>
+  </div>
+</div>
+
+<!-- v2rayNG -->
+<div id="tab-v2rayng" class="tab-content">
+  <div class="card">
+    <h2>v2rayNG (Android)</h2>
+    <p class="desc">Универсальная Base64-подписка. После импорта нажмите «Обновить подписку».</p>
+    <button class="btn" onclick="copyUrl('https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/main/Export/Base64/BLACK_all_base64.txt','v2rayNG')">
+      v2rayNG — BLACK Base64
+      <small>Скопировать ссылку</small>
+    </button>
+    <button class="btn secondary" onclick="copyUrl('https://raw.githack.com/igareck/vpn-configs-for-russia/main/Export/Base64/BLACK_all_base64.txt','v2rayNG (зеркало)')">
+      v2rayNG — зеркало GitHack
+      <small>Резервный вариант</small>
+    </button>
+  </div>
+  <div class="card">
+    <h2>Альтернатива: Awesome VPN</h2>
+    <p class="desc">Ежедневное обновление, другой набор серверов.</p>
+    <button class="btn secondary" onclick="copyUrl('https://cdn.jsdelivr.net/gh/awesome-vpn/awesome-vpn@master/all','Awesome VPN Base64')">
+      Awesome VPN — Base64 (jsDelivr)
+      <small>Работает через CDN, быстрее GitHub</small>
+    </button>
+  </div>
+</div>
+
+<!-- Clash -->
+<div id="tab-clash" class="tab-content">
+  <div class="card">
+    <h2>Clash / Mihomo</h2>
+    <p class="desc">YAML-подписка. Подходит для Clash Verge Rev, Clash Meta, Mihomo.</p>
+    <button class="btn" onclick="copyUrl('https://cdn.jsdelivr.net/gh/awesome-vpn/awesome-vpn@master/clash.yaml','Clash YAML')">
+      Clash YAML — Awesome VPN
+      <small>Через jsDelivr CDN</small>
+    </button>
+  </div>
+</div>
+
+<!-- Универсальные -->
+<div id="tab-universal" class="tab-content">
+  <div class="card">
+    <h2>Универсальные ссылки</h2>
+    <p class="desc">Подходят для NekoBox, v2rayTun, Hiddify и других клиентов.</p>
+    <button class="btn" onclick="copyUrl('https://raw.githubusercontent.com/awesome-vpn/awesome-vpn/master/sing-box.json','Sing-box JSON')">
+      Sing-box JSON (NekoBox)
+      <small>Скопировать</small>
+    </button>
+    <button class="btn secondary" onclick="copyUrl('https://cdn.jsdelivr.net/gh/awesome-vpn/awesome-vpn@master/all','Base64 универсальная')">
+      Base64 универсальная (jsDelivr)
+      <small>Максимальная совместимость</small>
+    </button>
+  </div>
+</div>
+
+<!-- Владелец -->
+<div id="tab-owner" class="tab-content">
+  <div class="card">
+    <h2>Добавить свою ссылку</h2>
+    <p class="desc">Вставьте URL subscription-файла. Ссылка сохранится в этом браузере (localStorage).</p>
+    <div class="input-group">
+      <input type="text" id="custom-url" placeholder="https://example.com/sub.txt">
+      <button onclick="addCustom()">Добавить</button>
+    </div>
+    <div id="custom-list"></div>
+  </div>
+  <div class="card">
+    <h2>Очистить всё</h2>
+    <button class="btn danger" onclick="clearCustom()">Удалить все добавленные ссылки</button>
+  </div>
+</div>
+
+<!-- Помощь -->
+<div id="tab-help" class="tab-content">
+  <div class="card">
+    <h2>Как пользоваться</h2>
+    <p class="note">
+      <strong>1.</strong> Выберите вкладку под ваш клиент.<br>
+      <strong>2.</strong> Нажмите кнопку — ссылка скопируется.<br>
+      <strong>3.</strong> Откройте приложение (Streisand / v2rayNG / NekoBox / Clash).<br>
+      <strong>4.</strong> Найдите «Добавить подписку» или «Import from URL».<br>
+      <strong>5.</strong> Вставьте ссылку и сохраните.<br>
+      <strong>6.</strong> Обновите подписку внутри приложения.
+    </p>
+  </div>
+  <div class="card">
+    <h2>Если не работает</h2>
+    <p class="note">
+      • Попробуйте зеркало (кнопки «зеркало» / «jsDelivr»).<br>
+      • Обновите подписку в клиенте (потяните вниз или кнопка «Update»).<br>
+      • Бесплатные серверы часто умирают — это нормально.<br>
+      • Не входите в банки и важные аккаунты через бесплатные серверы.
+    </p>
+  </div>
+</div>
+
+<div id="toast" class="status">Скопировано</div>
+
+<script>
+// ===== Вкладки =====
+function switchTab(name) {
+  document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(el) { el.classList.remove('active'); });
+  var content = document.getElementById('tab-' + name);
+  if (content) content.classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ===== Копирование =====
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window._toast);
+  window._toast = setTimeout(function() { t.classList.remove('show'); }, 2000);
+}
+
+function copyUrl(url, label) {
+  function done() { showToast('✅ ' + label + ' скопировано'); }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(done).catch(function() { fallbackCopy(url, done); });
+  } else {
+    fallbackCopy(url, done);
+  }
+}
+
+function fallbackCopy(url, done) {
+  var ta = document.createElement('textarea');
+  ta.value = url;
+  ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try { document.execCommand('copy'); done(); }
+  catch(e) { prompt('Скопируйте вручную:', url); }
+  document.body.removeChild(ta);
+}
+
+// ===== Владелец: localStorage =====
+var STORAGE_KEY = 'vpn_custom_links';
+
+function getCustom() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+  catch(e) { return []; }
+}
+
+function saveCustom(arr) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+}
+
+function renderCustom() {
+  var list = document.getElementById('custom-list');
+  var arr = getCustom();
+  if (arr.length === 0) {
+    list.innerHTML = '<div class="empty">Пока ничего не добавлено</div>';
+    return;
+  }
+  var html = '';
+  arr.forEach(function(item, i) {
+    html += '<div class="custom-item">' +
+      '<span title="' + item.url + '">' + (item.name || item.url) + '</span>' +
+      '<button onclick="copyCustom(' + i + ')">Копировать</button>' +
+      '<button class="del" onclick="delCustom(' + i + ')">×</button>' +
+      '</div>';
+  });
+  list.innerHTML = html;
+}
+
+function addCustom() {
+  var input = document.getElementById('custom-url');
+  var url = input.value.trim();
+  if (!url) return;
+  var arr = getCustom();
+  arr.push({ url: url, name: url.substring(0, 50) });
+  saveCustom(arr);
+  input.value = '';
+  renderCustom();
+  showToast('Добавлено');
+}
+
+function copyCustom(i) {
+  var arr = getCustom();
+  if (arr[i]) copyUrl(arr[i].url, 'Своя ссылка');
+}
+
+function delCustom(i) {
+  var arr = getCustom();
+  arr.splice(i, 1);
+  saveCustom(arr);
+  renderCustom();
+}
+
+function clearCustom() {
+  if (confirm('Удалить все добавленные ссылки?')) {
+    localStorage.removeItem(STORAGE_KEY);
+    renderCustom();
+    showToast('Очищено');
+  }
+}
+
+// Инициализация
+renderCustom();
+</script>
+
+</body>
+</html>
