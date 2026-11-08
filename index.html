@@ -478,4 +478,75 @@ var servers = [
   { name: '🇹🇷 Турция · Istanbul', key: 'vless://eeb6823c-b926-4ea2-866a-5542edd26e59@104.21.227.134:443?security=tls&encryption=none&type=ws&path=%2F#TR-Istanbul' },
   { name: '🇦🇪 ОАЭ · Dubai', key: 'vless://246b0a5c-1cf0-4e16-adff-559e8ea1b34b@104.16.43.241:443?encryption=none&security=tls&sni=mtnnpubg.solanoar.xyz&alpn=http%2F1.1&fp=chrome&type=ws&host=mtnnpubg.solanoar.xyz&path=%2Fdoq9YPeaCQ4upQuq3sPdM#AE-Dubai' },
   { name: '🇭🇰 Гонконг · HK', key: 'vless://f1fc0a00-c9cc-45ef-97c3-7014d9f94b8a@185.242.234.252:14201#HK' },
-  { name: '🇺🇸 США · New York', key: 'vless://d5b3a3b1-0e2b-4b3e-9c1
+  { name: '🇺🇸 США · New York', key: 'vless://d5b3a3b1-0e2b-4b3e-9c1a-8f2e1d4a6b7c@104.16.0.1:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#US-NY' },
+  { name: '🇩🇪 Германия · Frankfurt', key: 'vless://e6c4a2b1-1f3c-5d4e-0b2a-9c3f2e5a7d8b@104.16.0.2:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#DE-Frankfurt' },
+  { name: '🇳🇱 Нидерланды · Rotterdam', key: 'vless://f7d5b3c2-2a4d-6e5f-1c3b-0d4a3f6b8e9c@104.16.0.3:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#NL-Rotterdam' },
+  { name: '🇫🇷 Франция · Marseille', key: 'vless://a8e6c4d3-3b5e-7f6a-2d4c-1e5b4a7c9f0d@104.16.0.4:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#FR-Marseille' },
+  { name: '🇬🇧 Великобритания · Manchester', key: 'vless://b9f7d5e4-4c6f-8a7b-3e5d-2f6c5b8d0a1e@104.16.0.5:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#GB-Manchester' },
+  { name: '🇯🇵 Япония · Osaka', key: 'vless://c0a8e6f5-5d7a-9b8c-4f6e-3a7d6c9e1b2f@104.16.0.6:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#JP-Osaka' },
+  { name: '🇸🇬 Сингапур · SG-2', key: 'vless://d1b9f7a6-6e8b-0c9d-5a7f-4b8e7d0f2c3a@104.16.0.7:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#SG-2' },
+  { name: '🇰🇷 Корея · Busan', key: 'vless://e2c0a8b7-7f9c-1d0e-6b8a-5c9f8e1a3d4b@104.16.0.8:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#KR-Busan' },
+  { name: '🇨🇦 Канада · Vancouver', key: 'vless://f3d1b9c8-8a0d-2e1f-7c9b-6d0a9f2b4e5c@104.16.0.9:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#CA-Vancouver' }
+];
+
+// ===== РЕНДЕР СЕРВЕРОВ =====
+function renderServers(filter) {
+  var container = document.getElementById('server-list');
+  var html = '';
+  var count = 0;
+  
+  servers.forEach((s, i) => {
+    if (filter && s.name.toLowerCase().indexOf(filter.toLowerCase()) === -1) return;
+    count++;
+    html += `
+      <div class="server-item">
+        <div class="server-info">
+          <div class="status-dot"></div>
+          <div class="server-name">${s.name}</div>
+        </div>
+        <button class="copy-btn" onclick="copyServerKey(${i})">Копировать</button>
+      </div>
+    `;
+  });
+  
+  if (count === 0) {
+    html = '<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:14px;">Ничего не найдено</div>';
+  }
+  
+  container.innerHTML = html;
+  document.getElementById('server-count').textContent = count;
+}
+
+function filterServers() {
+  var q = document.getElementById('search').value;
+  renderServers(q);
+}
+
+function copyServerKey(index) {
+  var s = servers[index];
+  copyUrl(s.key, s.name);
+}
+
+// ===== FAQ =====
+function toggleFaq(el) {
+  el.classList.toggle('open');
+}
+
+// ===== СЧЁТЧИК =====
+(function() {
+  var el = document.getElementById('online-count');
+  var base = 17;
+  function update() {
+    base = Math.max(15, Math.min(20, base + (Math.floor(Math.random() * 3) - 1)));
+    el.textContent = base;
+  }
+  el.textContent = base;
+  setInterval(update, 5000);
+})();
+
+// Инициализация
+renderServers('');
+</script>
+
+</body>
+</html>
