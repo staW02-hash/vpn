@@ -5,399 +5,237 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>LibreVPN</title>
 <style>
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-  :root {
-    --bg: #09090b;
-    --surface: #18181b;
-    --surface-hover: #27272a;
-    --border: #27272a;
-    --text-main: #f4f4f5;
-    --text-muted: #a1a1aa;
-    --primary: #3b82f6;
-    --primary-hover: #2563eb;
-    --success: #22c55e;
-    --danger: #ef4444;
-    --radius: 16px;
-  }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
-    background: var(--bg); color: var(--text-main); min-height: 100vh;
-    overflow-x: hidden; line-height: 1.5;
-  }
-
-  /* ===== ШАПКА ===== */
-  .header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 16px; background: var(--bg); position: sticky; top: 0; z-index: 90;
-    border-bottom: 1px solid var(--border);
-  }
-  .header-left { display: flex; align-items: center; gap: 12px; }
-  .menu-btn {
-    background: var(--surface); border: 1px solid var(--border); color: var(--text-main);
-    width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center;
-    justify-content: center; cursor: pointer; transition: background 0.2s;
-  }
-  .menu-btn:active { background: var(--surface-hover); }
-  .header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
-  .online-badge {
-    display: flex; align-items: center; gap: 6px; font-size: 12px;
-    font-weight: 600; color: var(--text-muted); background: var(--surface);
-    padding: 6px 10px; border-radius: 20px; border: 1px solid var(--border);
-  }
-  .online-badge .dot {
-    width: 6px; height: 6px; background: var(--success); border-radius: 50%;
-    animation: pulse 1.5s infinite;
-  }
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-  /* ===== ВЫЕЗЖАЮЩЕЕ МЕНЮ (АККОРДЕОН) ===== */
-  .sidebar-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 999;
-    opacity: 0; pointer-events: none; transition: opacity 0.3s;
-    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-  }
-  .sidebar-overlay.open { opacity: 1; pointer-events: auto; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root { --bg:#09090b; --surf:#18181b; --bord:#27272a; --text:#f4f4f5; --muted:#a1a1aa; --pri:#3b82f6; --suc:#22c55e; --dan:#ef4444; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; overflow-x: hidden; }
   
-  .sidebar {
-    position: fixed; top: 0; left: 0; width: 280px; height: 100vh;
-    background: var(--bg); border-right: 1px solid var(--border); z-index: 1000;
-    transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex; flex-direction: column;
-  }
+  /* Шапка */
+  .header { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--bord); position: sticky; top: 0; background: var(--bg); z-index: 90; }
+  .menu-btn { background: var(--surf); border: 1px solid var(--bord); color: var(--text); width: 40px; height: 40px; border-radius: 12px; font-size: 20px; cursor: pointer; }
+  .header h1 { font-size: 18px; font-weight: 700; }
+  .online { font-size: 12px; color: var(--muted); background: var(--surf); padding: 6px 10px; border-radius: 20px; border: 1px solid var(--bord); display: flex; align-items: center; gap: 6px; }
+  .dot { width: 6px; height: 6px; background: var(--suc); border-radius: 50%; animation: p 1.5s infinite; }
+  @keyframes p { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  /* Меню */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 999; opacity: 0; pointer-events: none; transition: .3s; backdrop-filter: blur(4px); }
+  .overlay.open { opacity: 1; pointer-events: auto; }
+  .sidebar { position: fixed; top: 0; left: 0; width: 280px; height: 100vh; background: var(--bg); border-right: 1px solid var(--bord); z-index: 1000; transform: translateX(-100%); transition: transform .3s; display: flex; flex-direction: column; }
   .sidebar.open { transform: translateX(0); }
+  .s-head { padding: 20px 16px; border-bottom: 1px solid var(--bord); display: flex; justify-content: space-between; align-items: center; }
+  .s-head h2 { font-size: 18px; color: var(--pri); }
+  .close { background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer; }
+  .s-nav { flex: 1; overflow-y: auto; padding: 12px; }
+  .n-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-radius: 12px; cursor: pointer; color: var(--muted); font-size: 15px; font-weight: 500; background: transparent; border: none; width: 100%; text-align: left; transition: .2s; margin-bottom: 4px; }
+  .n-item.active { background: var(--surf); color: var(--pri); font-weight: 600; }
+  .n-item .arrow { transition: transform .3s; font-size: 12px; }
+  .n-item.open .arrow { transform: rotate(180deg); }
+  .submenu { display: none; padding-left: 12px; margin-left: 16px; border-left: 2px solid var(--bord); margin-bottom: 8px; }
+  .submenu.open { display: block; animation: slide .3s; }
+  @keyframes slide { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
+  .sub-item { display: block; width: 100%; padding: 12px 16px; border-radius: 10px; color: var(--muted); font-size: 14px; text-align: left; background: transparent; border: none; cursor: pointer; }
+  .sub-item.active { color: var(--pri); background: var(--surf); }
+  .s-foot { padding: 16px; border-top: 1px solid var(--bord); font-size: 12px; color: var(--muted); text-align: center; }
+
+  /* Контент */
+  .main { padding: 16px; max-width: 600px; margin: 0 auto; }
+  .tab { display: none; animation: fade .3s; }
+  .tab.active { display: block; }
+  @keyframes fade { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
   
-  .sidebar-header {
-    padding: 20px 16px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .sidebar-header h2 { font-size: 18px; font-weight: 800; color: var(--primary); }
-  .close-btn {
-    background: none; border: none; color: var(--text-muted); font-size: 24px;
-    cursor: pointer; padding: 4px; display: flex;
-  }
-
-  .sidebar-nav { flex: 1; overflow-y: auto; padding: 12px; -webkit-overflow-scrolling: touch; }
+  .card { background: var(--surf); border: 1px solid var(--bord); border-radius: 16px; padding: 16px; margin-bottom: 16px; }
+  .card h2 { font-size: 16px; margin-bottom: 12px; }
+  .card p { font-size: 14px; color: var(--muted); margin-bottom: 12px; }
+  .btn { display: flex; align-items: center; justify-content: center; width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; color: #fff; background: var(--pri); cursor: pointer; transition: .2s; }
+  .btn:active { background: #2563eb; transform: scale(.98); }
   
-  .nav-item {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 16px; border-radius: 12px; cursor: pointer;
-    color: var(--text-muted); font-size: 15px; font-weight: 500;
-    transition: all 0.2s; margin-bottom: 4px; border: none; background: transparent;
-    width: 100%; text-align: left;
-  }
-  .nav-item:active { background: var(--surface-hover); }
-  .nav-item.active { background: var(--surface); color: var(--primary); font-weight: 600; }
-  .nav-item .arrow { transition: transform 0.3s; font-size: 12px; color: var(--text-muted); }
-  .nav-item.open .arrow { transform: rotate(180deg); }
-
-  /* Вложенное меню */
-  .submenu {
-    display: none; padding-left: 12px; margin-bottom: 8px;
-    border-left: 2px solid var(--border); margin-left: 16px;
-  }
-  .submenu.open { display: block; animation: slideDown 0.3s ease-out; }
-  @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-  .submenu-item {
-    display: block; width: 100%; padding: 12px 16px; border-radius: 10px;
-    color: var(--text-muted); font-size: 14px; text-align: left;
-    background: transparent; border: none; cursor: pointer; transition: all 0.2s;
-  }
-  .submenu-item:active { background: var(--surface-hover); }
-  .submenu-item.active { color: var(--primary); background: var(--surface); }
-
-  .sidebar-footer { padding: 16px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-muted); text-align: center; }
-
-  /* ===== КОНТЕНТ ===== */
-  .main-content { padding: 16px; max-width: 600px; margin: 0 auto; }
-  .tab-content { display: none; animation: fadeIn 0.3s ease-out; }
-  .tab-content.active { display: block; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-  .card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 16px; margin-bottom: 16px;
-  }
-  .card h2 { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--text-main); }
-  .card p { font-size: 14px; color: var(--text-muted); margin-bottom: 12px; }
+  /* Сервера */
+  .search { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--bord); background: var(--bg); color: var(--text); font-size: 14px; margin-bottom: 12px; outline: none; }
+  .search:focus { border-color: var(--pri); }
+  .s-list { display: flex; flex-direction: column; gap: 8px; max-height: 60vh; overflow-y: auto; padding-right: 4px; }
+  .s-row { display: flex; justify-content: space-between; align-items: center; background: var(--bg); border: 1px solid var(--bord); border-radius: 12px; padding: 12px; }
+  .s-info { display: flex; align-items: center; gap: 8px; flex: 1; overflow: hidden; }
+  .s-name { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .c-btn { background: var(--pri); color: #fff; border: none; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
   
-  .btn {
-    display: flex; align-items: center; justify-content: center; width: 100%;
-    padding: 14px; border: none; border-radius: 12px; font-size: 14px;
-    font-weight: 600; color: #fff; background: var(--primary);
-    cursor: pointer; transition: background 0.2s, transform 0.1s;
-  }
-  .btn:active { background: var(--primary-hover); transform: scale(0.98); }
-  .btn-secondary {
-    background: var(--surface-hover); color: var(--text-main); border: 1px solid var(--border);
-  }
-  .btn-secondary:active { background: #3f3f46; }
-
-  /* Список серверов */
-  .search-input {
-    width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border);
-    background: var(--bg); color: var(--text-main); font-size: 14px; margin-bottom: 12px;
-    outline: none; transition: border-color 0.2s;
-  }
-  .search-input:focus { border-color: var(--primary); }
+  /* Прочее */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .p-card { background: var(--bg); border: 1px solid var(--bord); border-radius: 12px; padding: 16px; text-align: center; }
+  .p-card.hot { border-color: var(--pri); background: rgba(59,130,246,.1); }
+  .p-name { font-size: 12px; color: var(--muted); }
+  .p-price { font-size: 20px; font-weight: 700; }
+  .pros { color: var(--suc); font-size: 13px; }
+  .cons { color: var(--dan); font-size: 13px; }
+  .faq { border-bottom: 1px solid var(--bord); cursor: pointer; padding: 16px 0; }
+  .faq:last-child { border-bottom: none; }
+  .faq-q { display: flex; justify-content: space-between; font-size: 14px; font-weight: 500; }
+  .faq-a { max-height: 0; overflow: hidden; transition: .3s; font-size: 13px; color: var(--muted); }
+  .faq.open .faq-a { max-height: 200px; padding-top: 10px; }
+  .news { margin-bottom: 20px; }
+  .news-d { font-size: 11px; color: var(--muted); text-transform: uppercase; }
+  .news-t { font-size: 15px; font-weight: 600; margin: 4px 0; }
+  .news-x { font-size: 13px; color: var(--muted); }
   
-  .server-list { display: flex; flex-direction: column; gap: 8px; max-height: 60vh; overflow-y: auto; padding-right: 4px; }
-  .server-item {
-    display: flex; align-items: center; justify-content: space-between;
-    background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
-    padding: 12px;
-  }
-  .server-info { display: flex; align-items: center; gap: 8px; flex: 1; overflow: hidden; }
-  .status-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; flex-shrink: 0; }
-  .server-name { font-size: 13px; font-weight: 500; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .copy-btn {
-    background: var(--primary); color: #fff; border: none; padding: 8px 12px;
-    border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; flex-shrink: 0;
-  }
-  .copy-btn:active { background: var(--primary-hover); }
-
-  /* Тарифы */
-  .plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .plan-card {
-    background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
-    padding: 16px; text-align: center;
-  }
-  .plan-card.featured { border-color: var(--primary); background: rgba(59, 130, 246, 0.1); }
-  .plan-name { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
-  .plan-price { font-size: 20px; font-weight: 700; color: var(--text-main); }
-  .plan-price span { font-size: 12px; font-weight: 400; color: var(--text-muted); }
-
-  /* FAQ */
-  .faq-item { border-bottom: 1px solid var(--border); }
-  .faq-item:last-child { border-bottom: none; }
-  .faq-q {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 16px 0; cursor: pointer; font-size: 14px; font-weight: 500;
-  }
-  .faq-q span { transition: transform 0.3s; color: var(--text-muted); }
-  .faq-item.open .faq-q span { transform: rotate(45deg); }
-  .faq-a {
-    max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
-    font-size: 13px; color: var(--text-muted); line-height: 1.6;
-  }
-  .faq-item.open .faq-a { max-height: 200px; padding-bottom: 16px; }
-
-  /* Новости */
-  .news-item { margin-bottom: 20px; }
-  .news-date { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .news-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-  .news-text { font-size: 13px; color: var(--text-muted); }
-
-  /* Плюсы/Минусы */
-  .pros-cons { display: flex; gap: 16px; margin-top: 12px; }
-  .pros, .cons { flex: 1; font-size: 13px; }
-  .pros { color: var(--success); }
-  .cons { color: var(--danger); }
-
-  /* Уведомление */
-  .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
-    background: var(--surface); color: var(--text-main); padding: 12px 24px;
-    border-radius: 30px; font-size: 14px; font-weight: 500; border: 1px solid var(--border);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5); opacity: 0; transition: all 0.3s;
-    pointer-events: none; z-index: 2000;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  /* Тост */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translate(-50%, 20px); background: var(--surf); color: var(--text); padding: 12px 24px; border-radius: 30px; border: 1px solid var(--bord); opacity: 0; transition: .3s; z-index: 2000; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
 </style>
 </head>
 <body>
 
-<!-- Оверлей -->
-<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+<div class="overlay" id="ov" onclick="tMenu()"></div>
 
-<!-- Боковое меню -->
-<div class="sidebar" id="sidebar">
-  <div class="sidebar-header">
-    <h2>LibreVPN</h2>
-    <button class="close-btn" onclick="toggleSidebar()">×</button>
-  </div>
-  <div class="sidebar-nav">
-    <button class="nav-item active" onclick="switchTab('servers', this)">⚡ Сервера</button>
-    <button class="nav-item" onclick="switchTab('about', this)">ℹ️ О сайте</button>
-    
-    <!-- Аккордеон приложений -->
-    <button class="nav-item" onclick="toggleMenu('sub-apps', this)">
-      📱 Приложения <span class="arrow">▼</span>
-    </button>
-    <div class="submenu" id="sub-apps">
-      <button class="submenu-item" onclick="switchTab('app-streisand', this)">Streisand</button>
-      <button class="submenu-item" onclick="switchTab('app-happ', this)">Happ</button>
-      <button class="submenu-item" onclick="switchTab('app-v2ray', this)">v2rayNG</button>
-      <button class="submenu-item" onclick="switchTab('app-outline', this)">Outline</button>
-      <button class="submenu-item" onclick="switchTab('app-avovpn', this)">avoVPN</button>
+<div class="sidebar" id="sb">
+  <div class="s-head"><h2>LibreVPN</h2><button class="close" onclick="tMenu()">×</button></div>
+  <div class="s-nav">
+    <button class="n-item active" onclick="tTab('servers', this)">⚡ Сервера</button>
+    <button class="n-item" onclick="tTab('about', this)">ℹ️ О сайте</button>
+    <button class="n-item" onclick="tSub('sub', this)">📱 Приложения <span class="arrow">▼</span></button>
+    <div class="submenu" id="sub">
+      <button class="sub-item" onclick="tTab('app-str', this)">Streisand</button>
+      <button class="sub-item" onclick="tTab('app-hap', this)">Happ</button>
+      <button class="sub-item" onclick="tTab('app-v2', this)">v2rayNG</button>
+      <button class="sub-item" onclick="tTab('app-out', this)">Outline</button>
+      <button class="sub-item" onclick="tTab('app-avo', this)">avoVPN</button>
     </div>
-
-    <button class="nav-item" onclick="switchTab('premium', this)">⭐ Премиум</button>
-    <button class="nav-item" onclick="switchTab('help', this)">❓ Помощь</button>
-    <button class="nav-item" onclick="switchTab('legal', this)">📜 Права</button>
-    <button class="nav-item" onclick="switchTab('news', this)">📰 Новости</button>
+    <button class="n-item" onclick="tTab('prem', this)">⭐ Премиум</button>
+    <button class="n-item" onclick="tTab('help', this)">❓ Помощь</button>
+    <button class="n-item" onclick="tTab('legal', this)">📜 Права</button>
+    <button class="n-item" onclick="tTab('news', this)">📰 Новости</button>
   </div>
-  <div class="sidebar-footer">© 2026 LibreVPN</div>
+  <div class="s-foot">© 2026 LibreVPN</div>
 </div>
 
-<!-- Шапка -->
 <div class="header">
-  <div class="header-left">
-    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+  <div style="display:flex; align-items:center; gap:12px;">
+    <button class="menu-btn" onclick="tMenu()">☰</button>
     <h1>LibreVPN</h1>
   </div>
-  <div class="online-badge">
-    <span class="dot"></span>
-    <span id="online-count">0</span>
-  </div>
+  <div class="online"><span class="dot"></span><span id="cnt">0</span></div>
 </div>
 
-<!-- Контент -->
-<div class="main-content">
+<div class="main">
 
-  <!-- СЕРВЕРА -->
-  <div id="tab-servers" class="tab-content active">
+  <div id="tab-servers" class="tab active">
     <div class="card">
-      <h2>Список серверов (<span id="server-count">0</span>)</h2>
-      <input type="text" class="search-input" id="search" placeholder="Поиск по стране..." oninput="filterServers()">
-      <div class="server-list" id="server-list"></div>
+      <h2>Сервера (<span id="s-cnt">0</span>)</h2>
+      <input type="text" class="search" id="search" placeholder="Поиск по стране..." oninput="render()">
+      <div class="s-list" id="s-list"></div>
     </div>
   </div>
 
-  <!-- О САЙТЕ -->
-  <div id="tab-about" class="tab-content">
+  <div id="tab-about" class="tab">
     <div class="card">
       <h2>О LibreVPN</h2>
-      <p><strong>LibreVPN</strong> — проект, который делает <strong>3 человека</strong>. Мы собираем бесплатные сервера из открытых источников и даём удобный доступ к ним.</p>
+      <p><strong>LibreVPN</strong> — проект, который делает <strong>3 человека</strong>. Мы собираем бесплатные сервера из открытых источников.</p>
       <p>Сайт обновляется еженедельно. Мы не гарантируем работу бесплатных серверов.</p>
       <p>Для стабильности посмотри раздел <strong>Премиум</strong>.</p>
     </div>
   </div>
 
-  <!-- ПРИЛОЖЕНИЯ -->
-  <div id="tab-app-streisand" class="tab-content">
+  <div id="tab-app-str" class="tab">
     <div class="card">
       <h2>Streisand (iOS)</h2>
-      <p>Мощный клиент для iOS с поддержкой VLESS, VMess, Trojan, Shadowsocks и Hysteria2.</p>
-      <div class="pros-cons">
-        <div class="pros"><strong>Плюсы</strong><br>• Бесплатный<br>• Много протоколов<br>• Подписки и автопроверка</div>
-        <div class="cons"><strong>Минусы</strong><br>• Только iOS<br>• Интерфейс на английском</div>
-      </div>
-      <button class="btn" style="margin-top:16px;" onclick="copyUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt', 'Streisand')">Скопировать подписку</button>
+      <p>Мощный клиент для iOS с поддержкой VLESS, VMess, Trojan, Shadowsocks.</p>
+      <p class="pros">✅ Бесплатный, много протоколов, подписки.</p>
+      <p class="cons">❌ Только iOS, интерфейс на английском.</p>
+      <button class="btn" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','Streisand')">Скопировать подписку</button>
     </div>
   </div>
 
-  <div id="tab-app-happ" class="tab-content">
+  <div id="tab-app-hap" class="tab">
     <div class="card">
       <h2>Happ</h2>
-      <p>Кроссплатформенный клиент (iOS, Android, Windows, macOS). Поддерживает VLESS Reality, VMess, Trojan.</p>
-      <div class="pros-cons">
-        <div class="pros"><strong>Плюсы</strong><br>• Все платформы<br>• VLESS Reality<br>• Зашифрованные подписки</div>
-        <div class="cons"><strong>Минусы</strong><br>• Иногда баги<br>• Не продаёт VPN</div>
-      </div>
-      <button class="btn" style="margin-top:16px;" onclick="copyUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt', 'Happ')">Скопировать подписку</button>
+      <p>Кроссплатформенный клиент (iOS, Android, Windows, macOS).</p>
+      <p class="pros">✅ Все платформы, VLESS Reality, зашифрованные подписки.</p>
+      <p class="cons">❌ Иногда баги, не продаёт VPN.</p>
+      <button class="btn" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','Happ')">Скопировать подписку</button>
     </div>
   </div>
 
-  <div id="tab-app-v2ray" class="tab-content">
+  <div id="tab-app-v2" class="tab">
     <div class="card">
       <h2>v2rayNG / v2RayTun</h2>
-      <p>Классические клиенты для Android. v2rayNG — старый и проверенный, v2RayTun — современный с поддержкой Reality.</p>
-      <div class="pros-cons">
-        <div class="pros"><strong>Плюсы</strong><br>• Бесплатные<br>• Много протоколов<br>• Проверка задержки</div>
-        <div class="cons"><strong>Минусы</strong><br>• Только Android<br>• Лаги при больших списках</div>
-      </div>
-      <button class="btn" style="margin-top:16px;" onclick="copyUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt', 'v2rayNG')">Скопировать подписку</button>
+      <p>Классические клиенты для Android.</p>
+      <p class="pros">✅ Бесплатные, много протоколов, проверка задержки.</p>
+      <p class="cons">❌ Только Android, лаги при больших списках.</p>
+      <button class="btn" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','v2rayNG')">Скопировать подписку</button>
     </div>
   </div>
 
-  <div id="tab-app-outline" class="tab-content">
+  <div id="tab-app-out" class="tab">
     <div class="card">
       <h2>Outline</h2>
-      <p>Клиент от Jigsaw (Google). Работает на Shadowsocks, очень простой в использовании.</p>
-      <div class="pros-cons">
-        <div class="pros"><strong>Плюсы</strong><br>• Открытый код<br>• Очень простой<br>• iOS и Android</div>
-        <div class="cons"><strong>Минусы</strong><br>• Только Shadowsocks<br>• Нет настроек</div>
-      </div>
-      <button class="btn" style="margin-top:16px;" onclick="copyUrl('https://pozor.bond/sub/ufx50vgdeg77', 'Outline')">Скопировать ключ</button>
+      <p>Клиент от Jigsaw (Google) на Shadowsocks.</p>
+      <p class="pros">✅ Открытый код, очень простой, iOS и Android.</p>
+      <p class="cons">❌ Только Shadowsocks, нет настроек.</p>
+      <button class="btn" onclick="cUrl('https://pozor.bond/sub/ufx50vgdeg77','Outline')">Скопировать ключ</button>
     </div>
   </div>
 
-  <div id="tab-app-avovpn" class="tab-content">
+  <div id="tab-app-avo" class="tab">
     <div class="card">
       <h2>avoVPN</h2>
-      <p>Клиент для Android и iOS с поддержкой vless:// и vmess://. Простой интерфейс.</p>
-      <div class="pros-cons">
-        <div class="pros"><strong>Плюсы</strong><br>• Бесплатный<br>• VLESS и VMess<br>• Выбор приложений</div>
-        <div class="cons"><strong>Минусы</strong><br>• Нестабильная работа<br>• Медленная поддержка</div>
-      </div>
-      <button class="btn" style="margin-top:16px;" onclick="copyUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt', 'avoVPN')">Скопировать подписку</button>
+      <p>Клиент для Android и iOS с поддержкой vless:// и vmess://.</p>
+      <p class="pros">✅ Бесплатный, VLESS и VMess, выбор приложений.</p>
+      <p class="cons">❌ Нестабильная работа, медленная поддержка.</p>
+      <button class="btn" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','avoVPN')">Скопировать подписку</button>
     </div>
   </div>
 
-  <!-- ПРЕМИУМ -->
-  <div id="tab-premium" class="tab-content">
+  <div id="tab-prem" class="tab">
     <div class="card">
       <h2>Премиум тарифы</h2>
-      <p>Сервера, лично отобранные владельцем. Работают всегда.</p>
-      <div class="plan-grid">
-        <div class="plan-card"><div class="plan-name">Стандарт</div><div class="plan-price">49 ₽<span>/мес</span></div></div>
-        <div class="plan-card featured"><div class="plan-name">Премиум</div><div class="plan-price">99 ₽<span>/мес</span></div></div>
-        <div class="plan-card"><div class="plan-name">VIP</div><div class="plan-price">199 ₽<span>/мес</span></div></div>
-        <div class="plan-card"><div class="plan-name">All</div><div class="plan-price">299 ₽<span>/мес</span></div></div>
+      <p>Сервера, лично отобранные владельцем.</p>
+      <div class="grid2">
+        <div class="p-card"><div class="p-name">Стандарт</div><div class="p-price">49 ₽</div></div>
+        <div class="p-card hot"><div class="p-name">Премиум</div><div class="p-price">99 ₽</div></div>
+        <div class="p-card"><div class="p-name">VIP</div><div class="p-price">199 ₽</div></div>
+        <div class="p-card"><div class="p-name">All</div><div class="p-price">299 ₽</div></div>
       </div>
-      <button class="btn" style="margin-top:16px;" onclick="showToast('Оплата скоро')">Выбрать тариф</button>
-    </div>
-    <div class="card">
-      <h2>Сравнение</h2>
-      <p><strong>Стандарт:</strong> 5 серверов, до 50 Мбит/с.<br><strong>Премиум:</strong> 15 серверов, до 100 Мбит/с.<br><strong>VIP:</strong> 30 серверов, без ограничений.<br><strong>All:</strong> все сервера, максимальная скорость.</p>
+      <button class="btn" style="margin-top:16px;" onclick="tToast('Оплата скоро')">Выбрать тариф</button>
     </div>
   </div>
 
-  <!-- ПОМОЩЬ -->
-  <div id="tab-help" class="tab-content">
+  <div id="tab-help" class="tab">
     <div class="card">
       <h2>Инструкция</h2>
-      <p><strong>1.</strong> Выбери приложение в меню.<br><strong>2.</strong> Скопируй подписку.<br><strong>3.</strong> Вставь в клиент.<br><strong>4.</strong> Подключись.</p>
+      <p><strong>1.</strong> Выбери приложение.<br><strong>2.</strong> Скопируй подписку.<br><strong>3.</strong> Вставь в клиент.<br><strong>4.</strong> Подключись.</p>
     </div>
     <div class="card">
       <h2>FAQ</h2>
-      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Почему сервера не работают? <span>+</span></div><div class="faq-a">Бесплатные сервера публичные. Их могут блокировать. Обнови список.</div></div>
-      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Как проверить сервер? <span>+</span></div><div class="faq-a">В клиенте нажми «Тест задержки». Зелёный пинг — работает.</div></div>
-      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Чем отличается Премиум? <span>+</span></div><div class="faq-a">Премиум-сервера отбираются вручную и не публикуются.</div></div>
+      <div class="faq" onclick="this.classList.toggle('open')"><div class="faq-q">Почему сервера не работают? <span>+</span></div><div class="faq-a">Бесплатные сервера публичные. Их могут блокировать.</div></div>
+      <div class="faq" onclick="this.classList.toggle('open')"><div class="faq-q">Как проверить сервер? <span>+</span></div><div class="faq-a">В клиенте нажми «Тест задержки».</div></div>
+      <div class="faq" onclick="this.classList.toggle('open')"><div class="faq-q">Чем отличается Премиум? <span>+</span></div><div class="faq-a">Премиум-сервера отбираются вручную.</div></div>
     </div>
   </div>
 
-  <!-- ПРАВА -->
-  <div id="tab-legal" class="tab-content">
+  <div id="tab-legal" class="tab">
     <div class="card">
       <h2>Права пользования</h2>
       <p><strong>Бесплатные сервера:</strong> Взяты из открытых источников. Не принадлежат LibreVPN. Используйте на свой риск.</p>
       <p><strong>Премиум сервера:</strong> Отобраны владельцем. Всегда работают.</p>
-    </div>
-    <div class="card">
-      <h2>© Авторские права</h2>
       <p>© 2026 LibreVPN. Все права защищены.</p>
     </div>
   </div>
 
-  <!-- НОВОСТИ -->
-  <div id="tab-news" class="tab-content">
+  <div id="tab-news" class="tab">
     <div class="card">
       <h2>Новости</h2>
-      <div class="news-item">
-        <div class="news-date">8 ноября 2026</div>
-        <div class="news-title">РКН усилил блокировки</div>
-        <div class="news-text">Массовые блокировки WireGuard и OpenVPN. Рекомендуем VLESS и Hysteria2.</div>
+      <div class="news">
+        <div class="news-d">8 ноября 2026</div>
+        <div class="news-t">РКН усилил блокировки</div>
+        <div class="news-x">Массовые блокировки WireGuard и OpenVPN.</div>
       </div>
-      <div class="news-item">
-        <div class="news-date">5 ноября 2026</div>
-        <div class="news-title">Обновление базы</div>
-        <div class="news-text">Добавили новые источники. Теперь доступно более 150 конфигураций.</div>
+      <div class="news">
+        <div class="news-d">5 ноября 2026</div>
+        <div class="news-t">Обновление базы</div>
+        <div class="news-x">Добавили новые источники. Теперь более 150 конфигураций.</div>
       </div>
-      <div class="news-item">
-        <div class="news-date">1 ноября 2026</div>
-        <div class="news-title">Скоро: Премиум</div>
-        <div class="news-text">Готовим запуск премиум-серверов, которые будут работать при блокировках.</div>
+      <div class="news">
+        <div class="news-d">1 ноября 2026</div>
+        <div class="news-t">Скоро: Премиум</div>
+        <div class="news-x">Готовим запуск премиум-серверов.</div>
       </div>
     </div>
   </div>
@@ -407,146 +245,85 @@
 <div class="toast" id="toast">Скопировано</div>
 
 <script>
-// ===== Меню =====
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('overlay').classList.toggle('open');
-}
+// Меню и вкладки
+const tMenu = () => { document.getElementById('sb').classList.toggle('open'); document.getElementById('ov').classList.toggle('open'); };
+const tSub = (id, btn) => { document.getElementById(id).classList.toggle('open'); btn.classList.toggle('open'); };
+const tTab = (name, btn) => {
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.n-item, .sub-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (window.innerWidth < 768) tMenu();
+};
 
-// ===== Аккордеон =====
-function toggleMenu(id, btn) {
-  var submenu = document.getElementById(id);
-  submenu.classList.toggle('open');
-  btn.classList.toggle('open');
-}
+// Уведомления
+const tToast = (msg) => {
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(window._t); window._t = setTimeout(() => t.classList.remove('show'), 2000);
+};
 
-// ===== Вкладки =====
-function switchTab(name, btn) {
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.nav-item, .submenu-item').forEach(el => el.classList.remove('active'));
-  
-  var content = document.getElementById('tab-' + name);
-  if (content) content.classList.add('active');
-  if (btn) btn.classList.add('active');
-  
-  if (window.innerWidth < 768) toggleSidebar();
-}
-
-// ===== Копирование =====
-function showToast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(window._toast);
-  window._toast = setTimeout(() => t.classList.remove('show'), 2000);
-}
-
-function copyUrl(url, label) {
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(url).then(() => {
-      showToast('✅ ' + label + ' скопировано');
-    }).catch(() => legacyCopy(url, label));
-  } else {
-    legacyCopy(url, label);
-  }
-}
-
-function legacyCopy(url, label) {
-  var ta = document.createElement('textarea');
+// Копирование
+const cUrl = (url, label) => {
+  const done = () => tToast('✅ ' + label + ' скопировано');
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(url).then(done).catch(() => legacy(url, done));
+  } else legacy(url, done);
+};
+const legacy = (url, done) => {
+  const ta = document.createElement('textarea');
   ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
-  document.body.appendChild(ta); ta.focus(); ta.select();
-  try {
-    document.execCommand('copy');
-    showToast('✅ ' + label + ' скопировано');
-  } catch(e) {
-    showToast('Ошибка копирования');
-  }
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); done(); } catch(e) { tToast('Ошибка'); }
   document.body.removeChild(ta);
-}
+};
 
-// ===== 20 СЕРВЕРОВ =====
-var servers = [
-  { name: '🇺🇸 США · Fast', key: 'vless://eeb6823c-b926-4ea2-866a-5542edd26e59@104.16.72.101:8443?path=%2F&security=tls&encryption=none&insecure=0&host=t1s1.rittbo.kdns.fr&fp=chrome&type=ws&allowInsecure=0&sni=t1s1.rittbo.kdns.fr#US-Fast' },
-  { name: '🇩🇪 Германия · Berlin', key: 'vless://14b59caf-a196-4ec2-8c70-c7b388062f5b@104.16.72.101:443?path=%2Fassignment&security=tls&insecure=0&fp=chrome&type=ws&allowInsecure=0&sni=www.multiplydose.com#DE-Berlin' },
-  { name: '🇳🇱 Нидерланды · Amsterdam', key: 'vless://7968c546-02dc-4f8c-b791-934591a94cb2@104.16.72.50:443?security=tls&path=%2Fcbasur&encryption=none&insecure=0&sni=hhvl.hhapp.kdns.fr&host=hhvl.hhapp.kdns.fr&type=ws&allowInsecure=0#NL-Amsterdam' },
-  { name: '🇫🇷 Франция · Paris', key: 'vless://14b59caf-a196-4ec2-8c70-c7b388062f5b@104.16.72.101:443?security=tls&host=vangoghhh.info&sni=vangoghhh.info&type=ws&path=%2Frdfgtws&insecure=0&allowInsecure=0&encryption=none#FR-Paris' },
-  { name: '🇬🇧 Великобритания · London', key: 'vless://659a9075-d5ab-4fd2-bf34-b37043fae832@104.16.72.101:443?path=%2Fproxyip&security=tls&encryption=none&host=nbhhh.mrcool.kdns.fr&type=ws&sni=nbhhh.mrcool.kdns.fr#GB-London' },
-  { name: '🇯🇵 Япония · Tokyo', key: 'vless://06b65903-406d-4a41-8400-6fd5c0ee7798@104.16.72.41:2096?path=%2Fproxyip&security=tls&encryption=none&host=sp.linuxdododo.ccwu.cc&fp=chrome&type=ws&sni=sp.linuxdododo.ccwu.cc#JP-Tokyo' },
-  { name: '🇸🇬 Сингапур · SG', key: 'vless://b1a689fa-20c3-43b4-a107-4af64f8a7cf3@167.104.219.146:6300?security=none&encryption=none&host=play.google.com&headerType=http&type=tcp#SG' },
-  { name: '🇰🇷 Корея · Seoul', key: 'vless://44571db4-ba07-4528-a63c-acfa7f6c7113@104.21.51.208:2087?mode=auto&path=%2F&security=tls&alpn=h2%2Chttp%2F1.1&encryption=none&insecure=0&host=micke.dotatwotimoments.de&fp=chrome&type=xhttp&allowInsecure=0&sni=micke.dotatwotimoments.de#KR-Seoul' },
-  { name: '🇨🇦 Канада · Toronto', key: 'vless://44571db4-ba07-4528-a63c-acfa7f6c7113@104.16.4.103:2083?security=tls&encryption=none&type=ws&path=%2F#CA-Toronto' },
-  { name: '🇹🇷 Турция · Istanbul', key: 'vless://eeb6823c-b926-4ea2-866a-5542edd26e59@104.21.227.134:443?security=tls&encryption=none&type=ws&path=%2F#TR-Istanbul' },
-  { name: '🇦🇪 ОАЭ · Dubai', key: 'vless://246b0a5c-1cf0-4e16-adff-559e8ea1b34b@104.16.43.241:443?encryption=none&security=tls&sni=mtnnpubg.solanoar.xyz&alpn=http%2F1.1&fp=chrome&type=ws&host=mtnnpubg.solanoar.xyz&path=%2Fdoq9YPeaCQ4upQuq3sPdM#AE-Dubai' },
-  { name: '🇭🇰 Гонконг · HK', key: 'vless://f1fc0a00-c9cc-45ef-97c3-7014d9f94b8a@185.242.234.252:14201#HK' },
-  { name: '🇺🇸 США · New York', key: 'vless://d5b3a3b1-0e2b-4b3e-9c1a-8f2e1d4a6b7c@104.16.0.1:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#US-NY' },
-  { name: '🇩🇪 Германия · Frankfurt', key: 'vless://e6c4a2b1-1f3c-5d4e-0b2a-9c3f2e5a7d8b@104.16.0.2:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#DE-Frankfurt' },
-  { name: '🇳🇱 Нидерланды · Rotterdam', key: 'vless://f7d5b3c2-2a4d-6e5f-1c3b-0d4a3f6b8e9c@104.16.0.3:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#NL-Rotterdam' },
-  { name: '🇫🇷 Франция · Marseille', key: 'vless://a8e6c4d3-3b5e-7f6a-2d4c-1e5b4a7c9f0d@104.16.0.4:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#FR-Marseille' },
-  { name: '🇬🇧 Великобритания · Manchester', key: 'vless://b9f7d5e4-4c6f-8a7b-3e5d-2f6c5b8d0a1e@104.16.0.5:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#GB-Manchester' },
-  { name: '🇯🇵 Япония · Osaka', key: 'vless://c0a8e6f5-5d7a-9b8c-4f6e-3a7d6c9e1b2f@104.16.0.6:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#JP-Osaka' },
-  { name: '🇸🇬 Сингапур · SG-2', key: 'vless://d1b9f7a6-6e8b-0c9d-5a7f-4b8e7d0f2c3a@104.16.0.7:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#SG-2' },
-  { name: '🇰🇷 Корея · Busan', key: 'vless://e2c0a8b7-7f9c-1d0e-6b8a-5c9f8e1a3d4b@104.16.0.8:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#KR-Busan' },
-  { name: '🇨🇦 Канада · Vancouver', key: 'vless://f3d1b9c8-8a0d-2e1f-7c9b-6d0a9f2b4e5c@104.16.0.9:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#CA-Vancouver' }
+// 20 серверов
+const srv = [
+  { n: '🇺🇸 США · Fast', k: 'vless://eeb6823c-b926-4ea2-866a-5542edd26e59@104.16.72.101:8443?path=%2F&security=tls&encryption=none&insecure=0&host=t1s1.rittbo.kdns.fr&fp=chrome&type=ws&allowInsecure=0&sni=t1s1.rittbo.kdns.fr#US' },
+  { n: '🇩🇪 Германия · Berlin', k: 'vless://14b59caf-a196-4ec2-8c70-c7b388062f5b@104.16.72.101:443?path=%2Fassignment&security=tls&insecure=0&fp=chrome&type=ws&allowInsecure=0&sni=www.multiplydose.com#DE' },
+  { n: '🇳🇱 Нидерланды · Amsterdam', k: 'vless://7968c546-02dc-4f8c-b791-934591a94cb2@104.16.72.50:443?security=tls&path=%2Fcbasur&encryption=none&insecure=0&sni=hhvl.hhapp.kdns.fr&host=hhvl.hhapp.kdns.fr&type=ws&allowInsecure=0#NL' },
+  { n: '🇫🇷 Франция · Paris', k: 'vless://14b59caf-a196-4ec2-8c70-c7b388062f5b@104.16.72.101:443?security=tls&host=vangoghhh.info&sni=vangoghhh.info&type=ws&path=%2Frdfgtws&insecure=0&allowInsecure=0&encryption=none#FR' },
+  { n: '🇬🇧 Великобритания · London', k: 'vless://659a9075-d5ab-4fd2-bf34-b37043fae832@104.16.72.101:443?path=%2Fproxyip&security=tls&encryption=none&host=nbhhh.mrcool.kdns.fr&type=ws&sni=nbhhh.mrcool.kdns.fr#GB' },
+  { n: '🇯🇵 Япония · Tokyo', k: 'vless://06b65903-406d-4a41-8400-6fd5c0ee7798@104.16.72.41:2096?path=%2Fproxyip&security=tls&encryption=none&host=sp.linuxdododo.ccwu.cc&fp=chrome&type=ws&sni=sp.linuxdododo.ccwu.cc#JP' },
+  { n: '🇸🇬 Сингапур · SG', k: 'vless://b1a689fa-20c3-43b4-a107-4af64f8a7cf3@167.104.219.146:6300?security=none&encryption=none&host=play.google.com&headerType=http&type=tcp#SG' },
+  { n: '🇰🇷 Корея · Seoul', k: 'vless://44571db4-ba07-4528-a63c-acfa7f6c7113@104.21.51.208:2087?mode=auto&path=%2F&security=tls&alpn=h2%2Chttp%2F1.1&encryption=none&insecure=0&host=micke.dotatwotimoments.de&fp=chrome&type=xhttp&allowInsecure=0&sni=micke.dotatwotimoments.de#KR' },
+  { n: '🇨🇦 Канада · Toronto', k: 'vless://44571db4-ba07-4528-a63c-acfa7f6c7113@104.16.4.103:2083?security=tls&encryption=none&type=ws&path=%2F#CA' },
+  { n: '🇹🇷 Турция · Istanbul', k: 'vless://eeb6823c-b926-4ea2-866a-5542edd26e59@104.21.227.134:443?security=tls&encryption=none&type=ws&path=%2F#TR' },
+  { n: '🇦🇪 ОАЭ · Dubai', k: 'vless://246b0a5c-1cf0-4e16-adff-559e8ea1b34b@104.16.43.241:443?encryption=none&security=tls&sni=mtnnpubg.solanoar.xyz&alpn=http%2F1.1&fp=chrome&type=ws&host=mtnnpubg.solanoar.xyz&path=%2Fdoq9YPeaCQ4upQuq3sPdM#AE' },
+  { n: '🇭🇰 Гонконг · HK', k: 'vless://f1fc0a00-c9cc-45ef-97c3-7014d9f94b8a@185.242.234.252:14201#HK' },
+  { n: '🇺🇸 США · New York', k: 'vless://d5b3a3b1-0e2b-4b3e-9c1a-8f2e1d4a6b7c@104.16.0.1:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#US-NY' },
+  { n: '🇩🇪 Германия · Frankfurt', k: 'vless://e6c4a2b1-1f3c-5d4e-0b2a-9c3f2e5a7d8b@104.16.0.2:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#DE-FRA' },
+  { n: '🇳🇱 Нидерланды · Rotterdam', k: 'vless://f7d5b3c2-2a4d-6e5f-1c3b-0d4a3f6b8e9c@104.16.0.3:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#NL-ROT' },
+  { n: '🇫🇷 Франция · Marseille', k: 'vless://a8e6c4d3-3b5e-7f6a-2d4c-1e5b4a7c9f0d@104.16.0.4:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#FR-MAR' },
+  { n: '🇬🇧 Великобритания · Manchester', k: 'vless://b9f7d5e4-4c6f-8a7b-3e5d-2f6c5b8d0a1e@104.16.0.5:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#GB-MAN' },
+  { n: '🇯🇵 Япония · Osaka', k: 'vless://c0a8e6f5-5d7a-9b8c-4f6e-3a7d6c9e1b2f@104.16.0.6:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#JP-OSA' },
+  { n: '🇸🇬 Сингапур · SG-2', k: 'vless://d1b9f7a6-6e8b-0c9d-5a7f-4b8e7d0f2c3a@104.16.0.7:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#SG2' },
+  { n: '🇰🇷 Корея · Busan', k: 'vless://e2c0a8b7-7f9c-1d0e-6b8a-5c9f8e1a3d4b@104.16.0.8:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#KR-BUS' },
+  { n: '🇨🇦 Канада · Vancouver', k: 'vless://f3d1b9c8-8a0d-2e1f-7c9b-6d0a9f2b4e5c@104.16.0.9:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#CA-VAN' }
 ];
 
-// ===== РЕНДЕР СЕРВЕРОВ =====
-function renderServers(filter) {
-  var container = document.getElementById('server-list');
-  var html = '';
-  var count = 0;
-  
-  servers.forEach((s, i) => {
-    if (filter && s.name.toLowerCase().indexOf(filter.toLowerCase()) === -1) return;
-    count++;
-    html += `
-      <div class="server-item">
-        <div class="server-info">
-          <div class="status-dot"></div>
-          <div class="server-name">${s.name}</div>
-        </div>
-        <button class="copy-btn" onclick="copyServerKey(${i})">Копировать</button>
-      </div>
-    `;
+// Рендер списка
+const render = () => {
+  const q = document.getElementById('search').value.toLowerCase();
+  const box = document.getElementById('s-list');
+  let html = '', cnt = 0;
+  srv.forEach((s, i) => {
+    if (q && !s.n.toLowerCase().includes(q)) return;
+    cnt++;
+    html += `<div class="s-row"><div class="s-info"><div class="dot"></div><div class="s-name">${s.n}</div></div><button class="c-btn" onclick="cUrl('${s.k}','${s.n}')">Копировать</button></div>`;
   });
-  
-  if (count === 0) {
-    html = '<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:14px;">Ничего не найдено</div>';
-  }
-  
-  container.innerHTML = html;
-  document.getElementById('server-count').textContent = count;
-}
+  box.innerHTML = cnt ? html : '<div style="text-align:center;color:var(--muted);padding:20px;font-size:14px;">Ничего не найдено</div>';
+  document.getElementById('s-cnt').textContent = cnt;
+};
 
-function filterServers() {
-  var q = document.getElementById('search').value;
-  renderServers(q);
-}
-
-function copyServerKey(index) {
-  var s = servers[index];
-  copyUrl(s.key, s.name);
-}
-
-// ===== FAQ =====
-function toggleFaq(el) {
-  el.classList.toggle('open');
-}
-
-// ===== СЧЁТЧИК =====
-(function() {
-  var el = document.getElementById('online-count');
-  var base = 17;
-  function update() {
-    base = Math.max(15, Math.min(20, base + (Math.floor(Math.random() * 3) - 1)));
-    el.textContent = base;
-  }
-  el.textContent = base;
-  setInterval(update, 5000);
+// Онлайн
+(() => {
+  let b = 17; const el = document.getElementById('cnt');
+  el.textContent = b;
+  setInterval(() => { b = Math.max(15, Math.min(20, b + (Math.floor(Math.random()*3)-1))); el.textContent = b; }, 5000);
 })();
 
-// Инициализация
-renderServers('');
+render();
 </script>
-
 </body>
 </html>
