@@ -6,81 +6,30 @@
 <title>LibreVPN — Глубина Свободы</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  :root {
-    --bg-deep: #010a14;
-    --bg-mid: #04162b;
-    --bg-surface: #0a2a4a;
-    --border: #144a7a;
-    --border-light: #1e6a9e;
-    --text: #e0f2fe;
-    --text-muted: #7ca9cc;
-    --primary: #0ea5e9;
-    --primary-glow: #38bdf8;
-    --success: #10b981;
-    --danger: #f43f5e;
-    --radius: 20px;
-  }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: radial-gradient(circle at 50% 0%, #0a3a5c 0%, #04162b 40%, #010a14 100%);
-    background-attachment: fixed;
-    color: var(--text);
-    line-height: 1.6;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
+  :root { --bg-deep: #010a14; --bg-mid: #04162b; --bg-surface: #0a2a4a; --border: #144a7a; --border-light: #1e6a9e; --text: #e0f2fe; --text-muted: #7ca9cc; --primary: #0ea5e9; --primary-glow: #38bdf8; --success: #10b981; --danger: #f43f5e; --radius: 20px; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: radial-gradient(circle at 50% 0%, #0a3a5c 0%, #04162b 40%, #010a14 100%); background-attachment: fixed; color: var(--text); line-height: 1.6; min-height: 100vh; overflow-x: hidden; }
+  
   /* Шапка */
-  .header {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 16px; border-bottom: 1px solid var(--border);
-    position: sticky; top: 0; background: rgba(1, 10, 20, 0.85);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    z-index: 90;
-  }
-  .menu-btn {
-    background: var(--bg-surface); border: 1px solid var(--border);
-    color: var(--primary-glow); width: 44px; height: 44px; border-radius: 14px;
-    font-size: 20px; cursor: pointer; transition: 0.2s;
-  }
+  .header { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(1, 10, 20, 0.85); backdrop-filter: blur(20px); z-index: 90; }
+  .menu-btn { background: var(--bg-surface); border: 1px solid var(--border); color: var(--primary-glow); width: 44px; height: 44px; border-radius: 14px; font-size: 20px; cursor: pointer; transition: 0.2s; }
   .menu-btn:active { background: var(--bg-mid); transform: scale(0.95); }
   .header h1 { font-size: 19px; font-weight: 900; letter-spacing: -0.5px; color: #fff; }
   .header h1 span { color: var(--primary-glow); }
-  .online {
-    font-size: 12px; color: var(--primary-glow); background: var(--bg-surface);
-    padding: 8px 14px; border-radius: 20px; border: 1px solid var(--border);
-    display: flex; align-items: center; gap: 8px; font-weight: 700;
-  }
+  .online { font-size: 12px; color: var(--primary-glow); background: var(--bg-surface); padding: 8px 14px; border-radius: 20px; border: 1px solid var(--border); display: flex; align-items: center; gap: 8px; font-weight: 700; }
   .dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: p 1.5s infinite; }
   @keyframes p { 0%,100%{opacity:1; transform:scale(1)} 50%{opacity:.4; transform:scale(.8)} }
 
   /* Меню */
-  .overlay {
-    position: fixed; inset: 0; background: rgba(1,10,20,0.9); z-index: 999;
-    opacity: 0; pointer-events: none; transition: .3s;
-    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  }
+  .overlay { position: fixed; inset: 0; background: rgba(1,10,20,0.9); z-index: 999; opacity: 0; pointer-events: none; transition: .3s; backdrop-filter: blur(8px); }
   .overlay.open { opacity: 1; pointer-events: auto; }
-  .sidebar {
-    position: fixed; top: 0; left: 0; width: 300px; height: 100vh;
-    background: linear-gradient(180deg, #04162b, #010a14);
-    border-right: 1px solid var(--border);
-    z-index: 1000; transform: translateX(-100%); transition: transform .35s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex; flex-direction: column;
-  }
+  .sidebar { position: fixed; top: 0; left: 0; width: 300px; height: 100vh; background: linear-gradient(180deg, #04162b, #010a14); border-right: 1px solid var(--border); z-index: 1000; transform: translateX(-100%); transition: transform .35s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
   .sidebar.open { transform: translateX(0); }
   .s-head { padding: 24px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
   .s-head h2 { font-size: 20px; color: #fff; font-weight: 800; }
   .s-head h2 span { color: var(--primary-glow); }
   .close { background: none; border: none; color: var(--text-muted); font-size: 28px; cursor: pointer; }
-  .s-nav { flex: 1; overflow-y: auto; padding: 16px 12px; -webkit-overflow-scrolling: touch; }
-  .n-item {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 14px 18px; border-radius: 14px; cursor: pointer;
-    color: var(--text-muted); font-size: 15px; font-weight: 600;
-    background: transparent; border: none; width: 100%; text-align: left;
-    transition: .2s; margin-bottom: 6px;
-  }
+  .s-nav { flex: 1; overflow-y: auto; padding: 16px 12px; }
+  .n-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-radius: 14px; cursor: pointer; color: var(--text-muted); font-size: 15px; font-weight: 600; background: transparent; border: none; width: 100%; text-align: left; transition: .2s; margin-bottom: 6px; }
   .n-item:active { background: var(--bg-surface); }
   .n-item.active { background: linear-gradient(90deg, rgba(14,165,233,0.15), transparent); color: var(--primary-glow); font-weight: 800; border-left: 4px solid var(--primary); }
   .n-item .arrow { transition: transform .3s; font-size: 12px; }
@@ -88,11 +37,7 @@
   .submenu { display: none; padding-left: 12px; margin-left: 20px; border-left: 1px solid var(--border); margin-bottom: 10px; }
   .submenu.open { display: block; animation: slide .3s; }
   @keyframes slide { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
-  .sub-item {
-    display: block; width: 100%; padding: 12px 16px; border-radius: 10px;
-    color: var(--text-muted); font-size: 14px; text-align: left;
-    background: transparent; border: none; cursor: pointer; transition: .2s;
-  }
+  .sub-item { display: block; width: 100%; padding: 12px 16px; border-radius: 10px; color: var(--text-muted); font-size: 14px; text-align: left; background: transparent; border: none; cursor: pointer; transition: .2s; }
   .sub-item:active { background: var(--bg-surface); }
   .sub-item.active { color: var(--primary-glow); background: rgba(14,165,233,0.1); }
   .s-foot { padding: 20px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-muted); text-align: center; }
@@ -102,64 +47,34 @@
   .tab { display: none; animation: fade .4s ease-out; }
   .tab.active { display: block; }
   @keyframes fade { from{opacity:0;transform:translateY(15px)} to{opacity:1;transform:translateY(0)} }
-
-  .card {
-    background: linear-gradient(145deg, rgba(10,42,74,0.8), rgba(4,22,43,0.9));
-    border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 20px; margin-bottom: 16px; position: relative; overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    backdrop-filter: blur(10px);
-  }
+  .card { background: linear-gradient(145deg, rgba(10,42,74,0.8), rgba(4,22,43,0.9)); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; position: relative; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.3); backdrop-filter: blur(10px); }
   .card h2 { font-size: 17px; margin-bottom: 14px; color: var(--primary-glow); font-weight: 800; display: flex; align-items: center; gap: 8px; }
   .card p { font-size: 14px; color: var(--text-muted); margin-bottom: 12px; }
-
-  .btn {
-    display: flex; align-items: center; justify-content: center; width: 100%;
-    padding: 14px; border: none; border-radius: 14px; font-size: 14px;
-    font-weight: 800; color: #fff; cursor: pointer; transition: .2s;
-    background: linear-gradient(135deg, #0ea5e9, #0284c7);
-    box-shadow: 0 4px 20px rgba(14,165,233,0.3); margin-bottom: 8px;
-  }
+  .btn { display: flex; align-items: center; justify-content: center; width: 100%; padding: 14px; border: none; border-radius: 14px; font-size: 14px; font-weight: 800; color: #fff; cursor: pointer; transition: .2s; background: linear-gradient(135deg, #0ea5e9, #0284c7); box-shadow: 0 4px 20px rgba(14,165,233,0.3); margin-bottom: 8px; }
   .btn:active { transform: scale(0.98); box-shadow: 0 2px 10px rgba(14,165,233,0.4); }
   .btn-sec { background: var(--bg-surface); color: var(--text); border: 1px solid var(--border); box-shadow: none; }
   .btn-sec:active { background: var(--bg-mid); }
 
   /* Сервера */
-  .search {
-    width: 100%; padding: 14px 18px; border-radius: 14px; border: 1px solid var(--border);
-    background: var(--bg-deep); color: var(--text); font-size: 14px;
-    margin-bottom: 16px; outline: none; transition: .2s;
-  }
+  .search { width: 100%; padding: 14px 18px; border-radius: 14px; border: 1px solid var(--border); background: var(--bg-deep); color: var(--text); font-size: 14px; margin-bottom: 16px; outline: none; transition: .2s; }
   .search:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(14,165,233,0.1); }
   .s-list { display: flex; flex-direction: column; gap: 10px; max-height: 60vh; overflow-y: auto; padding-right: 4px; }
-  .s-row {
-    display: flex; justify-content: space-between; align-items: center;
-    background: var(--bg-deep); border: 1px solid var(--border); border-radius: 14px;
-    padding: 14px; transition: border-color 0.2s;
-  }
+  .s-row { display: flex; justify-content: space-between; align-items: center; background: var(--bg-deep); border: 1px solid var(--border); border-radius: 14px; padding: 14px; transition: border-color 0.2s; }
   .s-row:hover { border-color: var(--border-light); }
   .s-info { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; }
   .s-name { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
   .ping { font-size: 11px; color: var(--success); font-weight: 700; margin-left: auto; margin-right: 8px; }
-  .c-btn {
-    background: linear-gradient(135deg, #0ea5e9, #0284c7); color: #fff;
-    border: none; padding: 10px 14px; border-radius: 10px; font-size: 12px;
-    font-weight: 800; cursor: pointer; flex-shrink: 0; transition: .2s;
-  }
+  .c-btn { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: #fff; border: none; padding: 10px 14px; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; flex-shrink: 0; transition: .2s; }
   .c-btn:active { transform: scale(0.95); }
 
   /* Сетки и карточки */
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .p-card {
-    background: var(--bg-deep); border: 1px solid var(--border); border-radius: 16px;
-    padding: 18px; text-align: center; transition: .2s;
-  }
+  .p-card { background: var(--bg-deep); border: 1px solid var(--border); border-radius: 16px; padding: 18px; text-align: center; transition: .2s; }
   .p-card:hover { border-color: var(--border-light); }
   .p-card.hot { border-color: var(--primary); background: linear-gradient(180deg, rgba(14,165,233,0.15), var(--bg-deep)); box-shadow: 0 0 25px rgba(14,165,233,0.15); }
   .p-name { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
   .p-price { font-size: 24px; font-weight: 900; color: #fff; }
   .p-price span { font-size: 12px; font-weight: 500; color: var(--text-muted); }
-
   .pros { color: var(--success); font-size: 13px; margin-bottom: 6px; display: flex; gap: 8px; }
   .cons { color: var(--danger); font-size: 13px; display: flex; gap: 8px; }
 
@@ -180,13 +95,7 @@
   .news-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
 
   /* Тост */
-  .toast {
-    position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 20px);
-    background: linear-gradient(135deg, #0ea5e9, #0284c7); color: #fff;
-    padding: 14px 28px; border-radius: 30px; font-size: 14px; font-weight: 800;
-    box-shadow: 0 10px 40px rgba(14,165,233,0.5); opacity: 0; transition: .3s;
-    z-index: 2000; pointer-events: none;
-  }
+  .toast { position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 20px); background: linear-gradient(135deg, #0ea5e9, #0284c7); color: #fff; padding: 14px 28px; border-radius: 30px; font-size: 14px; font-weight: 800; box-shadow: 0 10px 40px rgba(14,165,233,0.5); opacity: 0; transition: .3s; z-index: 2000; pointer-events: none; }
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
   /* Спец. карточки */
@@ -195,8 +104,6 @@
   .tag-free { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
   .tag-ios { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
   .tag-android { background: rgba(16,185,129,0.1); color: #4ade80; border: 1px solid rgba(16,185,129,0.2); }
-
-  /* Шаги */
   .step { display: flex; gap: 14px; margin-bottom: 18px; align-items: flex-start; }
   .step-num { width: 32px; height: 32px; background: linear-gradient(135deg, #0ea5e9, #0284c7); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; flex-shrink: 0; }
   .step-text { font-size: 14px; color: var(--text-muted); }
@@ -299,9 +206,10 @@
       <div class="cons">❌ Иногда баги с сортировкой, не продаёт VPN.</div>
       <span class="tag tag-free">Бесплатно</span> <span class="tag tag-ios">iOS</span> <span class="tag tag-android">Android</span>
       <div style="margin-top:20px;">
-        <button class="btn" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','Happ Base64')">Скопировать Base64</button>
-        <button class="btn btn-sec" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/singbox.json','Happ Sing-box')">Скопировать Sing-box JSON</button>
-        <button class="btn btn-sec" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/clash.yaml','Happ Clash')">Скопировать Clash YAML</button>
+        <button class="btn" onclick="cUrl('vless://9aff658c-1f80-4c82-9213-48ca26996142@168.113.128.70:20105?flow=xtls-rprx-vision&type=tcp&security=tls&sni=ripelever.net&alpn=h2,http/1.1&fp=chrome#%F0%9F%87%A7%F0%9F%87%ACBulgaria%20%5B*CIDR%5D','Happ Bulgaria')">Скопировать Bulgaria</button>
+        <button class="btn btn-sec" onclick="cUrl('vless://fa8c52f8-d800-4ddd-bdc3-4f8a24b073c6@87.242.87.165:8445?type=grpc&mode=gun&serviceName=grpc-reality&security=reality&fp=ios&sni=codifyr.ru&pbk=WCGVWrqI3t-c5ZIbUEmwjN3wiFFT7xV09PIio-OQGHU&sid=d16860c57700c886#%F0%9F%87%A8%F0%9F%87%ADSwitzerland%20%5B*CIDR%5D','Happ Switzerland')">Скопировать Switzerland</button>
+        <button class="btn btn-sec" onclick="cUrl('vless://3837e7a5-d40e-4b85-8700-5f9725a5a2cb@45.143.94.91:8443?flow=xtls-rprx-vision&type=tcp&headerType=none&security=reality&fp=edge&sni=us1.cloudvienta.com&pbk=3Kgy_0tHtOzEn9_mEylNsBVlAHNngT6S4AuYy5wEOSU&sid=0c37b64d1935ebc1#%F0%9F%87%BA%F0%9F%87%B8United%20States%20%7C%20%F0%9F%8C%90%20%5B*CIDR%5D','Happ USA')">Скопировать USA</button>
+        <button class="btn btn-sec" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','Happ Base64')">Скопировать Base64</button>
       </div>
     </div>
   </div>
@@ -448,6 +356,7 @@ const legacy = (url, done) => {
 };
 
 const srv = [
+  { n: '🇵🇱 Польша | [CIDR]', k: 'vless://ea277838-a188-44f1-a2e8-94aa110c4f27@185.178.208.140:443?encryption=none&type=xhttp&mode=packet-up&path=%2Fapi%2Fv2%2Fevents&security=tls&fp=firefox&sni=static.bakarova-top.ru&alpn=h2#%F0%9F%87%B5%F0%9F%87%B1%20Poland%20%7C%20%5B*CIDR%5D' },
   { n: '🇧🇬 Болгария [CIDR]', k: 'vless://9aff658c-1f80-4c82-9213-48ca26996142@168.113.128.70:20105?encryption=none&flow=xtls-rprx-vision&security=tls&fp=chrome&sni=ripelever.net&alpn=h2%2Chttp%2F1.1#%F0%9F%87%A7%F0%9F%87%AC%20Bulgaria%20%5B*CIDR%5D' },
   { n: '🇧🇬 Болгария | [CIDR]', k: 'vless://9aff658c-1f80-4c82-9213-48ca26996142@168.113.128.70:20105?encryption=none&flow=xtls-rprx-vision&security=tls&fp=edge&sni=ripelever.net&alpn=h2%2Chttp%2F1.1#%F0%9F%87%A7%F0%9F%87%AC%20Bulgaria%20%7C%20%5B*CIDR%5D' },
   { n: '🇰🇼 Кувейт | [CIDR]', k: 'vless://ea277838-a188-44f1-a2e8-94aa110c4f27@185.178.208.140:443?encryption=none&type=xhttp&mode=packet-up&host=static.bakarova-top.ru&path=%2Fapi%2Fv2%2Fevents&security=tls&fp=firefox&sni=static.bakarova-top.ru#%F0%9F%87%B0%F0%9F%87%BC%20Kuwait%20%7C%20%5B*CIDR%5D' },
