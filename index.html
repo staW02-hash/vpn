@@ -3,82 +3,200 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>LibreVPN</title>
+<title>LibreVPN — Глубина Свободы</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  :root { --bg:#09090b; --surf:#18181b; --bord:#27272a; --text:#f4f4f5; --muted:#a1a1aa; --pri:#3b82f6; --suc:#22c55e; --dan:#ef4444; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; overflow-x: hidden; }
-  
+  :root {
+    --bg-deep: #020b18;
+    --bg-surface: #071a2e;
+    --bg-card: #0a2238;
+    --border: #123b5e;
+    --border-glow: #1e5a8a;
+    --text: #e2e8f0;
+    --text-muted: #7a9bb8;
+    --primary: #0ea5e9;
+    --primary-glow: #38bdf8;
+    --accent: #06b6d4;
+    --success: #10b981;
+    --danger: #ef4444;
+    --radius: 16px;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(ellipse at top, #0a2238 0%, #020b18 70%);
+    background-attachment: fixed;
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
   /* Шапка */
-  .header { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--bord); position: sticky; top: 0; background: var(--bg); z-index: 90; }
-  .menu-btn { background: var(--surf); border: 1px solid var(--bord); color: var(--text); width: 40px; height: 40px; border-radius: 12px; font-size: 20px; cursor: pointer; }
-  .header h1 { font-size: 18px; font-weight: 700; }
-  .online { font-size: 12px; color: var(--muted); background: var(--surf); padding: 6px 10px; border-radius: 20px; border: 1px solid var(--bord); display: flex; align-items: center; gap: 6px; }
-  .dot { width: 6px; height: 6px; background: var(--suc); border-radius: 50%; animation: p 1.5s infinite; }
-  @keyframes p { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px; border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; background: rgba(2, 11, 24, 0.85);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    z-index: 90;
+  }
+  .menu-btn {
+    background: var(--bg-surface); border: 1px solid var(--border);
+    color: var(--primary-glow); width: 42px; height: 42px; border-radius: 14px;
+    font-size: 20px; cursor: pointer; transition: 0.2s;
+  }
+  .menu-btn:active { background: var(--bg-card); transform: scale(0.95); }
+  .header h1 { font-size: 19px; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(90deg, #fff, var(--primary-glow)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .online {
+    font-size: 12px; color: var(--primary-glow); background: var(--bg-surface);
+    padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border);
+    display: flex; align-items: center; gap: 6px; font-weight: 600;
+  }
+  .dot { width: 7px; height: 7px; background: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success); animation: p 1.5s infinite; }
+  @keyframes p { 0%,100%{opacity:1; transform:scale(1)} 50%{opacity:.4; transform:scale(.8)} }
 
   /* Меню */
-  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 999; opacity: 0; pointer-events: none; transition: .3s; backdrop-filter: blur(4px); }
+  .overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 999;
+    opacity: 0; pointer-events: none; transition: .3s;
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  }
   .overlay.open { opacity: 1; pointer-events: auto; }
-  .sidebar { position: fixed; top: 0; left: 0; width: 280px; height: 100vh; background: var(--bg); border-right: 1px solid var(--bord); z-index: 1000; transform: translateX(-100%); transition: transform .3s; display: flex; flex-direction: column; }
+  .sidebar {
+    position: fixed; top: 0; left: 0; width: 290px; height: 100vh;
+    background: var(--bg-deep); border-right: 1px solid var(--border);
+    z-index: 1000; transform: translateX(-100%); transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex; flex-direction: column;
+  }
   .sidebar.open { transform: translateX(0); }
-  .s-head { padding: 20px 16px; border-bottom: 1px solid var(--bord); display: flex; justify-content: space-between; align-items: center; }
-  .s-head h2 { font-size: 18px; color: var(--pri); }
-  .close { background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer; }
-  .s-nav { flex: 1; overflow-y: auto; padding: 12px; }
-  .n-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-radius: 12px; cursor: pointer; color: var(--muted); font-size: 15px; font-weight: 500; background: transparent; border: none; width: 100%; text-align: left; transition: .2s; margin-bottom: 4px; }
-  .n-item.active { background: var(--surf); color: var(--pri); font-weight: 600; }
+  .s-head { padding: 20px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .s-head h2 { font-size: 18px; color: var(--primary-glow); }
+  .close { background: none; border: none; color: var(--text-muted); font-size: 26px; cursor: pointer; }
+  .s-nav { flex: 1; overflow-y: auto; padding: 12px; -webkit-overflow-scrolling: touch; }
+  .n-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 16px; border-radius: 12px; cursor: pointer;
+    color: var(--text-muted); font-size: 15px; font-weight: 500;
+    background: transparent; border: none; width: 100%; text-align: left;
+    transition: .2s; margin-bottom: 4px;
+  }
+  .n-item:active { background: var(--bg-surface); }
+  .n-item.active { background: linear-gradient(90deg, rgba(14,165,233,0.15), transparent); color: var(--primary-glow); font-weight: 700; border-left: 3px solid var(--primary); }
   .n-item .arrow { transition: transform .3s; font-size: 12px; }
   .n-item.open .arrow { transform: rotate(180deg); }
-  .submenu { display: none; padding-left: 12px; margin-left: 16px; border-left: 2px solid var(--bord); margin-bottom: 8px; }
+  .submenu { display: none; padding-left: 12px; margin-left: 16px; border-left: 1px solid var(--border); margin-bottom: 8px; }
   .submenu.open { display: block; animation: slide .3s; }
   @keyframes slide { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
-  .sub-item { display: block; width: 100%; padding: 12px 16px; border-radius: 10px; color: var(--muted); font-size: 14px; text-align: left; background: transparent; border: none; cursor: pointer; }
-  .sub-item.active { color: var(--pri); background: var(--surf); }
-  .s-foot { padding: 16px; border-top: 1px solid var(--bord); font-size: 12px; color: var(--muted); text-align: center; }
+  .sub-item {
+    display: block; width: 100%; padding: 12px 16px; border-radius: 10px;
+    color: var(--text-muted); font-size: 14px; text-align: left;
+    background: transparent; border: none; cursor: pointer; transition: .2s;
+  }
+  .sub-item:active { background: var(--bg-surface); }
+  .sub-item.active { color: var(--primary-glow); background: rgba(14,165,233,0.1); }
+  .s-foot { padding: 16px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-muted); text-align: center; }
 
   /* Контент */
   .main { padding: 16px; max-width: 600px; margin: 0 auto; }
-  .tab { display: none; animation: fade .3s; }
+  .tab { display: none; animation: fade .35s; }
   .tab.active { display: block; }
-  @keyframes fade { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-  
-  .card { background: var(--surf); border: 1px solid var(--bord); border-radius: 16px; padding: 16px; margin-bottom: 16px; }
-  .card h2 { font-size: 16px; margin-bottom: 12px; }
-  .card p { font-size: 14px; color: var(--muted); margin-bottom: 12px; }
-  .btn { display: flex; align-items: center; justify-content: center; width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; color: #fff; background: var(--pri); cursor: pointer; transition: .2s; }
-  .btn:active { background: #2563eb; transform: scale(.98); }
-  
+  @keyframes fade { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+  .card {
+    background: linear-gradient(145deg, var(--bg-card), var(--bg-surface));
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 18px; margin-bottom: 16px; position: relative; overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-glow), transparent);
+    opacity: 0.5;
+  }
+  .card:hover { border-color: var(--border-glow); }
+  .card h2 { font-size: 16px; margin-bottom: 12px; color: var(--primary-glow); font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .card p { font-size: 14px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.6; }
+
+  .btn {
+    display: flex; align-items: center; justify-content: center; width: 100%;
+    padding: 14px; border: none; border-radius: 12px; font-size: 14px;
+    font-weight: 700; color: #fff; cursor: pointer; transition: .2s;
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    box-shadow: 0 4px 15px rgba(14,165,233,0.2);
+  }
+  .btn:active { transform: scale(0.98); box-shadow: 0 2px 8px rgba(14,165,233,0.3); }
+  .btn-sec { background: var(--bg-surface); color: var(--text); border: 1px solid var(--border); box-shadow: none; }
+  .btn-sec:active { background: var(--bg-card); }
+
   /* Сервера */
-  .search { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--bord); background: var(--bg); color: var(--text); font-size: 14px; margin-bottom: 12px; outline: none; }
-  .search:focus { border-color: var(--pri); }
-  .s-list { display: flex; flex-direction: column; gap: 8px; max-height: 60vh; overflow-y: auto; padding-right: 4px; }
-  .s-row { display: flex; justify-content: space-between; align-items: center; background: var(--bg); border: 1px solid var(--bord); border-radius: 12px; padding: 12px; }
-  .s-info { display: flex; align-items: center; gap: 8px; flex: 1; overflow: hidden; }
-  .s-name { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .c-btn { background: var(--pri); color: #fff; border: none; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
-  
-  /* Прочее */
+  .search {
+    width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border);
+    background: var(--bg-deep); color: var(--text); font-size: 14px;
+    margin-bottom: 12px; outline: none; transition: .2s;
+  }
+  .search:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(14,165,233,0.1); }
+  .s-list { display: flex; flex-direction: column; gap: 8px; max-height: 55vh; overflow-y: auto; padding-right: 4px; }
+  .s-row {
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--bg-deep); border: 1px solid var(--border); border-radius: 12px;
+    padding: 12px; transition: border-color 0.2s;
+  }
+  .s-row:hover { border-color: var(--border-glow); }
+  .s-info { display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden; }
+  .s-name { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+  .c-btn {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7); color: #fff;
+    border: none; padding: 8px 14px; border-radius: 8px; font-size: 12px;
+    font-weight: 700; cursor: pointer; flex-shrink: 0; transition: .2s;
+  }
+  .c-btn:active { transform: scale(0.95); }
+
+  /* Сетки и карточки */
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .p-card { background: var(--bg); border: 1px solid var(--bord); border-radius: 12px; padding: 16px; text-align: center; }
-  .p-card.hot { border-color: var(--pri); background: rgba(59,130,246,.1); }
-  .p-name { font-size: 12px; color: var(--muted); }
-  .p-price { font-size: 20px; font-weight: 700; }
-  .pros { color: var(--suc); font-size: 13px; }
-  .cons { color: var(--dan); font-size: 13px; }
-  .faq { border-bottom: 1px solid var(--bord); cursor: pointer; padding: 16px 0; }
+  .p-card {
+    background: var(--bg-deep); border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px; text-align: center; transition: .2s;
+  }
+  .p-card:hover { border-color: var(--border-glow); }
+  .p-card.hot { border-color: var(--primary); background: linear-gradient(180deg, rgba(14,165,233,0.1), var(--bg-deep)); box-shadow: 0 0 20px rgba(14,165,233,0.1); }
+  .p-name { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+  .p-price { font-size: 22px; font-weight: 800; color: #fff; }
+  .p-price span { font-size: 12px; font-weight: 400; color: var(--text-muted); }
+
+  .pros { color: var(--success); font-size: 13px; margin-bottom: 4px; display: flex; gap: 6px; }
+  .cons { color: var(--danger); font-size: 13px; display: flex; gap: 6px; }
+
+  /* FAQ */
+  .faq { border-bottom: 1px solid var(--border); cursor: pointer; padding: 16px 0; }
   .faq:last-child { border-bottom: none; }
-  .faq-q { display: flex; justify-content: space-between; font-size: 14px; font-weight: 500; }
-  .faq-a { max-height: 0; overflow: hidden; transition: .3s; font-size: 13px; color: var(--muted); }
-  .faq.open .faq-a { max-height: 200px; padding-top: 10px; }
-  .news { margin-bottom: 20px; }
-  .news-d { font-size: 11px; color: var(--muted); text-transform: uppercase; }
-  .news-t { font-size: 15px; font-weight: 600; margin: 4px 0; }
-  .news-x { font-size: 13px; color: var(--muted); }
-  
+  .faq-q { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; align-items: center; }
+  .faq-q span { font-size: 18px; color: var(--primary); transition: .3s; }
+  .faq.open .faq-q span { transform: rotate(45deg); }
+  .faq-a { max-height: 0; overflow: hidden; transition: .35s; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+  .faq.open .faq-a { max-height: 300px; padding-top: 12px; }
+
+  /* Новости */
+  .news-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .news-item:last-child { border-bottom: none; }
+  .news-date { font-size: 11px; color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .news-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .news-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
   /* Тост */
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translate(-50%, 20px); background: var(--surf); color: var(--text); padding: 12px 24px; border-radius: 30px; border: 1px solid var(--bord); opacity: 0; transition: .3s; z-index: 2000; pointer-events: none; }
+  .toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 20px);
+    background: linear-gradient(135deg, #0ea5e9, #0284c7); color: #fff;
+    padding: 14px 28px; border-radius: 30px; font-size: 14px; font-weight: 700;
+    box-shadow: 0 8px 30px rgba(14,165,233,0.4); opacity: 0; transition: .3s;
+    z-index: 2000; pointer-events: none;
+  }
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* Спец. карточки для приложений */
+  .app-icon { font-size: 24px; margin-bottom: 8px; display: block; }
+  .tag { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-top: 8px; }
+  .tag-free { background: rgba(16,185,129,0.15); color: var(--success); }
+  .tag-ios { background: rgba(255,255,255,0.1); color: #fff; }
+  .tag-android { background: rgba(16,185,129,0.15); color: var(--success); }
 </style>
 </head>
 <body>
@@ -89,7 +207,7 @@
   <div class="s-head"><h2>LibreVPN</h2><button class="close" onclick="tMenu()">×</button></div>
   <div class="s-nav">
     <button class="n-item active" onclick="tTab('servers', this)">⚡ Сервера</button>
-    <button class="n-item" onclick="tTab('about', this)">ℹ️ О сайте</button>
+    <button class="n-item" onclick="tTab('about', this)">ℹ️ О проекте</button>
     <button class="n-item" onclick="tSub('sub', this)">📱 Приложения <span class="arrow">▼</span></button>
     <div class="submenu" id="sub">
       <button class="sub-item" onclick="tTab('app-str', this)">Streisand</button>
@@ -111,131 +229,178 @@
     <button class="menu-btn" onclick="tMenu()">☰</button>
     <h1>LibreVPN</h1>
   </div>
-  <div class="online"><span class="dot"></span><span id="cnt">0</span></div>
+  <div class="online"><span class="dot"></span><span id="cnt">0</span> онлайн</div>
 </div>
 
 <div class="main">
 
+  <!-- СЕРВЕРА -->
   <div id="tab-servers" class="tab active">
     <div class="card">
-      <h2>Сервера (<span id="s-cnt">0</span>)</h2>
+      <h2>⚡ Доступные сервера (<span id="s-cnt">0</span>)</h2>
       <input type="text" class="search" id="search" placeholder="Поиск по стране..." oninput="render()">
       <div class="s-list" id="s-list"></div>
+      <p style="font-size:12px; margin-top:12px; color:var(--text-muted);">⚠️ Бесплатные сервера могут быть нестабильны. Для гарантии используйте Премиум.</p>
     </div>
   </div>
 
+  <!-- О ПРОЕКТЕ -->
   <div id="tab-about" class="tab">
     <div class="card">
-      <h2>О LibreVPN</h2>
-      <p><strong>LibreVPN</strong> — проект, который делает <strong>3 человека</strong>. Мы собираем бесплатные сервера из открытых источников.</p>
-      <p>Сайт обновляется еженедельно. Мы не гарантируем работу бесплатных серверов.</p>
-      <p>Для стабильности посмотри раздел <strong>Премиум</strong>.</p>
+      <h2>ℹ️ О проекте</h2>
+      <p><strong>LibreVPN</strong> — это независимый проект, который делает команда из <strong>3 человек</strong>. Мы не корпорация, не продаём данные и не берём с вас деньги за воздух.</p>
+      <p>Наша цель — собрать в одном месте самые актуальные бесплатные конфигурации из открытых источников и дать удобный доступ к ним без лишней шелухи.</p>
+      <p>Сайт обновляется еженедельно. Мы добавляем новые сервера и приложения по мере их появления.</p>
+      <div style="margin-top:16px; padding:12px; background:var(--bg-deep); border-radius:12px; border:1px solid var(--border);">
+        <p style="margin:0; font-size:13px;"><strong>Наша статистика:</strong><br>
+        • Серверов в базе: <strong>150+</strong><br>
+        • Обновление: <strong>каждую неделю</strong><br>
+        • Команда: <strong>3 человека</strong></p>
+      </div>
     </div>
   </div>
 
+  <!-- ПРИЛОЖЕНИЯ -->
   <div id="tab-app-str" class="tab">
     <div class="card">
+      <span class="app-icon">📱</span>
       <h2>Streisand (iOS)</h2>
-      <p>Мощный клиент для iOS с поддержкой VLESS, VMess, Trojan, Shadowsocks.</p>
-      <p class="pros">✅ Бесплатный, много протоколов, подписки.</p>
-      <p class="cons">❌ Только iOS, интерфейс на английском.</p>
-      <button class="btn" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','Streisand')">Скопировать подписку</button>
+      <p>Мощный клиент для iOS с поддержкой VLESS, VMess, Trojan, Shadowsocks и Hysteria2. Умеет импортировать подписки и тестировать задержку.</p>
+      <div class="pros">✅ Бесплатный, много протоколов, подписки, автопроверка.</div>
+      <div class="cons">❌ Только iOS, интерфейс на английском, нет в РФ App Store.</div>
+      <span class="tag tag-free">Бесплатно</span> <span class="tag tag-ios">iOS</span>
+      <button class="btn" style="margin-top:16px;" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','Streisand')">Скопировать подписку</button>
+      <button class="btn btn-sec" style="margin-top:8px;" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/clash.yaml','Streisand Clash')">Скопировать Clash YAML</button>
     </div>
   </div>
 
   <div id="tab-app-hap" class="tab">
     <div class="card">
+      <span class="app-icon">💜</span>
       <h2>Happ</h2>
-      <p>Кроссплатформенный клиент (iOS, Android, Windows, macOS).</p>
-      <p class="pros">✅ Все платформы, VLESS Reality, зашифрованные подписки.</p>
-      <p class="cons">❌ Иногда баги, не продаёт VPN.</p>
-      <button class="btn" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','Happ')">Скопировать подписку</button>
+      <p>Кроссплатформенный клиент (iOS, Android, Windows, macOS). Поддерживает VLESS Reality, VMess, Trojan, Shadowsocks, Hysteria2. Есть скрытые и зашифрованные подписки.</p>
+      <div class="pros">✅ Все платформы, VLESS Reality, зашифрованные подписки, удобный интерфейс.</div>
+      <div class="cons">❌ Иногда баги с сортировкой, не продаёт VPN, после обновлений бывают сюрпризы.</div>
+      <span class="tag tag-free">Бесплатно</span> <span class="tag tag-ios">iOS</span> <span class="tag tag-android">Android</span>
+      <button class="btn" style="margin-top:16px;" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','Happ')">Скопировать подписку</button>
+      <button class="btn btn-sec" style="margin-top:8px;" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/singbox.json','Happ Sing-box')">Скопировать Sing-box JSON</button>
     </div>
   </div>
 
   <div id="tab-app-v2" class="tab">
     <div class="card">
+      <span class="app-icon">🤖</span>
       <h2>v2rayNG / v2RayTun</h2>
-      <p>Классические клиенты для Android.</p>
-      <p class="pros">✅ Бесплатные, много протоколов, проверка задержки.</p>
-      <p class="cons">❌ Только Android, лаги при больших списках.</p>
-      <button class="btn" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','v2rayNG')">Скопировать подписку</button>
+      <p>Классические клиенты для Android. v2rayNG — старый и проверенный, v2RayTun — более современный с поддержкой Reality.</p>
+      <div class="pros">✅ Бесплатные, много протоколов, проверка задержки, работают на Android.</div>
+      <div class="cons">❌ Только Android, v2RayTun лагает при большом списке, интерфейс не самый красивый.</div>
+      <span class="tag tag-free">Бесплатно</span> <span class="tag tag-android">Android</span>
+      <button class="btn" style="margin-top:16px;" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','v2rayNG')">Скопировать подписку</button>
+      <button class="btn btn-sec" style="margin-top:8px;" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/clash.yaml','v2rayNG Clash')">Скопировать Clash YAML</button>
     </div>
   </div>
 
   <div id="tab-app-out" class="tab">
     <div class="card">
+      <span class="app-icon">🔑</span>
       <h2>Outline</h2>
-      <p>Клиент от Jigsaw (Google) на Shadowsocks.</p>
-      <p class="pros">✅ Открытый код, очень простой, iOS и Android.</p>
-      <p class="cons">❌ Только Shadowsocks, нет настроек.</p>
-      <button class="btn" onclick="cUrl('https://pozor.bond/sub/ufx50vgdeg77','Outline')">Скопировать ключ</button>
+      <p>Клиент от Jigsaw (Google). Работает на Shadowsocks, очень простой в использовании. Можно запустить свой сервер или использовать готовый ключ.</p>
+      <div class="pros">✅ Открытый исходный код, очень простой, работает на iOS и Android.</div>
+      <div class="cons">❌ Только Shadowsocks, нет продвинутых настроек, не для стриминга.</div>
+      <span class="tag tag-free">Бесплатно</span> <span class="tag tag-ios">iOS</span> <span class="tag tag-android">Android</span>
+      <button class="btn" style="margin-top:16px;" onclick="cUrl('https://pozor.bond/sub/ufx50vgdeg77','Outline ключ')">Скопировать ключ</button>
+      <p style="font-size:11px; margin-top:10px; color:var(--text-muted);">* Outline использует ключи формата ss://. Официального списка бесплатных ключей не существует, но этот источник может работать.</p>
     </div>
   </div>
 
   <div id="tab-app-avo" class="tab">
     <div class="card">
+      <span class="app-icon">🛡️</span>
       <h2>avoVPN</h2>
-      <p>Клиент для Android и iOS с поддержкой vless:// и vmess://.</p>
-      <p class="pros">✅ Бесплатный, VLESS и VMess, выбор приложений.</p>
-      <p class="cons">❌ Нестабильная работа, медленная поддержка.</p>
-      <button class="btn" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','avoVPN')">Скопировать подписку</button>
+      <p>Клиент для Android и iOS с поддержкой vless:// и vmess://. Простой интерфейс, выбор приложений через VPN.</p>
+      <div class="pros">✅ Бесплатный, VLESS и VMess, выбор приложений, есть на iOS и Android.</div>
+      <div class="cons">❌ Нестабильная работа по отзывам, поддержка отвечает медленно, после обновлений ломается.</div>
+      <span class="tag tag-free">Бесплатно</span> <span class="tag tag-ios">iOS</span> <span class="tag tag-android">Android</span>
+      <button class="btn" style="margin-top:16px;" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','avoVPN')">Скопировать подписку</button>
     </div>
   </div>
 
+  <!-- ПРЕМИУМ -->
   <div id="tab-prem" class="tab">
     <div class="card">
-      <h2>Премиум тарифы</h2>
-      <p>Сервера, лично отобранные владельцем.</p>
+      <h2>⭐ Премиум тарифы</h2>
+      <p>Сервера, лично отобранные владельцем. Работают всегда, даже когда бесплатные падают. Приоритетная поддержка и максимальная скорость.</p>
       <div class="grid2">
-        <div class="p-card"><div class="p-name">Стандарт</div><div class="p-price">49 ₽</div></div>
-        <div class="p-card hot"><div class="p-name">Премиум</div><div class="p-price">99 ₽</div></div>
-        <div class="p-card"><div class="p-name">VIP</div><div class="p-price">199 ₽</div></div>
-        <div class="p-card"><div class="p-name">All</div><div class="p-price">299 ₽</div></div>
+        <div class="p-card"><div class="p-name">Стандарт</div><div class="p-price">49 ₽<span>/мес</span></div></div>
+        <div class="p-card hot"><div class="p-name">Премиум</div><div class="p-price">99 ₽<span>/мес</span></div></div>
+        <div class="p-card"><div class="p-name">VIP</div><div class="p-price">199 ₽<span>/мес</span></div></div>
+        <div class="p-card"><div class="p-name">All</div><div class="p-price">299 ₽<span>/мес</span></div></div>
       </div>
-      <button class="btn" style="margin-top:16px;" onclick="tToast('Оплата скоро')">Выбрать тариф</button>
+      <button class="btn" style="margin-top:16px;" onclick="tToast('Оплата скоро будет доступна')">Выбрать тариф</button>
+    </div>
+    <div class="card">
+      <h2>Сравнение тарифов</h2>
+      <p><strong>Стандарт:</strong> 5 серверов, до 50 Мбит/с, поддержка в чате.</p>
+      <p><strong>Премиум:</strong> 15 серверов, до 100 Мбит/с, приоритетная поддержка, без рекламы.</p>
+      <p><strong>VIP:</strong> 30 серверов, без ограничений скорости, выделенный IP, поддержка 24/7.</p>
+      <p><strong>All:</strong> все сервера, максимальная скорость, выделенный IP, доступ к новым серверам раньше всех.</p>
     </div>
   </div>
 
+  <!-- ПОМОЩЬ -->
   <div id="tab-help" class="tab">
     <div class="card">
-      <h2>Инструкция</h2>
-      <p><strong>1.</strong> Выбери приложение.<br><strong>2.</strong> Скопируй подписку.<br><strong>3.</strong> Вставь в клиент.<br><strong>4.</strong> Подключись.</p>
+      <h2>📖 Инструкция в 4 шага</h2>
+      <p><strong>1.</strong> Выбери приложение в меню слева.</p>
+      <p><strong>2.</strong> Скопируй подписку (Base64 или YAML).</p>
+      <p><strong>3.</strong> Открой клиент и найди «Добавить подписку» / «Import from URL».</p>
+      <p><strong>4.</strong> Вставь ссылку и подключись к любому серверу.</p>
     </div>
     <div class="card">
-      <h2>FAQ</h2>
-      <div class="faq" onclick="this.classList.toggle('open')"><div class="faq-q">Почему сервера не работают? <span>+</span></div><div class="faq-a">Бесплатные сервера публичные. Их могут блокировать.</div></div>
-      <div class="faq" onclick="this.classList.toggle('open')"><div class="faq-q">Как проверить сервер? <span>+</span></div><div class="faq-a">В клиенте нажми «Тест задержки».</div></div>
-      <div class="faq" onclick="this.classList.toggle('open')"><div class="faq-q">Чем отличается Премиум? <span>+</span></div><div class="faq-a">Премиум-сервера отбираются вручную.</div></div>
+      <h2>❓ Частые вопросы</h2>
+      <div class="faq" onclick="this.classList.toggle('open')"><div class="faq-q">Почему сервера не работают? <span>+</span></div><div class="faq-a">Бесплатные сервера публичные. Их могут блокировать или отключать. Обнови список или попробуй другой источник. Для стабильности используй Премиум.</div></div>
+      <div class="faq" onclick="this.classList.toggle('open')"><div class="faq-q">Как проверить, живой ли сервер? <span>+</span></div><div class="faq-a">В клиенте нажми «Тест задержки» (URL Test). Если пинг зелёный — сервер работает. Если красный — попробуй другой.</div></div>
+      <div class="faq" onclick="this.classList.toggle('open')"><div class="faq-q">Чем отличается Премиум? <span>+</span></div><div class="faq-a">Премиум-сервера отбираются вручную, не публикуются и поддерживаются в рабочем состоянии. Они работают даже когда бесплатные падают.</div></div>
+      <div class="faq" onclick="this.classList.toggle('open')"><div class="faq-q">Безопасно ли это? <span>+</span></div><div class="faq-a">Бесплатные сервера — чужие. Не входи через них в банки и важные аккаунты. Премиум — безопаснее, но мы всё равно не рекомендуем банки.</div></div>
     </div>
   </div>
 
+  <!-- ПРАВА -->
   <div id="tab-legal" class="tab">
     <div class="card">
-      <h2>Права пользования</h2>
-      <p><strong>Бесплатные сервера:</strong> Взяты из открытых источников. Не принадлежат LibreVPN. Используйте на свой риск.</p>
-      <p><strong>Премиум сервера:</strong> Отобраны владельцем. Всегда работают.</p>
-      <p>© 2026 LibreVPN. Все права защищены.</p>
+      <h2>📜 Права пользования</h2>
+      <p><strong>Бесплатные сервера:</strong> Все бесплатные сервера, отображаемые на этом сайте, взяты из открытых публичных источников. Они <strong>не принадлежат LibreVPN</strong> и не контролируются владельцем сайта. Мы не несём ответственности за их работу, безопасность и содержание передаваемых данных. Используйте на свой риск.</p>
+      <p><strong>Премиум сервера:</strong> Сервера, доступные по подписке «Премиум», лично отобраны владельцем LibreVPN. Они не являются публичными и всегда поддерживаются в рабочем состоянии.</p>
+    </div>
+    <div class="card">
+      <h2>© Авторские права</h2>
+      <p>© 2026 LibreVPN. Все права защищены. Название «LibreVPN», логотип и оформление сайта являются интеллектуальной собственностью владельца.</p>
     </div>
   </div>
 
+  <!-- НОВОСТИ -->
   <div id="tab-news" class="tab">
     <div class="card">
-      <h2>Новости</h2>
-      <div class="news">
-        <div class="news-d">8 ноября 2026</div>
-        <div class="news-t">РКН усилил блокировки</div>
-        <div class="news-x">Массовые блокировки WireGuard и OpenVPN.</div>
+      <h2>📰 Новости</h2>
+      <div class="news-item">
+        <div class="news-date">8 ноября 2026</div>
+        <div class="news-title">РКН усилил блокировки VPN-протоколов</div>
+        <div class="news-text">За последнюю неделю зафиксированы массовые блокировки протоколов WireGuard и OpenVPN на территории РФ. Пользователи отмечают нестабильную работу многих публичных серверов. Рекомендуем использовать протоколы VLESS и Hysteria2, а также переходить на Премиум-сервера для стабильного соединения.</div>
       </div>
-      <div class="news">
-        <div class="news-d">5 ноября 2026</div>
-        <div class="news-t">Обновление базы</div>
-        <div class="news-x">Добавили новые источники. Теперь более 150 конфигураций.</div>
+      <div class="news-item">
+        <div class="news-date">5 ноября 2026</div>
+        <div class="news-title">Обновление базы бесплатных серверов</div>
+        <div class="news-text">Мы добавили новые источники в раздел «Сервера». Теперь доступно более 150 конфигураций. Если сервера перестали работать — попробуй обновить подписку или выбрать другой источник.</div>
       </div>
-      <div class="news">
-        <div class="news-d">1 ноября 2026</div>
-        <div class="news-t">Скоро: Премиум</div>
-        <div class="news-x">Готовим запуск премиум-серверов.</div>
+      <div class="news-item">
+        <div class="news-date">1 ноября 2026</div>
+        <div class="news-title">Скоро: запуск Премиум-подписки</div>
+        <div class="news-text">Мы готовим запуск премиум-серверов, которые будут отбираться вручную. Они будут работать даже при массовых блокировках, так как используют собственные зарезервированные IP-адреса.</div>
+      </div>
+      <div class="news-item">
+        <div class="news-date">28 октября 2026</div>
+        <div class="news-title">LibreVPN теперь на GitHub Pages</div>
+        <div class="news-text">Сайт переехал на стабильный хостинг. Теперь доступ к серверам возможен с любого устройства без установки дополнительных приложений. Просто открой ссылку и скопируй нужную подписку.</div>
       </div>
     </div>
   </div>
@@ -259,7 +424,7 @@ const tTab = (name, btn) => {
 // Уведомления
 const tToast = (msg) => {
   const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
-  clearTimeout(window._t); window._t = setTimeout(() => t.classList.remove('show'), 2000);
+  clearTimeout(window._t); window._t = setTimeout(() => t.classList.remove('show'), 2500);
 };
 
 // Копирование
@@ -273,7 +438,7 @@ const legacy = (url, done) => {
   const ta = document.createElement('textarea');
   ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
   document.body.appendChild(ta); ta.select();
-  try { document.execCommand('copy'); done(); } catch(e) { tToast('Ошибка'); }
+  try { document.execCommand('copy'); done(); } catch(e) { tToast('Ошибка копирования'); }
   document.body.removeChild(ta);
 };
 
@@ -298,8 +463,7 @@ const srv = [
   { n: '🇬🇧 Великобритания · Manchester', k: 'vless://b9f7d5e4-4c6f-8a7b-3e5d-2f6c5b8d0a1e@104.16.0.5:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#GB-MAN' },
   { n: '🇯🇵 Япония · Osaka', k: 'vless://c0a8e6f5-5d7a-9b8c-4f6e-3a7d6c9e1b2f@104.16.0.6:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#JP-OSA' },
   { n: '🇸🇬 Сингапур · SG-2', k: 'vless://d1b9f7a6-6e8b-0c9d-5a7f-4b8e7d0f2c3a@104.16.0.7:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#SG2' },
-  { n: '🇰🇷 Корея · Busan', k: 'vless://e2c0a8b7-7f9c-1d0e-6b8a-5c9f8e1a3d4b@104.16.0.8:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#KR-BUS' },
-  { n: '🇨🇦 Канада · Vancouver', k: 'vless://f3d1b9c8-8a0d-2e1f-7c9b-6d0a9f2b4e5c@104.16.0.9:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#CA-VAN' }
+  { n: '🇰🇷 Корея · Busan', k: 'vless://e2c0a8b7-7f9c-1d0e-6b8a-5c9f8e1a3d4b@104.16.0.8:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#KR-BUS' }
 ];
 
 // Рендер списка
@@ -312,7 +476,7 @@ const render = () => {
     cnt++;
     html += `<div class="s-row"><div class="s-info"><div class="dot"></div><div class="s-name">${s.n}</div></div><button class="c-btn" onclick="cUrl('${s.k}','${s.n}')">Копировать</button></div>`;
   });
-  box.innerHTML = cnt ? html : '<div style="text-align:center;color:var(--muted);padding:20px;font-size:14px;">Ничего не найдено</div>';
+  box.innerHTML = cnt ? html : '<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:14px;">Ничего не найдено</div>';
   document.getElementById('s-cnt').textContent = cnt;
 };
 
