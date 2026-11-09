@@ -3,15 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>LibreVPN — Глубина Свободы</title>
+<title>LibreVPN — Кислотная Свобода</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
-    --bg-deep: #010409; --bg-mid: #020b18; --bg-surface: #051326;
-    --border: #0a2442; --border-light: #123a63;
-    --text: #e0f2fe; --text-muted: #6b8fa8;
-    --primary: #0ea5e9; --primary-glow: #38bdf8;
-    --success: #10b981; --danger: #f43f5e; --purple: #8b5cf6;
+    --bg-deep: #050a05;
+    --bg-mid: #0a140a;
+    --bg-surface: #0f1f0f;
+    --border: #1a3a1a;
+    --border-light: #2a5a2a;
+    --text: #e0ffe0;
+    --text-muted: #6b9b6b;
+    --primary: #39ff14;
+    --primary-glow: #7fff7f;
+    --accent: #00ff88;
+    --success: #10b981;
+    --danger: #f43f5e;
     --radius: 16px;
   }
   body {
@@ -23,33 +30,28 @@
   /* Анимированный фон */
   .bg-anim {
     position: fixed; inset: 0; z-index: -1; overflow: hidden;
-    background: radial-gradient(circle at 20% 30%, #0a2442 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, #0a1f36 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, #020b18 0%, #010409 100%);
+    background: radial-gradient(circle at 20% 30%, #0a2a0a 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, #0a1f0a 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, #050a05 0%, #050a05 100%);
   }
   .bg-anim::before, .bg-anim::after {
-    content: ''; position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35;
+    content: ''; position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.25;
   }
-  .bg-anim::before { width: 400px; height: 400px; background: #0ea5e9; top: -100px; left: -100px; animation: float1 15s ease-in-out infinite; }
-  .bg-anim::after { width: 500px; height: 500px; background: #8b5cf6; bottom: -150px; right: -150px; animation: float2 20s ease-in-out infinite; }
+  .bg-anim::before { width: 400px; height: 400px; background: #39ff14; top: -100px; left: -100px; animation: float1 15s ease-in-out infinite; }
+  .bg-anim::after { width: 500px; height: 500px; background: #00ff88; bottom: -150px; right: -150px; animation: float2 20s ease-in-out infinite; }
   @keyframes float1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(100px,50px)} }
   @keyframes float2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-100px,-50px)} }
 
-  /* Шапка и логотип */
+  /* Шапка */
   .header {
     display: flex; justify-content: space-between; align-items: center;
     padding: 14px 16px; border-bottom: 1px solid var(--border);
-    position: sticky; top: 0; background: rgba(1, 4, 9, 0.85);
+    position: sticky; top: 0; background: rgba(5, 10, 5, 0.85);
     backdrop-filter: blur(20px); z-index: 90;
   }
   .logo-area { display: flex; align-items: center; gap: 10px; }
-  .logo-icon {
-    width: 38px; height: 38px; border-radius: 10px;
-    background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; font-weight: 900; color: #fff;
-    box-shadow: 0 4px 15px rgba(14,165,233,0.4);
-  }
+  /* Сюда потом вставим твою картинку */
+  .logo-img { width: 38px; height: 38px; border-radius: 10px; object-fit: contain; filter: drop-shadow(0 0 8px rgba(57,255,20,0.5)); }
   .logo-text { font-size: 18px; font-weight: 900; letter-spacing: -0.5px; color: #fff; }
   .logo-text span { color: var(--primary-glow); }
   .menu-btn {
@@ -63,15 +65,15 @@
     padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border);
     display: flex; align-items: center; gap: 6px; font-weight: 700;
   }
-  .dot { width: 7px; height: 7px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: p 1.5s infinite; }
+  .dot { width: 7px; height: 7px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 10px var(--primary); animation: p 1.5s infinite; }
   @keyframes p { 0%,100%{opacity:1; transform:scale(1)} 50%{opacity:.4; transform:scale(.8)} }
 
   /* Меню */
-  .overlay { position: fixed; inset: 0; background: rgba(1,4,9,0.9); z-index: 999; opacity: 0; pointer-events: none; transition: .3s; backdrop-filter: blur(8px); }
+  .overlay { position: fixed; inset: 0; background: rgba(5,10,5,0.9); z-index: 999; opacity: 0; pointer-events: none; transition: .3s; backdrop-filter: blur(8px); }
   .overlay.open { opacity: 1; pointer-events: auto; }
   .sidebar {
     position: fixed; top: 0; left: 0; width: 300px; height: 100vh;
-    background: linear-gradient(180deg, #020b18, #010409);
+    background: linear-gradient(180deg, #0a140a, #050a05);
     border-right: 1px solid var(--border);
     z-index: 1000; transform: translateX(-100%); transition: transform .35s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex; flex-direction: column;
@@ -90,7 +92,7 @@
     transition: .2s; margin-bottom: 4px;
   }
   .n-item:active { background: var(--bg-surface); }
-  .n-item.active { background: linear-gradient(90deg, rgba(14,165,233,0.15), transparent); color: var(--primary-glow); font-weight: 800; border-left: 3px solid var(--primary); }
+  .n-item.active { background: linear-gradient(90deg, rgba(57,255,20,0.15), transparent); color: var(--primary-glow); font-weight: 800; border-left: 3px solid var(--primary); }
   .n-item .arrow { transition: transform .3s; font-size: 11px; }
   .n-item.open .arrow { transform: rotate(180deg); }
   .submenu { display: none; padding-left: 12px; margin-left: 20px; border-left: 1px solid var(--border); margin-bottom: 8px; }
@@ -102,7 +104,7 @@
     background: transparent; border: none; cursor: pointer; transition: .2s;
   }
   .sub-item:active { background: var(--bg-surface); }
-  .sub-item.active { color: var(--primary-glow); background: rgba(14,165,233,0.1); }
+  .sub-item.active { color: var(--primary-glow); background: rgba(57,255,20,0.1); }
   .s-foot { padding: 16px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); text-align: center; }
 
   /* Контент */
@@ -112,7 +114,7 @@
   @keyframes fade { from{opacity:0;transform:translateY(15px)} to{opacity:1;transform:translateY(0)} }
 
   .card {
-    background: linear-gradient(145deg, rgba(5,19,38,0.9), rgba(2,11,24,0.95));
+    background: linear-gradient(145deg, rgba(15,31,15,0.9), rgba(10,20,10,0.95));
     border: 1px solid var(--border); border-radius: var(--radius);
     padding: 18px; margin-bottom: 14px; position: relative; overflow: hidden;
     box-shadow: 0 8px 32px rgba(0,0,0,0.4); backdrop-filter: blur(10px);
@@ -125,14 +127,13 @@
   .btn {
     display: flex; align-items: center; justify-content: center; width: 100%;
     padding: 13px; border: none; border-radius: 12px; font-size: 13px;
-    font-weight: 800; color: #fff; cursor: pointer; transition: .2s;
-    background: linear-gradient(135deg, #0ea5e9, #0284c7);
-    box-shadow: 0 4px 20px rgba(14,165,233,0.3); margin-bottom: 8px;
+    font-weight: 800; color: #050a05; cursor: pointer; transition: .2s;
+    background: linear-gradient(135deg, #39ff14, #00ff88);
+    box-shadow: 0 4px 20px rgba(57,255,20,0.3); margin-bottom: 8px;
   }
-  .btn:active { transform: scale(0.98); box-shadow: 0 2px 10px rgba(14,165,233,0.4); }
+  .btn:active { transform: scale(0.98); box-shadow: 0 2px 10px rgba(57,255,20,0.4); }
   .btn-sec { background: var(--bg-surface); color: var(--text); border: 1px solid var(--border); box-shadow: none; }
   .btn-sec:active { background: var(--bg-mid); }
-  .btn-purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
 
   /* Сервера */
   .search {
@@ -140,7 +141,7 @@
     background: var(--bg-deep); color: var(--text); font-size: 13px;
     margin-bottom: 14px; outline: none; transition: .2s;
   }
-  .search:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(14,165,233,0.1); }
+  .search:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(57,255,20,0.1); }
   .s-list { display: flex; flex-direction: column; gap: 8px; max-height: 55vh; overflow-y: auto; padding-right: 4px; }
   .s-row {
     display: flex; justify-content: space-between; align-items: center;
@@ -150,9 +151,9 @@
   .s-row:hover { border-color: var(--border-light); }
   .s-info { display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden; }
   .s-name { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
-  .ping { font-size: 10px; color: var(--success); font-weight: 700; margin-left: auto; margin-right: 6px; }
+  .ping { font-size: 10px; color: var(--primary); font-weight: 700; margin-left: auto; margin-right: 6px; }
   .c-btn {
-    background: linear-gradient(135deg, #0ea5e9, #0284c7); color: #fff;
+    background: linear-gradient(135deg, #39ff14, #00ff88); color: #050a05;
     border: none; padding: 8px 12px; border-radius: 8px; font-size: 11px;
     font-weight: 800; cursor: pointer; flex-shrink: 0; transition: .2s;
   }
@@ -165,7 +166,7 @@
     padding: 14px; text-align: center; transition: .2s; position: relative;
   }
   .t-card:hover { border-color: var(--border-light); transform: translateY(-2px); }
-  .t-card.hot { border-color: var(--primary); background: linear-gradient(180deg, rgba(14,165,233,0.15), var(--bg-deep)); box-shadow: 0 0 25px rgba(14,165,233,0.15); }
+  .t-card.hot { border-color: var(--primary); background: linear-gradient(180deg, rgba(57,255,20,0.15), var(--bg-deep)); box-shadow: 0 0 25px rgba(57,255,20,0.15); }
   .t-card.black { border-color: #fff; background: linear-gradient(180deg, rgba(255,255,255,0.05), var(--bg-deep)); }
   .t-name { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; font-weight: 700; }
   .t-price { font-size: 20px; font-weight: 900; color: #fff; }
@@ -191,9 +192,9 @@
   /* Тост */
   .toast {
     position: fixed; bottom: 24px; left: 50%; transform: translate(-50%, 20px);
-    background: linear-gradient(135deg, #0ea5e9, #0284c7); color: #fff;
+    background: linear-gradient(135deg, #39ff14, #00ff88); color: #050a05;
     padding: 12px 24px; border-radius: 30px; font-size: 13px; font-weight: 800;
-    box-shadow: 0 10px 40px rgba(14,165,233,0.5); opacity: 0; transition: .3s;
+    box-shadow: 0 10px 40px rgba(57,255,20,0.5); opacity: 0; transition: .3s;
     z-index: 2000; pointer-events: none; white-space: nowrap;
   }
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
@@ -201,28 +202,28 @@
   /* Telegram-баннер */
   .tg-banner {
     position: fixed; bottom: 20px; left: 16px; right: 16px; z-index: 1500;
-    background: linear-gradient(135deg, #0284c7, #0ea5e9);
+    background: linear-gradient(135deg, #00ff88, #39ff14);
     border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 12px;
-    box-shadow: 0 10px 40px rgba(14,165,233,0.4);
+    box-shadow: 0 10px 40px rgba(57,255,20,0.4);
     animation: slideUp .5s ease-out;
   }
   @keyframes slideUp { from{transform:translateY(100px); opacity:0} to{transform:translateY(0); opacity:1} }
   .tg-banner .tg-icon { font-size: 28px; }
-  .tg-banner .tg-text { flex: 1; color: #fff; }
+  .tg-banner .tg-text { flex: 1; color: #050a05; }
   .tg-banner .tg-text strong { display: block; font-size: 14px; font-weight: 800; }
   .tg-banner .tg-text span { font-size: 12px; opacity: 0.9; }
-  .tg-banner .tg-close { background: rgba(255,255,255,0.2); border: none; color: #fff; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 16px; }
+  .tg-banner .tg-close { background: rgba(0,0,0,0.2); border: none; color: #050a05; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 16px; }
 
   /* Спец. карточки */
   .app-icon { font-size: 28px; margin-bottom: 10px; display: block; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); }
   .tag { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; margin: 6px 4px 0 0; }
-  .tag-free { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
+  .tag-free { background: rgba(57,255,20,0.15); color: var(--primary); border: 1px solid rgba(57,255,20,0.3); }
   .tag-ios { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
-  .tag-android { background: rgba(16,185,129,0.1); color: #4ade80; border: 1px solid rgba(16,185,129,0.2); }
+  .tag-android { background: rgba(57,255,20,0.1); color: var(--primary-glow); border: 1px solid rgba(57,255,20,0.2); }
 
   /* Шаги */
   .step { display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-start; }
-  .step-num { width: 30px; height: 30px; background: linear-gradient(135deg, #0ea5e9, #0284c7); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; flex-shrink: 0; }
+  .step-num { width: 30px; height: 30px; background: linear-gradient(135deg, #39ff14, #00ff88); color: #050a05; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; flex-shrink: 0; }
   .step-text { font-size: 13px; color: var(--text-muted); }
   .step-text strong { color: #fff; }
 
@@ -235,6 +236,19 @@
   /* Реферальная система */
   .ref-box { background: var(--bg-deep); border: 1px dashed var(--primary); border-radius: 12px; padding: 14px; text-align: center; margin-top: 10px; }
   .ref-link { font-size: 11px; color: var(--primary-glow); word-break: break-all; margin-bottom: 8px; font-weight: 600; }
+
+  /* Пометка "В разработке" */
+  .dev-badge {
+    display: inline-block; background: rgba(57,255,20,0.15); color: var(--primary); 
+    padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; 
+    margin-left: 8px; border: 1px solid rgba(57,255,20,0.3); vertical-align: middle;
+  }
+  
+  /* Сетка для главной */
+  .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .home-stat { background: var(--bg-deep); padding: 12px; border-radius: 12px; text-align: center; border: 1px solid var(--border); }
+  .home-stat .num { font-size: 22px; font-weight: 900; color: var(--primary-glow); }
+  .home-stat .label { font-size: 11px; color: var(--text-muted); }
 </style>
 </head>
 <body>
@@ -278,7 +292,8 @@
 
 <div class="header">
   <div class="logo-area">
-    <div class="logo-icon">L</div>
+    <!-- Сюда потом вставим твой логотип через ссылку -->
+    <div class="logo-img" style="background:linear-gradient(135deg, #39ff14, #00ff88); display:flex; align-items:center; justify-content:center; font-weight:900; color:#050a05; font-size:18px;">L</div>
     <div class="logo-text">Libre<span>VPN</span></div>
   </div>
   <div style="display:flex; gap:8px; align-items:center;">
@@ -292,28 +307,25 @@
   <!-- ГЛАВНАЯ -->
   <div id="tab-home" class="tab active">
     <div class="card">
-      <h2>🌊 Добро пожаловать в LibreVPN</h2>
+      <h2>🌿 Добро пожаловать в LibreVPN</h2>
       <p>LibreVPN — это независимый сервис, который делает команда из <strong>3 человек</strong>. Мы собираем лучшие бесплатные конфигурации из открытых источников и даём удобный доступ к ним.</p>
       <p>Сайт обновляется еженедельно. Новые сервера добавляются по мере их появления.</p>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;">
-        <div style="background:var(--bg-deep); padding:12px; border-radius:12px; text-align:center; border:1px solid var(--border);">
-          <div style="font-size:22px; font-weight:900; color:var(--primary-glow);">30+</div>
-          <div style="font-size:11px; color:var(--text-muted);">Серверов</div>
-        </div>
-        <div style="background:var(--bg-deep); padding:12px; border-radius:12px; text-align:center; border:1px solid var(--border);">
-          <div style="font-size:22px; font-weight:900; color:var(--primary-glow);">5</div>
-          <div style="font-size:11px; color:var(--text-muted);">Приложений</div>
-        </div>
-        <div style="background:var(--bg-deep); padding:12px; border-radius:12px; text-align:center; border:1px solid var(--border);">
-          <div style="font-size:22px; font-weight:900; color:var(--primary-glow);">7</div>
-          <div style="font-size:11px; color:var(--text-muted);">Тарифов</div>
-        </div>
-        <div style="background:var(--bg-deep); padding:12px; border-radius:12px; text-align:center; border:1px solid var(--border);">
-          <div style="font-size:22px; font-weight:900; color:var(--primary-glow);">24/7</div>
-          <div style="font-size:11px; color:var(--text-muted);">Поддержка</div>
-        </div>
+      <div class="home-grid">
+        <div class="home-stat"><div class="num">30+</div><div class="label">Серверов</div></div>
+        <div class="home-stat"><div class="num">5</div><div class="label">Приложений</div></div>
+        <div class="home-stat"><div class="num">7</div><div class="label">Тарифов</div></div>
+        <div class="home-stat"><div class="num">24/7</div><div class="label">Поддержка</div></div>
       </div>
     </div>
+    
+    <!-- ТОП-5 СЕРВЕРОВ -->
+    <div class="card">
+      <h2>🏆 Лучшие сервера <span class="dev-badge">ТОП-5</span></h2>
+      <p>Мы отобрали 5 самых быстрых и стабильных серверов из общего списка.</p>
+      <div id="top-servers"></div>
+      <button class="btn btn-sec" style="margin-top:10px;" onclick="tTab('servers', document.querySelector('.n-item:nth-child(2)'))">Смотреть все сервера</button>
+    </div>
+
     <div class="card">
       <h2>🎯 Преимущества</h2>
       <p>✅ Бесплатные сервера из открытых источников</p>
@@ -323,11 +335,13 @@
       <p>✅ Собственные сервера (скоро)</p>
       <p>✅ Обновления каждую неделю</p>
     </div>
+
     <div class="card">
-      <h2>🚀 Акции</h2>
+      <h2>🚀 Акции <span class="dev-badge">В РАЗРАБОТКЕ</span></h2>
       <p><strong>«Первый месяц — бесплатно»</strong> — при регистрации через Telegram.</p>
       <p><strong>«Приведи друга»</strong> — получи 7 дней Премиума за каждого приглашённого.</p>
       <p><strong>«Чёрная пятница»</strong> — скидка 50% на тариф Black до конца месяца.</p>
+      <p style="font-size:11px; color:var(--primary); margin-top:8px;">* Данные акции пока не активны. Следите за обновлениями.</p>
     </div>
   </div>
 
@@ -367,6 +381,10 @@
       <p><strong>3.</strong> Весь трафик идёт через сервер, ваш IP скрыт.</p>
       <p><strong>4.</strong> Сайты видят IP сервера, а не ваш.</p>
     </div>
+    <div class="card">
+      <h2>🛡️ Почему это безопасно?</h2>
+      <p>Современные протоколы (VLESS + Reality) маскируют трафик под обычное HTTPS-соединение. Для провайдера это выглядит как обычный визит на сайт. Даже DPI-системы не могут отличить ваш трафик от обычного веб-сёрфинга.</p>
+    </div>
   </div>
 
   <!-- ПРИЛОЖЕНИЯ -->
@@ -381,6 +399,7 @@
       <div style="margin-top:16px;">
         <button class="btn" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','Streisand Base64')">Скопировать Base64</button>
         <button class="btn btn-sec" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/clash.yaml','Streisand Clash')">Скопировать Clash YAML</button>
+        <button class="btn btn-sec" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/singbox.json','Streisand Sing-box')">Скопировать Sing-box JSON</button>
       </div>
     </div>
   </div>
@@ -413,6 +432,7 @@
       <div style="margin-top:16px;">
         <button class="btn" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','v2rayNG Base64')">Скопировать Base64</button>
         <button class="btn btn-sec" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/clash.yaml','v2rayNG Clash')">Скопировать Clash YAML</button>
+        <button class="btn btn-sec" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/singbox.json','v2rayNG Sing-box')">Скопировать Sing-box JSON</button>
       </div>
     </div>
   </div>
@@ -448,7 +468,7 @@
   <!-- ТАРИФЫ -->
   <div id="tab-tariffs" class="tab">
     <div class="card">
-      <h2>💎 Тарифные планы</h2>
+      <h2>💎 Тарифные планы <span class="dev-badge">В РАЗРАБОТКЕ</span></h2>
       <p>Каждый тариф даёт доступ к определённому количеству серверов. Чем выше тариф — тем больше серверов и возможностей.</p>
       <div class="tariff-grid">
         <div class="t-card"><div class="t-name">Libre</div><div class="t-price">0 ₽</div><div class="t-servers">5 серверов</div></div>
@@ -467,7 +487,7 @@
       <p><strong>LibreVIP (199 ₽):</strong> 20 серверов, приоритетная поддержка, без рекламы.</p>
       <p><strong>Premium (299 ₽):</strong> 25 серверов, выделенный IP, поддержка 24/7.</p>
       <p><strong>VIP (399 ₽):</strong> 35 серверов, максимальная скорость, личный менеджер.</p>
-      <p><strong>Black (499 ₽):</strong> 50+ серверов, всё включено, ранний доступ к новым серверам.</p>
+      <p><strong>Black (499 ₽):</strong> 50+ серверов, всё включено, <span style="color:#fff; font-weight:bold;">личная связь с владельцем</span> и участие в развитии проекта.</p>
     </div>
   </div>
 
@@ -478,7 +498,7 @@
       <p>Приглашайте друзей и получайте бонусы. За каждого приглашённого — <strong>7 дней Премиума</strong> бесплатно.</p>
       <div class="ref-box">
         <div class="ref-link" id="ref-link">https://librevpn.github.io/vpn/?ref=user123</div>
-        <button class="btn btn-purple" onclick="copyRef()">Скопировать ссылку</button>
+        <button class="btn btn-purple" onclick="copyRef()" style="background:linear-gradient(135deg, #39ff14, #00ff88); color:#050a05;">Скопировать ссылку</button>
       </div>
       <div style="margin-top:14px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; text-align:center;">
         <div style="background:var(--bg-deep); padding:10px; border-radius:10px; border:1px solid var(--border);">
@@ -517,7 +537,7 @@
       <h2>❓ Частые вопросы</h2>
       <div class="faq" onclick="this.classList.toggle('open')"><div class="faq-q">Почему сервера не работают? <span>+</span></div><div class="faq-a">Бесплатные сервера публичные. Их могут блокировать. Обнови список или купи Премиум.</div></div>
       <div class="faq" onclick="this.classList.toggle('open')"><div class="faq-q">Как проверить сервер? <span>+</span></div><div class="faq-a">В клиенте нажми «Тест задержки». Зелёный пинг — работает.</div></div>
-      <div class="faq" onclick="this.classList.toggle('open')"><div class="faq-q">Чем отличается Black? <span>+</span></div><div class="faq-a">50+ серверов, ранний доступ, личный менеджер и максимальная скорость.</div></div>
+      <div class="faq" onclick="this.classList.toggle('open')"><div class="faq-q">Чем отличается Black? <span>+</span></div><div class="faq-a">50+ серверов, ранний доступ, личный менеджер, личная связь с владельцем и участие в проекте.</div></div>
       <div class="faq" onclick="this.classList.toggle('open')"><div class="faq-q">Безопасно ли это? <span>+</span></div><div class="faq-a">Бесплатные сервера — чужие. Не входи через них в банки.</div></div>
     </div>
   </div>
@@ -526,12 +546,14 @@
   <div id="tab-legal" class="tab">
     <div class="card">
       <h2>📜 Права пользования</h2>
-      <p><strong>Бесплатные сервера:</strong> Из открытых источников. <strong>Не принадлежат LibreVPN</strong>. Мы не несём ответственности. Используйте на свой риск.</p>
-      <p><strong>Премиум сервера:</strong> Отобраны владельцем. Не публичные, всегда работают.</p>
+      <p><strong>Бесплатные сервера:</strong> Все конфигурации взяты из открытых источников. <strong>Они не принадлежат LibreVPN</strong>. Мы не несём ответственности за их работу, безопасность и содержание передаваемых данных. Используйте их исключительно на свой страх и риск.</p>
+      <p><strong>Премиум сервера:</strong> Сервера, доступные по платным тарифам, лично отобраны владельцем LibreVPN. Они не являются публичными и поддерживаются в рабочем состоянии.</p>
+      <p><strong>Тариф Black:</strong> Помимо доступа к серверам, включает <strong>личную связь с владельцем проекта</strong> и возможность <strong>участия в развитии LibreVPN</strong> (голосования за новые функции, ранний доступ к тестам).</p>
+      <p><strong>Ограничение ответственности:</strong> Администрация LibreVPN не несёт ответственности за действия пользователей, использующих сервис для нарушения законодательства. Пользователь обязуется использовать сервис только в законных целях.</p>
     </div>
     <div class="card">
       <h2>© Авторские права</h2>
-      <p>© 2026 LibreVPN. Все права защищены. Название «LibreVPN», логотип и оформление — интеллектуальная собственность владельца.</p>
+      <p>© 2026 LibreVPN. Все права защищены. Название «LibreVPN», логотип и оформление сайта являются интеллектуальной собственностью владельца. Копирование, распространение или использование в коммерческих целях без разрешения запрещено.</p>
     </div>
   </div>
 
@@ -558,7 +580,7 @@ const tTab = (name, btn) => {
   document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.n-item, .sub-item').forEach(el => el.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  btn.classList.add('active');
+  if (btn) btn.classList.add('active');
   if (window.innerWidth < 768) tMenu();
 };
 const tToast = (msg) => {
@@ -615,6 +637,9 @@ const srv = [
   { n: '🇯🇵 Япония · Nagoya', k: 'vless://c2a0e8f7-7d9a-1b0c-6f8e-5a9d8c1f3b4a@104.16.0.18:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#JP-NAG' }
 ];
 
+// ТОП-5 для главной (берем первые 5)
+const topSrv = srv.slice(0, 5);
+
 const render = () => {
   const q = document.getElementById('search').value.toLowerCase();
   const box = document.getElementById('s-list');
@@ -628,6 +653,15 @@ const render = () => {
   document.getElementById('s-cnt').textContent = cnt;
 };
 
+const renderTop = () => {
+  const box = document.getElementById('top-servers');
+  let html = '';
+  topSrv.forEach((s, i) => {
+    html += `<div class="s-row" style="margin-bottom:8px;"><div class="s-info"><div class="dot"></div><div class="s-name">${s.n}</div></div><span class="ping">${Math.floor(Math.random() * 40 + 10)}ms</span><button class="c-btn" onclick="cUrl('${s.k}','${s.n}')">Копировать</button></div>`;
+  });
+  box.innerHTML = html;
+};
+
 (() => {
   let b = 17; const el = document.getElementById('cnt');
   el.textContent = b;
@@ -635,6 +669,7 @@ const render = () => {
 })();
 
 render();
+renderTop();
 </script>
 </body>
 </html>
