@@ -7,29 +7,17 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
-    --bg-deep: #010409;
-    --bg-mid: #020b18;
-    --bg-surface: #051326;
-    --border: #0a2442;
-    --border-light: #123a63;
-    --text: #e0f2fe;
-    --text-muted: #6b8fa8;
-    --primary: #0ea5e9;
-    --primary-glow: #38bdf8;
-    --accent: #0284c7;
-    --success: #10b981;
-    --danger: #f43f5e;
-    --purple: #8b5cf6;
+    --bg-deep: #010409; --bg-mid: #020b18; --bg-surface: #051326;
+    --border: #0a2442; --border-light: #123a63;
+    --text: #e0f2fe; --text-muted: #6b8fa8;
+    --primary: #0ea5e9; --primary-glow: #38bdf8;
+    --success: #10b981; --danger: #f43f5e; --purple: #8b5cf6;
     --radius: 16px;
   }
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--bg-deep);
-    color: var(--text);
-    line-height: 1.6;
-    min-height: 100vh;
-    overflow-x: hidden;
-    position: relative;
+    background: var(--bg-deep); color: var(--text); line-height: 1.6;
+    min-height: 100vh; overflow-x: hidden; position: relative;
   }
 
   /* Анимированный фон */
@@ -40,30 +28,23 @@
                 radial-gradient(circle at 50% 50%, #020b18 0%, #010409 100%);
   }
   .bg-anim::before, .bg-anim::after {
-    content: ''; position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4;
+    content: ''; position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35;
   }
-  .bg-anim::before {
-    width: 400px; height: 400px; background: #0ea5e9;
-    top: -100px; left: -100px; animation: float1 15s ease-in-out infinite;
-  }
-  .bg-anim::after {
-    width: 500px; height: 500px; background: #8b5cf6;
-    bottom: -150px; right: -150px; animation: float2 20s ease-in-out infinite;
-  }
+  .bg-anim::before { width: 400px; height: 400px; background: #0ea5e9; top: -100px; left: -100px; animation: float1 15s ease-in-out infinite; }
+  .bg-anim::after { width: 500px; height: 500px; background: #8b5cf6; bottom: -150px; right: -150px; animation: float2 20s ease-in-out infinite; }
   @keyframes float1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(100px,50px)} }
   @keyframes float2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-100px,-50px)} }
 
-  /* Шапка */
+  /* Шапка и логотип */
   .header {
     display: flex; justify-content: space-between; align-items: center;
     padding: 14px 16px; border-bottom: 1px solid var(--border);
     position: sticky; top: 0; background: rgba(1, 4, 9, 0.85);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    z-index: 90;
+    backdrop-filter: blur(20px); z-index: 90;
   }
   .logo-area { display: flex; align-items: center; gap: 10px; }
   .logo-icon {
-    width: 36px; height: 36px; border-radius: 10px;
+    width: 38px; height: 38px; border-radius: 10px;
     background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
     display: flex; align-items: center; justify-content: center;
     font-size: 18px; font-weight: 900; color: #fff;
@@ -86,11 +67,7 @@
   @keyframes p { 0%,100%{opacity:1; transform:scale(1)} 50%{opacity:.4; transform:scale(.8)} }
 
   /* Меню */
-  .overlay {
-    position: fixed; inset: 0; background: rgba(1,4,9,0.9); z-index: 999;
-    opacity: 0; pointer-events: none; transition: .3s;
-    backdrop-filter: blur(8px);
-  }
+  .overlay { position: fixed; inset: 0; background: rgba(1,4,9,0.9); z-index: 999; opacity: 0; pointer-events: none; transition: .3s; backdrop-filter: blur(8px); }
   .overlay.open { opacity: 1; pointer-events: auto; }
   .sidebar {
     position: fixed; top: 0; left: 0; width: 300px; height: 100vh;
@@ -138,8 +115,7 @@
     background: linear-gradient(145deg, rgba(5,19,38,0.9), rgba(2,11,24,0.95));
     border: 1px solid var(--border); border-radius: var(--radius);
     padding: 18px; margin-bottom: 14px; position: relative; overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4); backdrop-filter: blur(10px);
     transition: border-color 0.3s;
   }
   .card:hover { border-color: var(--border-light); }
@@ -606,7 +582,6 @@ const copyRef = () => {
   cUrl('https://librevpn.github.io/vpn/?ref=user123', 'Реферальная ссылка');
 };
 
-// 30 серверов
 const srv = [
   { n: '🇵🇱 Польша | [CIDR]', k: 'vless://ea277838-a188-44f1-a2e8-94aa110c4f27@185.178.208.140:443?encryption=none&type=xhttp&mode=packet-up&path=%2Fapi%2Fv2%2Fevents&security=tls&fp=firefox&sni=static.bakarova-top.ru&alpn=h2#PL' },
   { n: '🇧🇬 Болгария [CIDR]', k: 'vless://9aff658c-1f80-4c82-9213-48ca26996142@168.113.128.70:20105?encryption=none&flow=xtls-rprx-vision&security=tls&fp=chrome&sni=ripelever.net&alpn=h2%2Chttp%2F1.1#BG' },
