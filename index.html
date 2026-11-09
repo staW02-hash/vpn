@@ -9,58 +9,30 @@
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   
   :root {
-    --bg-base: #f5f6fa;
-    --bg-glass: rgba(255, 255, 255, 0.55);
-    --bg-glass-heavy: rgba(255, 255, 255, 0.85);
-    --bg-glass-card: rgba(255, 255, 255, 0.4);
-    --border-glass: rgba(255, 255, 255, 0.9);
-    --border-dark: rgba(0, 0, 0, 0.05);
-    --text-main: #1a1a2e;
-    --text-muted: #5e6472;
-    --primary: #6366f1;
-    --primary-glow: #818cf8;
-    --accent: #8b5cf6;
-    --shadow: 0 8px 32px rgba(31, 38, 135, 0.08);
-    --blur: blur(24px);
-    --radius: 24px;
+    --bg-base: #f5f6fa; --bg-glass: rgba(255, 255, 255, 0.55); --bg-glass-heavy: rgba(255, 255, 255, 0.85);
+    --bg-glass-card: rgba(255, 255, 255, 0.4); --border-glass: rgba(255, 255, 255, 0.9);
+    --text-main: #1a1a2e; --text-muted: #5e6472; --primary: #6366f1; --primary-glow: #818cf8;
+    --accent: #8b5cf6; --shadow: 0 8px 32px rgba(31, 38, 135, 0.08); --blur: blur(24px); --radius: 24px;
   }
   
   [data-theme="dark"] {
-    --bg-base: #0b0714;
-    --bg-glass: rgba(20, 15, 35, 0.55);
-    --bg-glass-heavy: rgba(25, 18, 45, 0.85);
-    --bg-glass-card: rgba(255, 255, 255, 0.04);
-    --border-glass: rgba(255, 255, 255, 0.08);
-    --border-dark: rgba(255, 255, 255, 0.03);
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --primary: #8b5cf6;
-    --primary-glow: #a78bfa;
-    --accent: #6366f1;
-    --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --bg-base: #0b0714; --bg-glass: rgba(20, 15, 35, 0.55); --bg-glass-heavy: rgba(25, 18, 45, 0.85);
+    --bg-glass-card: rgba(255, 255, 255, 0.04); --border-glass: rgba(255, 255, 255, 0.08);
+    --text-main: #f8fafc; --text-muted: #94a3b8; --primary: #8b5cf6; --primary-glow: #a78bfa;
+    --accent: #6366f1; --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   }
 
   body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--bg-base);
-    color: var(--text-main);
-    min-height: 100vh; overflow-x: hidden;
-    transition: background-color 0.5s, color 0.5s;
+    font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-main);
+    min-height: 100vh; overflow-x: hidden; transition: background-color 0.5s, color 0.5s;
   }
 
-  /* Фон с блюром */
-  .bg-blobs { position: fixed; inset: 0; z-index: -1; overflow: hidden; background: var(--bg-base); transition: background 0.5s; }
-  .blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.5; animation: float 12s infinite alternate; }
-  .blob-1 { width: 400px; height: 400px; background: #8b5cf6; top: -100px; left: -100px; }
-  .blob-2 { width: 500px; height: 500px; background: #3b82f6; bottom: -150px; right: -100px; animation-delay: -5s; }
-  .blob-3 { width: 300px; height: 300px; background: #ec4899; top: 40%; left: 30%; opacity: 0.2; animation-delay: -2s; }
-  @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(50px, 50px) scale(1.1); } }
-  [data-theme="dark"] .blob { opacity: 0.25; }
+  /* Canvas фон */
+  #bg-canvas { position: fixed; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; }
 
   /* Шапка */
   .header {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; justify-content: space-between; align-items: center;
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center;
     padding: 16px 20px; background: var(--bg-glass); backdrop-filter: var(--blur);
     border-bottom: 1px solid var(--border-glass); transition: background 0.4s;
   }
@@ -82,76 +54,67 @@
   }
   .sidebar.open { transform: translateX(0); }
   .s-header { padding: 24px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-glass); }
-  .s-header h2 { font-size: 18px; font-weight: 800; }
   .s-nav { flex: 1; overflow-y: auto; padding: 20px 16px; display: flex; flex-direction: column; gap: 6px; }
   .nav-btn { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 16px; border-radius: 16px; border: none; background: transparent; color: var(--text-main); font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: left; }
   .nav-btn:hover { background: var(--bg-glass-card); }
   .nav-btn.active { background: var(--bg-glass-card); color: var(--primary); box-shadow: 0 4px 15px rgba(99,102,241,0.1); border: 1px solid var(--border-glass); }
-  .nav-btn .icon { font-size: 20px; width: 24px; text-align: center; }
+  .nav-btn svg { width: 24px; height: 24px; }
   .submenu { display: none; flex-direction: column; gap: 4px; padding-left: 44px; margin-top: 4px; }
   .submenu.open { display: flex; animation: slideDown 0.3s; }
   .sub-btn { padding: 10px 16px; border-radius: 12px; border: none; background: transparent; color: var(--text-muted); font-size: 14px; font-weight: 600; text-align: left; cursor: pointer; transition: 0.2s; }
   .sub-btn:hover { color: var(--primary); }
   .sub-btn.active { color: var(--primary); background: rgba(99,102,241,0.05); }
 
+  /* Секретная кнопка админа */
+  .admin-trigger { height: 20px; width: 100%; cursor: default; }
+
   /* Контент */
   .main-content { padding: 100px 20px 40px; max-width: 700px; margin: 0 auto; }
   .page { display: none; opacity: 0; transform: translateY(20px); transition: all 0.4s ease-out; }
   .page.active { display: block; opacity: 1; transform: translateY(0); }
 
-  /* Карточки (Liquid Glass) */
+  /* Карточки */
   .glass-card {
-    background: var(--bg-glass); border: 1px solid var(--border-glass);
-    border-radius: var(--radius); padding: 24px; margin-bottom: 20px;
-    backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
-    box-shadow: var(--shadow); transition: transform 0.2s, box-shadow 0.2s;
+    background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 24px; margin-bottom: 20px;
+    backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); box-shadow: var(--shadow); transition: transform 0.2s, box-shadow 0.2s;
     position: relative; overflow: hidden;
   }
-  .glass-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--border-glass), transparent);
-  }
-  .glass-card:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(31, 38, 135, 0.12); }
-  
+  .glass-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--border-glass), transparent); }
   .h-title { font-size: 24px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.5px; }
   .h-desc { font-size: 15px; color: var(--text-muted); line-height: 1.7; margin-bottom: 20px; }
   .article-text { font-size: 15px; color: var(--text-main); line-height: 1.8; }
   .article-text p { margin-bottom: 16px; }
   .article-text h3 { font-size: 18px; margin: 24px 0 12px; color: var(--primary); }
 
-  /* Кнопки */
-  .btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 16px; border-radius: 16px; border: none; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3); }
-  .btn:active { transform: scale(0.97); }
-  .btn-sec { background: var(--bg-glass-card); color: var(--text-main); border: 1px solid var(--border-glass); box-shadow: none; }
-
-  /* Статистика */
-  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-  .stat-box { background: var(--bg-glass-card); border: 1px solid var(--border-glass); border-radius: 20px; padding: 16px; text-align: center; backdrop-filter: var(--blur); }
-  .stat-box .val { font-size: 24px; font-weight: 800; color: var(--primary); }
-  .stat-box .lbl { font-size: 12px; color: var(--text-muted); font-weight: 600; margin-top: 4px; }
-
-  /* Аккордеоны */
-  .accordion { background: var(--bg-glass-card); border: 1px solid var(--border-glass); border-radius: 20px; margin-bottom: 12px; overflow: hidden; backdrop-filter: var(--blur); transition: all 0.3s; }
-  .accordion-header { padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 700; font-size: 16px; }
-  .accordion-header .arrow { transition: transform 0.3s; color: var(--text-muted); }
-  .accordion.open .accordion-header .arrow { transform: rotate(180deg); }
-  .accordion-body { display: none; padding: 0 20px 20px; }
-  .accordion.open .accordion-body { display: block; animation: slideDown 0.3s; }
+  /* Глоссарий (Термины) */
+  .term { color: var(--primary); font-weight: 700; border-bottom: 1px dashed var(--primary); cursor: pointer; position: relative; }
+  .term-tooltip {
+    position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-10px);
+    background: var(--bg-glass-heavy); backdrop-filter: blur(20px); border: 1px solid var(--primary);
+    padding: 12px; border-radius: 12px; font-size: 12px; color: var(--text-main); width: 220px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 100; opacity: 0; pointer-events: none; transition: 0.2s;
+  }
+  .term:hover .term-tooltip { opacity: 1; transform: translateX(-50%) translateY(-4px); pointer-events: auto; }
 
   /* Сервера */
   .filter-bar { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
   .filter-btn { padding: 8px 16px; border-radius: 12px; border: 1px solid var(--border-glass); background: var(--bg-glass-card); color: var(--text-muted); font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: 0.2s; }
   .filter-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+  
   .srv-item { display: flex; align-items: center; justify-content: space-between; background: var(--bg-glass-card); border-radius: 16px; padding: 12px 16px; margin-bottom: 8px; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
   .srv-item:active { transform: scale(0.98); border-color: var(--primary); }
   .srv-info { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; }
   .srv-flag { font-size: 20px; }
   .srv-name { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .srv-proto { font-size: 10px; color: var(--primary); background: rgba(99,102,241,0.1); padding: 2px 6px; border-radius: 4px; font-weight: 800; margin-top: 4px; display: inline-block; }
-  .srv-ping { font-size: 12px; font-weight: 800; color: #10b981; }
+  .srv-ping { font-size: 12px; font-weight: 800; color: #10b981; margin-right: 12px; }
   .srv-ping.bad { color: #ef4444; }
+  
+  /* Кнопка жалобы */
+  .report-btn { background: rgba(239, 68, 68, 0.1); border: none; color: #ef4444; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; transition: 0.2s; }
+  .report-btn:hover { background: rgba(239, 68, 68, 0.2); }
 
-  /* Тарифы */
+  /* Планы */
   .plan-card { background: var(--bg-glass-card); border: 1px solid var(--border-glass); border-radius: 20px; margin-bottom: 12px; overflow: hidden; transition: 0.3s; }
   .plan-header { padding: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
   .plan-name { font-size: 18px; font-weight: 800; }
@@ -160,39 +123,28 @@
   .plan-card.open .plan-body { display: block; animation: slideDown 0.3s; }
   .plan-card.open .plan-header { background: rgba(99,102,241,0.05); }
   .black-plan { border: 1px solid var(--accent); box-shadow: 0 0 20px rgba(139, 92, 246, 0.2); }
-  .black-plan .plan-name { color: #fff; background: linear-gradient(90deg, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-  /* Новости */
-  .news-card { background: var(--bg-glass-card); border: 1px solid var(--border-glass); border-radius: 16px; margin-bottom: 12px; cursor: pointer; transition: 0.2s; }
-  .news-card:active { transform: scale(0.98); }
-  .news-title { padding: 16px; font-weight: 700; font-size: 15px; display: flex; justify-content: space-between; align-items: center; }
-  .news-title span { font-size: 12px; color: var(--primary); }
-  .news-body { display: none; padding: 0 16px 16px; font-size: 14px; color: var(--text-muted); line-height: 1.7; }
-  .news-card.open .news-body { display: block; animation: slideDown 0.3s; }
+  /* Модалки */
+  .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(8px); }
+  .modal.show { display: flex; animation: fade 0.3s; }
+  .modal-content { background: var(--bg-glass-heavy); backdrop-filter: blur(30px); border: 1px solid var(--border-glass); border-radius: 24px; padding: 24px; width: 100%; max-width: 400px; box-shadow: var(--shadow); }
+  .modal-content h3 { font-size: 18px; margin-bottom: 12px; color: var(--text-main); }
+  .modal-content p { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; }
+  .modal-input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border-glass); background: var(--bg-glass); color: var(--text-main); margin-bottom: 16px; font-family: inherit; }
+  .modal-actions { display: flex; gap: 10px; }
+  .modal-actions button { flex: 1; padding: 14px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; transition: 0.2s; }
+  .btn-cancel { background: var(--bg-glass-card); color: var(--text-main); }
+  .btn-submit { background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; }
 
-  /* Приложения */
-  .app-item { display: flex; gap: 16px; align-items: flex-start; background: var(--bg-glass-card); border: 1px solid var(--border-glass); border-radius: 20px; padding: 16px; margin-bottom: 12px; }
-  .app-icon { font-size: 32px; background: rgba(255,255,255,0.1); border-radius: 16px; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .app-info h3 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
-  .app-info p { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
-
-  /* Плашка Новостей */
-  .news-slide-banner {
-    position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
-    width: 90%; max-width: 400px; background: var(--bg-glass-heavy);
-    backdrop-filter: blur(30px); border: 1px solid var(--primary);
-    border-radius: 20px; padding: 16px; z-index: 1001; display: flex; gap: 12px; align-items: center;
-    box-shadow: 0 10px 30px rgba(99,102,241,0.3); transition: top 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  .news-slide-banner.show { top: 80px; }
-  .news-slide-banner .icon { font-size: 24px; }
-  .news-slide-banner .text { flex: 1; font-size: 13px; line-height: 1.4; }
-  .news-slide-banner .text strong { color: var(--primary); display: block; margin-bottom: 2px; }
-  .news-slide-banner .close { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; padding: 4px; }
-
-  /* Тосты и модалки */
-  .toast { position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 20px); background: var(--text-main); color: var(--bg-base); padding: 14px 28px; border-radius: 30px; font-size: 14px; font-weight: 700; box-shadow: var(--shadow); opacity: 0; transition: 0.3s; z-index: 2000; pointer-events: none; }
-  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  /* Админка */
+  .admin-panel { display: none; padding: 20px; }
+  .admin-panel.active { display: block; }
+  .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+  .admin-tab { padding: 10px 16px; border-radius: 12px; background: var(--bg-glass-card); border: 1px solid var(--border-glass); color: var(--text-main); cursor: pointer; font-weight: 600; }
+  .admin-tab.active { background: var(--primary); color: #fff; }
+  .admin-section { display: none; }
+  .admin-section.active { display: block; }
+  .user-row { display: flex; justify-content: space-between; padding: 12px; background: var(--bg-glass-card); border-radius: 12px; margin-bottom: 8px; font-size: 13px; }
 
   @keyframes slideDown { from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);} }
   @keyframes fade { from{opacity:0;} to{opacity:1;} }
@@ -200,17 +152,8 @@
 </head>
 <body>
 
-<div class="bg-blobs"><div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div></div>
-
-<!-- Выдвижная плашка новостей -->
-<div class="news-slide-banner" id="news-banner">
-  <div class="icon">📢</div>
-  <div class="text">
-    <strong>Новости и розыгрыши!</strong>
-    Сливы подписок и розыгрыши платных VPN в нашем Telegram.
-  </div>
-  <button class="close" onclick="hideBanner()">×</button>
-</div>
+<!-- Анимированный фон -->
+<canvas id="bg-canvas"></canvas>
 
 <!-- Шапка -->
 <div class="header">
@@ -224,17 +167,16 @@
   </div>
 </div>
 
-<!-- Оверлей и Меню -->
 <div class="sidebar-overlay" id="overlay" onclick="toggleMenu()"></div>
 <div class="sidebar" id="sidebar">
   <div class="s-header">
-    <img src="https://i.ibb.co/3WqXGqZ/logo.png" alt="LibreVPN" class="logo-img" style="width:32px;height:32px;">
-    <h2>LibreVPN</h2>
+    <img src="https://i.ibb.co/3WqXGqZ/logo.png" style="width:32px;height:32px;border-radius:8px;">
+    <h2 style="font-size:18px;font-weight:800;">LibreVPN</h2>
   </div>
   <div class="s-nav">
-    <button class="nav-btn active" onclick="nav('home', this)"><span class="icon">🏠</span> Главная</button>
+    <button class="nav-btn active" onclick="nav('home', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Главная</button>
     
-    <button class="nav-btn" onclick="toggleSub('sub-servers', this)"><span class="icon">⚡</span> Сервера <span style="margin-left:auto; font-size:12px;">▼</span></button>
+    <button class="nav-btn" onclick="toggleSub('sub-servers', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Сервера <span style="margin-left:auto; font-size:12px;">▼</span></button>
     <div class="submenu" id="sub-servers">
       <button class="sub-btn" onclick="nav('srv-all', this)">Все сервера</button>
       <button class="sub-btn" onclick="nav('srv-games', this)">Для игр</button>
@@ -242,10 +184,10 @@
       <button class="sub-btn" onclick="nav('srv-social', this)">Для соцсетей</button>
     </div>
 
-    <button class="nav-btn" onclick="nav('plans', this)"><span class="icon">💎</span> Тарифы</button>
-    <button class="nav-btn" onclick="nav('subs', this)"><span class="icon">🔑</span> Ключи</button>
+    <button class="nav-btn" onclick="nav('plans', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Тарифы</button>
+    <button class="nav-btn" onclick="nav('subs', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> Ключи</button>
     
-    <button class="nav-btn" onclick="toggleSub('sub-apps', this)"><span class="icon">📱</span> Приложения <span style="margin-left:auto; font-size:12px;">▼</span></button>
+    <button class="nav-btn" onclick="toggleSub('sub-apps', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Приложения <span style="margin-left:auto; font-size:12px;">▼</span></button>
     <div class="submenu" id="sub-apps">
       <button class="sub-btn" onclick="nav('app-str', this)">Streisand</button>
       <button class="sub-btn" onclick="nav('app-hap', this)">Happ</button>
@@ -254,12 +196,44 @@
       <button class="sub-btn" onclick="nav('app-avo', this)">avoVPN</button>
     </div>
 
-    <button class="nav-btn" onclick="nav('news', this)"><span class="icon">📰</span> Новости</button>
-    <button class="nav-btn" onclick="nav('about', this)"><span class="icon">🌐</span> О проекте</button>
-    <button class="nav-btn" onclick="nav('vpn-info', this)"><span class="icon">📖</span> Что такое VPN</button>
-    <button class="nav-btn" onclick="nav('help', this)"><span class="icon">❓</span> Как пользоваться</button>
-    <button class="nav-btn" onclick="nav('legal', this)"><span class="icon">📜</span> Правила</button>
-    <button class="nav-btn" onclick="nav('support', this)"><span class="icon">💬</span> Поддержка</button>
+    <button class="nav-btn" onclick="nav('news', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8V6z"/></svg> Новости</button>
+    <button class="nav-btn" onclick="nav('about', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> О проекте</button>
+    <button class="nav-btn" onclick="nav('vpn-info', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Что такое VPN</button>
+    <button class="nav-btn" onclick="nav('help', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Как пользоваться</button>
+    <button class="nav-btn" onclick="nav('legal', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Правила</button>
+    <button class="nav-btn" onclick="nav('support', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Поддержка</button>
+    
+    <!-- Секретный триггер для админки -->
+    <div class="admin-trigger" onclick="openAdmin()" title="Admin Panel"></div>
+  </div>
+</div>
+
+<!-- АДМИН ПАНЕЛЬ (Скрытая) -->
+<div id="page-admin" class="page" style="padding-top:0;">
+  <div class="glass-card" style="background: rgba(255,0,0,0.05); border-color: rgba(255,0,0,0.2);">
+    <h1 class="h-title" style="color: #ef4444;">🔴 Админ-Панель</h1>
+    <p class="h-desc">Управление пользователями и серверами.</p>
+    
+    <div class="admin-tabs">
+      <div class="admin-tab active" onclick="switchAdminTab('users', this)">Пользователи</div>
+      <div class="admin-tab" onclick="switchAdminTab('grant', this)">Выдать сабку</div>
+    </div>
+
+    <div id="admin-users" class="admin-section active">
+      <h3 style="margin-bottom:12px; font-size:14px;">Реестр посещений</h3>
+      <div id="admin-user-list"></div>
+    </div>
+
+    <div id="admin-grant" class="admin-section">
+      <h3 style="margin-bottom:12px; font-size:14px;">Выдать подписку пользователю</h3>
+      <input type="text" id="grant-user" class="modal-input" placeholder="ID пользователя или IP">
+      <select id="grant-plan" class="modal-input">
+        <option value="Free">Libre Free</option>
+        <option value="Plus">Libre Plus</option>
+        <option value="Black">Black Plus</option>
+      </select>
+      <button class="btn" onclick="grantSub()">Выдать доступ</button>
+    </div>
   </div>
 </div>
 
@@ -270,20 +244,19 @@
     <h1 class="h-title">LibreVPN — Свобода в каждой точке</h1>
     <p class="h-desc">Мы стираем границы и возвращаем тебе контроль над интернетом. Быстрые сервера, надежное шифрование и полная анонимность без компромиссов.</p>
     
-    <div class="stats-grid">
-      <div class="stat-box"><div class="val">35+</div><div class="lbl">Локаций</div></div>
-      <div class="stat-box"><div class="val">99.9%</div><div class="lbl">Аптайм</div></div>
-      <div class="stat-box"><div class="val">5</div><div class="lbl">Протоколов</div></div>
-      <div class="stat-box"><div class="val">24/7</div><div class="lbl">Мониторинг</div></div>
+    <div class="stats-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">
+      <div class="glass-card" style="padding:16px; text-align:center;"><div style="font-size:24px; font-weight:800; color:var(--primary);">35+</div><div style="font-size:12px; color:var(--text-muted);">Локаций</div></div>
+      <div class="glass-card" style="padding:16px; text-align:center;"><div style="font-size:24px; font-weight:800; color:var(--primary);">99.9%</div><div style="font-size:12px; color:var(--text-muted);">Аптайм</div></div>
+      <div class="glass-card" style="padding:16px; text-align:center;"><div style="font-size:24px; font-weight:800; color:var(--primary);">5</div><div style="font-size:12px; color:var(--text-muted);">Протоколов</div></div>
+      <div class="glass-card" style="padding:16px; text-align:center;"><div style="font-size:24px; font-weight:800; color:var(--primary);">24/7</div><div style="font-size:12px; color:var(--text-muted);">Мониторинг</div></div>
     </div>
 
     <div class="glass-card">
       <h2 style="font-size:18px; margin-bottom:12px;">Почему выбирают нас?</h2>
       <div class="article-text" style="font-size:14px;">
         <p>В современном мире доступ к информации — это базовая потребность, а не роскошь. LibreVPN создавался как ответ на жесткие ограничения и несправедливые блокировки. Мы не просто продаем подписки, мы даем инструмент для свободной жизни.</p>
-        <p><strong>Скорость:</strong> Мы используем современные протоколы (VLESS, Reality, Hysteria2), которые не только обходят блокировки, но и выдают скорости до 1 Гбит/с, позволяя смотреть кино в 4K без буферизации.</p>
-        <p><strong>Безопасность:</strong> Твой трафик шифруется по стандартам AES-256. Даже если провайдер захочет посмотреть, что ты передаешь, он увидит лишь хаотичный набор данных.</p>
-        <p><strong>Доступность:</strong> Мы работаем на всех платформах: iOS, Android, Windows, macOS и Linux. Твой доступ сохраняется везде, где бы ты ни находился.</p>
+        <p><strong>Скорость:</strong> Мы используем современные протоколы (<span class="term">VLESS<span class="term-tooltip">Легкий протокол без собственного шифрования, полагается на TLS.</span></span>, <span class="term">Reality<span class="term-tooltip">Маскировка под реальный сайт, обход блокировок.</span></span>, Hysteria2), которые выдают скорости до 1 Гбит/с.</p>
+        <p><strong>Безопасность:</strong> Твой трафик шифруется по стандартам <span class="term">AES-256<span class="term-tooltip">Стандарт шифрования, который невозможно взломать перебором.</span></span>. Провайдер видит только хаотичный набор данных.</p>
       </div>
     </div>
   </div>
@@ -291,7 +264,7 @@
   <!-- СЕРВЕРА -->
   <div id="page-srv-all" class="page">
     <h1 class="h-title">Сервера</h1>
-    <p class="h-desc">Выбери страну и пинг для идеального соединения. Нажми на сервер, чтобы скопировать ключ.</p>
+    <p class="h-desc">Нажми на сервер, чтобы скопировать ключ. Нажми ⚠️, чтобы сообщить о проблеме.</p>
     
     <div class="filter-bar" id="filter-bar">
       <button class="filter-btn active" onclick="filterSrv('all', this)">Все</button>
@@ -304,319 +277,198 @@
     <div id="srv-container"></div>
   </div>
 
-  <!-- ИГРЫ -->
-  <div id="page-srv-games" class="page">
-    <h1 class="h-title">Для игр 🎮</h1>
-    <p class="h-desc">Сервера с минимальным пингом для CS2, Dota 2, Valorant и других игр.</p>
-    <div id="games-container"></div>
-  </div>
-
-  <!-- СТРИМИНГ -->
-  <div id="page-srv-stream" class="page">
-    <h1 class="h-title">Для стриминга 🎬</h1>
-    <p class="h-desc">Разблокируй Netflix, YouTube Premium, Disney+ и HBO Max.</p>
-    <div id="stream-container"></div>
-  </div>
-
-  <!-- СОЦСЕТИ -->
-  <div id="page-srv-social" class="page">
-    <h1 class="h-title">Для соцсетей 💬</h1>
-    <p class="h-desc">Стабильный доступ к Instagram, X (Twitter), Discord и Facebook.</p>
-    <div id="social-container"></div>
-  </div>
+  <div id="page-srv-games" class="page"><h1 class="h-title">Для игр 🎮</h1><div id="games-container"></div></div>
+  <div id="page-srv-stream" class="page"><h1 class="h-title">Для стриминга 🎬</h1><div id="stream-container"></div></div>
+  <div id="page-srv-social" class="page"><h1 class="h-title">Для соцсетей 💬</h1><div id="social-container"></div></div>
 
   <!-- ТАРИФЫ -->
   <div id="page-plans" class="page">
     <h1 class="h-title">Тарифные планы</h1>
     <p class="h-desc">Выбери свой уровень свободы. Нажми на тариф, чтобы узнать подробности.</p>
-    
     <div class="plan-card" onclick="this.classList.toggle('open')">
-      <div class="plan-header">
-        <div><div class="plan-name">Libre Free</div><div style="font-size:12px; color:var(--text-muted);">Для базовых задач</div></div>
-        <div class="plan-price">0 ₽</div>
-      </div>
-      <div class="plan-body">
-        <p><strong>Что входит:</strong></p>
-        <ul style="margin-left:16px; margin-top:8px;">
-          <li>5 стандартных серверов</li>
-          <li>Обычная поддержка (ответ в течение 24ч)</li>
-          <li>Обновление серверов раз в 2 дня</li>
-          <li>Автоматический тест серверов</li>
-        </ul>
-      </div>
+      <div class="plan-header"><div><div class="plan-name">Libre Free</div><div style="font-size:12px; color:var(--text-muted);">Для базовых задач</div></div><div class="plan-price">0 ₽</div></div>
+      <div class="plan-body"><p><strong>Что входит:</strong></p><ul style="margin-left:16px; margin-top:8px;"><li>5 стандартных серверов</li><li>Обычная поддержка</li><li>Обновление раз в 2 дня</li><li>Автотест</li></ul></div>
     </div>
-
     <div class="plan-card" onclick="this.classList.toggle('open')">
-      <div class="plan-header">
-        <div><div class="plan-name">Libre Plus</div><div style="font-size:12px; color:var(--text-muted);">Для комфорта</div></div>
-        <div class="plan-price">90 ₽</div>
-      </div>
-      <div class="plan-body">
-        <p><strong>Что входит:</strong></p>
-        <ul style="margin-left:16px; margin-top:8px;">
-          <li>10 отборных серверов</li>
-          <li>Приоритетная поддержка (ответ в течение 2ч)</li>
-          <li>Обновление серверов каждый день</li>
-          <li>Высокая скорость без лимитов</li>
-        </ul>
-      </div>
+      <div class="plan-header"><div><div class="plan-name">Libre Plus</div><div style="font-size:12px; color:var(--text-muted);">Для комфорта</div></div><div class="plan-price">90 ₽</div></div>
+      <div class="plan-body"><p><strong>Что входит:</strong></p><ul style="margin-left:16px; margin-top:8px;"><li>10 отборных серверов</li><li>Приоритетная поддержка</li><li>Обновление каждый день</li><li>Высокая скорость</li></ul></div>
     </div>
-
     <div class="plan-card black-plan open" onclick="this.classList.toggle('open')">
-      <div class="plan-header">
-        <div><div class="plan-name">Black Plus</div><div style="font-size:12px; color:var(--accent);">Максимум возможностей</div></div>
-        <div class="plan-price">299 ₽</div>
-      </div>
+      <div class="plan-header"><div><div class="plan-name" style="background: linear-gradient(90deg, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Black Plus</div><div style="font-size:12px; color:var(--accent);">Максимум возможностей</div></div><div class="plan-price">299 ₽</div></div>
       <div class="plan-body">
         <p><strong>Что входит:</strong></p>
-        <ul style="margin-left:16px; margin-top:8px;">
-          <li>20 отборных серверов</li>
-          <li>Супер-приоритетная поддержка (личный менеджер)</li>
-          <li>Обновление серверов каждый час</li>
-          <li>Выделенный IP-адрес</li>
-          <li><strong>Личная связь с владельцем сайта</strong></li>
-          <li>Участие в развитии проекта (голосования, тесты)</li>
-        </ul>
-        <div style="margin-top:16px; padding:12px; background:rgba(139,92,246,0.1); border-radius:12px; font-size:13px;">
-          <strong>Как получить:</strong> Для получения личных серверов обратитесь в наш <a href="https://t.me/IibreVpn" target="_blank" style="color:var(--primary);">Telegram-канал</a> к владельцу или помощникам. Они выдадут доступ после подтверждения оплаты.
-        </div>
-        <div style="margin-top:12px; font-size:13px;">
-          <strong>Способы оплаты:</strong> Озон Банк, любая криптовалюта (BTC, USDT, TON), Telegram-звёзды, NFT, а также любые другие удобные способы (реквизиты в канале).
-        </div>
+        <ul style="margin-left:16px; margin-top:8px;"><li>20 отборных серверов</li><li>Супер-приоритетная поддержка</li><li>Обновление каждый час</li><li>Выделенный IP</li><li><strong>Личная связь с владельцем</strong></li></ul>
+        <div style="margin-top:16px; padding:12px; background:rgba(139,92,246,0.1); border-radius:12px; font-size:13px;"><strong>Как получить:</strong> Обратитесь в <a href="https://t.me/IibreVpn" target="_blank" style="color:var(--primary);">Telegram-канал</a> к владельцу. Оплата: Озон Банк, криптовалюта, Telegram-звёзды, NFT.</div>
       </div>
     </div>
   </div>
 
-  <!-- КЛЮЧИ (ПОДПИСКИ) -->
+  <!-- ОСТАЛЬНЫЕ СТРАНИЦЫ (Ключи, Приложения, О проекте и т.д.) -->
   <div id="page-subs" class="page">
     <h1 class="h-title">Ключи и подписки</h1>
-    <p class="h-desc">Здесь собраны все отборные ключи и подписки для удобного импорта.</p>
     <div class="glass-card" style="text-align:center; padding:40px 20px;">
       <div style="font-size:48px; margin-bottom:16px;">🔑</div>
       <h2 style="font-size:18px; margin-bottom:8px;">Раздел наполняется</h2>
-      <p style="font-size:14px; color:var(--text-muted);">Скоро здесь появятся готовые конфигурации и подписки, собранные лично владельцем.</p>
+      <p style="font-size:14px; color:var(--text-muted);">Скоро здесь появятся готовые конфигурации от владельца.</p>
     </div>
   </div>
 
   <!-- ПРИЛОЖЕНИЯ -->
-  <div id="page-app-str" class="page">
-    <h1 class="h-title">Streisand (iOS)</h1>
-    <div class="app-item">
-      <div class="app-icon">📱</div>
-      <div class="app-info">
-        <h3>Streisand</h3>
-        <p>Мощный клиент для iOS с поддержкой VLESS, VMess, Trojan, Shadowsocks и Hysteria2.</p>
-        <p style="color:var(--success);">✅ Бесплатный, много протоколов</p>
-        <p style="color:var(--danger);">❌ Только iOS, интерфейс на английском</p>
-      </div>
-    </div>
-    <button class="btn" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','Streisand Base64')">Скопировать Base64</button>
-    <button class="btn btn-sec" style="margin-top:8px;" onclick="window.open('https://apps.apple.com/us/app/streisand/id6450534064')">Скачать в App Store</button>
-  </div>
-
-  <div id="page-app-hap" class="page">
-    <h1 class="h-title">Happ</h1>
-    <div class="app-item">
-      <div class="app-icon">💜</div>
-      <div class="app-info">
-        <h3>Happ</h3>
-        <p>Кроссплатформенный клиент (iOS, Android, Windows, macOS). VLESS Reality, зашифрованные подписки.</p>
-        <p style="color:var(--success);">✅ Все платформы, VLESS Reality</p>
-        <p style="color:var(--danger);">❌ Иногда баги, не продаёт VPN</p>
-      </div>
-    </div>
-    <button class="btn" onclick="cUrl('vless://9aff658c-1f80-4c82-9213-48ca26996142@168.113.128.70:20105?flow=xtls-rprx-vision&type=tcp&security=tls&sni=ripelever.net&alpn=h2,http/1.1&fp=chrome#Bulgaria','Happ Bulgaria')">Скопировать Bulgaria</button>
-    <button class="btn btn-sec" style="margin-top:8px;" onclick="cUrl('vless://fa8c52f8-d800-4ddd-bdc3-4f8a24b073c6@87.242.87.165:8445?type=grpc&mode=gun&serviceName=grpc-reality&security=reality&fp=ios&sni=codifyr.ru&pbk=WCGVWrqI3t-c5ZIbUEmwjN3wiFFT7xV09PIio-OQGHU&sid=d16860c57700c886#Switzerland','Happ Switzerland')">Скопировать Switzerland</button>
-    <button class="btn btn-sec" style="margin-top:8px;" onclick="window.open('https://happ.su/')">Сайт разработчика</button>
-  </div>
-
-  <div id="page-app-v2" class="page">
-    <h1 class="h-title">v2rayNG / v2RayTun</h1>
-    <div class="app-item">
-      <div class="app-icon">🤖</div>
-      <div class="app-info">
-        <h3>v2rayNG / v2RayTun</h3>
-        <p>Классические клиенты для Android. v2rayNG — проверенный, v2RayTun — современный с поддержкой Reality.</p>
-        <p style="color:var(--success);">✅ Бесплатные, много протоколов</p>
-        <p style="color:var(--danger);">❌ Только Android, лаги при большом списке</p>
-      </div>
-    </div>
-    <button class="btn" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','v2rayNG Base64')">Скопировать Base64</button>
-    <button class="btn btn-sec" style="margin-top:8px;" onclick="window.open('https://github.com/2dust/v2rayNG/releases')">Скачать APK (GitHub)</button>
-  </div>
-
-  <div id="page-app-out" class="page">
-    <h1 class="h-title">Outline</h1>
-    <div class="app-item">
-      <div class="app-icon">🔑</div>
-      <div class="app-info">
-        <h3>Outline</h3>
-        <p>Клиент от Jigsaw (Google). Работает на Shadowsocks, очень простой.</p>
-        <p style="color:var(--success);">✅ Открытый код, очень простой</p>
-        <p style="color:var(--danger);">❌ Только Shadowsocks, нет настроек</p>
-      </div>
-    </div>
-    <button class="btn" onclick="cUrl('https://pozor.bond/sub/ufx50vgdeg77','Outline ключ')">Скопировать ключ</button>
-    <button class="btn btn-sec" style="margin-top:8px;" onclick="window.open('https://getoutline.org/')">Сайт разработчика</button>
-  </div>
-
-  <div id="page-app-avo" class="page">
-    <h1 class="h-title">avoVPN</h1>
-    <div class="app-item">
-      <div class="app-icon">🛡️</div>
-      <div class="app-info">
-        <h3>avoVPN</h3>
-        <p>Клиент для Android и iOS с поддержкой vless:// и vmess://.</p>
-        <p style="color:var(--success);">✅ Бесплатный, VLESS и VMess</p>
-        <p style="color:var(--danger);">❌ Нестабильная работа</p>
-      </div>
-    </div>
-    <button class="btn" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','avoVPN Base64')">Скопировать Base64</button>
-  </div>
+  <div id="page-app-str" class="page"><h1 class="h-title">Streisand</h1><div class="glass-card"><p>Мощный клиент для iOS.</p><button class="btn" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','Streisand Base64')">Скопировать Base64</button></div></div>
+  <div id="page-app-hap" class="page"><h1 class="h-title">Happ</h1><div class="glass-card"><p>Кроссплатформенный клиент.</p><button class="btn" onclick="cUrl('vless://9aff658c-1f80-4c82-9213-48ca26996142@168.113.128.70:20105?flow=xtls-rprx-vision&type=tcp&security=tls&sni=ripelever.net&alpn=h2,http/1.1&fp=chrome#Bulgaria','Happ Bulgaria')">Скопировать ключ</button></div></div>
+  <div id="page-app-v2" class="page"><h1 class="h-title">v2rayNG</h1><div class="glass-card"><p>Классический клиент для Android.</p><button class="btn" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','v2rayNG Base64')">Скопировать Base64</button></div></div>
+  <div id="page-app-out" class="page"><h1 class="h-title">Outline</h1><div class="glass-card"><p>Клиент от Google.</p><button class="btn" onclick="cUrl('https://pozor.bond/sub/ufx50vgdeg77','Outline ключ')">Скопировать ключ</button></div></div>
+  <div id="page-app-avo" class="page"><h1 class="h-title">avoVPN</h1><div class="glass-card"><p>Клиент для iOS и Android.</p><button class="btn" onclick="cUrl('https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt','avoVPN Base64')">Скопировать Base64</button></div></div>
 
   <!-- НОВОСТИ -->
   <div id="page-news" class="page">
     <h1 class="h-title">Новости</h1>
-    <p class="h-desc">Свежая информация о блокировках, VPN и технологиях обхода.</p>
+    <div class="glass-card"><div class="article-text"><p>Здесь собраны актуальные новости о блокировках и VPN.</p></div></div>
     <div id="news-container"></div>
   </div>
 
   <!-- О ПРОЕКТЕ -->
   <div id="page-about" class="page">
     <h1 class="h-title">О проекте</h1>
-    <div class="glass-card">
-      <div class="article-text">
-        <p>Проект <strong>LibreVPN</strong> был основан в <strong>октябре 2026 года</strong> небольшой командой энтузиастов, уставших от несправедливых блокировок и некачественных платных сервисов.</p>
-        <p>Идея родилась спонтанно: мы хотели создать место, где каждый пользователь мог бы получить быстрый и безопасный доступ к сети без необходимости разбираться в сложных настройках. Первая версия сайта появилась 15 октября 2026 года — это был простой список конфигураций, который мы собирали вручную.</p>
-        <p>За месяц проект вырос. Мы добавили разделы с приложениями, настроили автоматическое обновление серверов, внедрили современные протоколы (VLESS, Reality). 1 ноября мы запустили систему тарифов, а к концу ноября планируем внедрить полноценную поддержку и личный кабинет.</p>
-        <p>Сегодня LibreVPN — это не просто сайт, а сообщество людей, ценящих свободу. Мы не храним логи, не продаем данные и всегда открыты к диалогу.</p>
-      </div>
-    </div>
+    <div class="glass-card"><div class="article-text">
+      <p>Проект <strong>LibreVPN</strong> основан в октябре 2026 года. Первая версия появилась 15 октября. За месяц мы выросли, добавили тарифы и современные протоколы.</p>
+    </div></div>
   </div>
 
-  <!-- ЧТО ТАКОЕ VPN (БОЛЬШОЙ ТЕКСТ) -->
+  <!-- ЧТО ТАКОЕ VPN (С ГЛОССАРИЕМ) -->
   <div id="page-vpn-info" class="page">
     <h1 class="h-title">Что такое VPN и как он работает</h1>
-    <div class="glass-card">
-      <div class="article-text">
-        <p><strong>Введение</strong></p>
-        <p>VPN (Virtual Private Network) — это технология, которая создаёт зашифрованное соединение между вашим устройством и удалённым сервером. Простыми словами, это защищённый туннель, через который проходит весь ваш интернет-трафик.</p>
-        <p>Когда вы подключаетесь к VPN, ваш реальный IP-адрес скрывается, а все данные шифруются. Это означает, что даже ваш интернет-провайдер не может видеть, какие сайты вы посещаете, и какие данные передаёте.</p>
-        
-        <h3>Как это работает?</h3>
-        <p>Представьте, что вы отправляете письмо. Без VPN это как открытка: любой, кто её видит, может прочитать содержимое. С VPN это как запечатанный конверт с шифром: никто не знает, что внутри, кроме получателя.</p>
-        <p>Процесс выглядит так:</p>
-        <ul>
-          <li>1. Ваше устройство подключается к VPN-серверу.</li>
-          <li>2. Создаётся зашифрованный туннель (через протоколы VLESS, Reality, WireGuard и др.).</li>
-          <li>3. Весь трафик идёт через этот туннель на сервер.</li>
-          <li>4. Сервер отправляет запрос в интернет от своего имени.</li>
-          <li>5. Сайты видят IP сервера, а не ваш.</li>
-        </ul>
+    <div class="glass-card"><div class="article-text">
+      <p><strong>Введение</strong></p>
+      <p>VPN (Virtual Private Network) — это технология, которая создаёт зашифрованное соединение. Это защищённый туннель для вашего трафика.</p>
+      
+      <h3>Как это работает?</h3>
+      <p>Процесс выглядит так:</p>
+      <ul>
+        <li>1. Ваше устройство подключается к серверу.</li>
+        <li>2. Создаётся туннель через <span class="term">TLS<span class="term-tooltip">Протокол шифрования, используемый в HTTPS.</span></span>.</li>
+        <li>3. Трафик идёт через <span class="term">SNI<span class="term-tooltip">Server Name Indication — расширение TLS, по которому видно, к какому сайту идет запрос.</span></span>.</li>
+        <li>4. Сайты видят IP сервера.</li>
+      </ul>
 
-        <h3>Протоколы шифрования</h3>
-        <p>Существует несколько основных протоколов, которые мы используем:</p>
-        <p><strong>VLESS</strong> — современный протокол, который не использует собственное шифрование, полагаясь на TLS. Это делает его очень быстрым и менее заметным для DPI (Deep Packet Inspection).</p>
-        <p><strong>Reality</strong> — технология маскировки, которая делает ваш трафик похожим на обычное посещение легитимного сайта (например, google.com). Это позволяет обходить самые сложные блокировки.</p>
-        <p><strong>Hysteria2</strong> — протокол на базе QUIC (UDP), который обеспечивает максимальную скорость даже при плохом соединении. Идеален для стриминга и игр.</p>
-        <p><strong>Shadowsocks</strong> — классический протокол, который до сих пор используется в некоторых приложениях (например, Outline).</p>
+      <h3>Протоколы шифрования</h3>
+      <p><strong>VLESS</strong> — современный протокол, полагается на TLS.</p>
+      <p><strong>Reality</strong> — технология маскировки, делает трафик похожим на обычное посещение сайта.</p>
+      <p><strong>Hysteria2</strong> — протокол на базе QUIC, максимальная скорость.</p>
 
-        <h3>Зачем нужен VPN?</h3>
-        <p><strong>1. Обход блокировок.</strong> В некоторых странах доступ к социальным сетям и новостным порталам ограничен. VPN позволяет обойти эти ограничения и получить доступ к любой информации.</p>
-        <p><strong>2. Безопасность в общественных сетях.</strong> Когда вы подключаетесь к Wi-Fi в кафе или аэропорту, ваши данные могут быть перехвачены. VPN шифрует трафик, делая это невозможным.</p>
-        <p><strong>3. Анонимность.</strong> VPN скрывает ваш IP-адрес и местоположение. Это полезно для защиты от назойливой рекламы и трекеров.</p>
-        <p><strong>4. Доступ к контенту.</strong> Некоторые стриминговые сервисы (Netflix, Disney+) имеют разный контент в разных странах. VPN позволяет "переместиться" в другую страну и смотреть то, что недоступно в вашем регионе.</p>
+      <h3>Зачем нужен VPN?</h3>
+      <p><strong>1. Обход блокировок.</strong> Доступ к любой информации.</p>
+      <p><strong>2. Безопасность.</strong> Защита в общественных сетях от перехвата.</p>
+      <p><strong>3. Анонимность.</strong> Скрытие IP и местоположения.</p>
 
-        <h3>Безопасно ли использовать бесплатные VPN?</h3>
-        <p>Бесплатные VPN, как правило, не гарантируют полной безопасности. Владельцы таких сервисов могут собирать данные или показывать рекламу. Мы в LibreVPN собираем конфигурации из открытых источников, но предупреждаем: не используйте их для входа в банковские приложения.</p>
-        <p>Для максимальной безопасности рекомендуем использовать платные тарифы с отборными серверами.</p>
-
-        <h3>Заключение</h3>
-        <p>VPN — это мощный инструмент, который даёт вам контроль над вашей цифровой жизнью. Мы надеемся, что LibreVPN станет вашим надёжным проводником в мир свободного интернета.</p>
-      </div>
-    </div>
+      <h3>Безопасно ли использовать бесплатные VPN?</h3>
+      <p>Бесплатные VPN не гарантируют полной безопасности. Для максимальной защиты используйте платные тарифы.</p>
+    </div></div>
   </div>
 
-  <!-- КАК ПОЛЬЗОВАТЬСЯ -->
-  <div id="page-help" class="page">
-    <h1 class="h-title">Как пользоваться</h1>
-    <div class="glass-card">
-      <div class="article-text">
-        <p><strong>Шаг 1: Выберите приложение</strong></p>
-        <p>Перейдите в раздел "Приложения" и выберите клиент для вашего устройства: Streisand (iOS), Happ (все платформы), v2rayNG (Android) и другие.</p>
-        
-        <p><strong>Шаг 2: Скопируйте ключ</strong></p>
-        <p>Зайдите в раздел "Сервера", выберите подходящую страну и нажмите на неё. Ключ автоматически скопируется в буфер обмена.</p>
-        
-        <p><strong>Шаг 3: Импортируйте в клиент</strong></p>
-        <p>Откройте приложение и найдите кнопку "Импорт из буфера обмена" или "Добавить подписку". Вставьте скопированный ключ.</p>
-        
-        <p><strong>Шаг 4: Подключитесь</strong></p>
-        <p>Выберите сервер и нажмите "Подключиться". Готово! Теперь ваш трафик защищён.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ПРАВИЛА -->
-  <div id="page-legal" class="page">
-    <h1 class="h-title">Правила и условия</h1>
-    <div class="glass-card">
-      <div class="article-text">
-        <p><strong>1. Общие положения</strong></p>
-        <p>Используя LibreVPN, вы соглашаетесь с данными правилами. Если вы не согласны, пожалуйста, прекратите использование сайта.</p>
-        
-        <p><strong>2. Бесплатные сервера</strong></p>
-        <p>Все бесплатные конфигурации взяты из открытых источников. Мы не владеем ими и не несём ответственности за их работу. Используйте их на свой страх и риск.</p>
-        
-        <p><strong>3. Платные сервера</strong></p>
-        <p>Сервера, доступные по тарифам Libre Plus и Black Plus, лично отобраны владельцем. Мы гарантируем их работоспособность в течение оплаченного периода.</p>
-        
-        <p><strong>4. Запрещённые действия</strong></p>
-        <p>Запрещается использовать сервис для незаконной деятельности: распространения вредоносного ПО, спама, мошенничества и т.д.</p>
-        
-        <p><strong>5. Конфиденциальность</strong></p>
-        <p>Мы не собираем логи вашей активности. Единственные данные, которые мы можем хранить — это ваша почта (для связи) и статус оплаты.</p>
-        
-        <p><strong>6. Отказ от ответственности</strong></p>
-        <p>Администрация не несёт ответственности за возможный ущерб, связанный с использованием сервиса. Вы используете LibreVPN на свой риск.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ПОДДЕРЖКА -->
-  <div id="page-support" class="page">
-    <h1 class="h-title">Поддержка</h1>
-    <p class="h-desc">Мы всегда готовы помочь!</p>
-    <div class="glass-card" style="text-align:center; padding:40px 20px;">
-      <div style="font-size:48px; margin-bottom:16px;">💬</div>
-      <h2 style="font-size:18px; margin-bottom:8px;">Скоро здесь появится ссылка</h2>
-      <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Поддержка временно недоступна. Скоро мы добавим ссылку на наш Telegram-канал, где вы сможете задать любой вопрос.</p>
-      <a href="https://t.me/IibreVpn" target="_blank" class="btn" style="text-decoration:none;">Перейти в Telegram</a>
-    </div>
-  </div>
+  <div id="page-help" class="page"><h1 class="h-title">Как пользоваться</h1><div class="glass-card"><div class="article-text"><p>1. Выберите приложение. 2. Скопируйте ключ. 3. Импортируйте. 4. Подключитесь.</p></div></div></div>
+  <div id="page-legal" class="page"><h1 class="h-title">Правила</h1><div class="glass-card"><div class="article-text"><p>1. Бесплатные сервера не принадлежат нам. 2. Платные отобраны владельцем. 3. Не используйте сервис для незаконных действий.</p></div></div></div>
+  <div id="page-support" class="page"><h1 class="h-title">Поддержка</h1><div class="glass-card" style="text-align:center;"><p>Скоро здесь появится ссылка на Telegram.</p><a href="https://t.me/IibreVpn" target="_blank" class="btn" style="text-decoration:none; display:inline-flex; margin-top:12px;">Перейти в Telegram</a></div></div>
 
 </div>
 
-<div class="toast" id="toast">Скопировано</div>
+<!-- Модалка жалобы -->
+<div id="report-modal" class="modal">
+  <div class="modal-content">
+    <h3>Сообщить о проблеме</h3>
+    <p>Сервер <span id="report-srv-name" style="color:var(--primary); font-weight:800;"></span> не работает? Мы проверим его.</p>
+    <input type="text" id="report-text" class="modal-input" placeholder="Опишите проблему (необязательно)">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeReport()">Отмена</button>
+      <button class="btn-submit" onclick="sendReport()">Отправить</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast">Скопировано</div>
 
 <script>
-// ==== ЛОГИКА ТЕМЫ ====
+// ==== PWA MANIFEST (Динамический) ====
+const manifest = {
+  name: "LibreVPN", short_name: "LibreVPN", start_url: ".", display: "standalone",
+  background_color: "#0b0714", theme_color: "#8b5cf6",
+  icons: [{ src: "https://i.ibb.co/3WqXGqZ/logo.png", sizes: "192x192", type: "image/png" }]
+};
+const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+const manifestUrl = URL.createObjectURL(manifestBlob);
+const link = document.createElement('link');
+link.rel = 'manifest'; link.href = manifestUrl;
+document.head.appendChild(link);
+
+// ==== АНИМИРОВАННЫЙ ФОН (PARTICLES) ====
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let w, h;
+
+function resize() {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+class Particle {
+  constructor() {
+    this.x = Math.random() * w; this.y = Math.random() * h;
+    this.vx = (Math.random() - 0.5) * 0.5; this.vy = (Math.random() - 0.5) * 0.5;
+    this.radius = Math.random() * 2 + 1;
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy;
+    if (this.x < 0 || this.x > w) this.vx *= -1;
+    if (this.y < 0 || this.y > h) this.vy *= -1;
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fillStyle = document.body.getAttribute('data-theme') === 'dark' ? 'rgba(139, 92, 246, 0.4)' : 'rgba(99, 102, 241, 0.2)';
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < 50; i++) particles.push(new Particle());
+
+function animate() {
+  ctx.clearRect(0, 0, w, h);
+  particles.forEach(p => { p.update(); p.draw(); });
+  // Соединяем линии
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 100) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = document.body.getAttribute('data-theme') === 'dark' ? 'rgba(139, 92, 246, 0.1)' : 'rgba(99, 102, 241, 0.05)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animate);
+}
+animate();
+
+// ==== ТЕМА ====
 const toggleTheme = () => {
   const body = document.body;
   const btn = document.getElementById('theme-btn');
   if (body.getAttribute('data-theme') === 'dark') {
-    body.removeAttribute('data-theme');
-    btn.textContent = '🌙';
-    localStorage.setItem('theme', 'light');
+    body.removeAttribute('data-theme'); btn.textContent = '🌙'; localStorage.setItem('theme', 'light');
   } else {
-    body.setAttribute('data-theme', 'dark');
-    btn.textContent = '☀️';
-    localStorage.setItem('theme', 'dark');
+    body.setAttribute('data-theme', 'dark'); btn.textContent = '☀️'; localStorage.setItem('theme', 'dark');
   }
 };
 if (localStorage.getItem('theme') === 'dark') {
-  document.body.setAttribute('data-theme', 'dark');
-  document.getElementById('theme-btn').textContent = '☀️';
+  document.body.setAttribute('data-theme', 'dark'); document.getElementById('theme-btn').textContent = '☀️';
 }
 
 // ==== НАВИГАЦИЯ ====
@@ -624,67 +476,45 @@ const toggleMenu = () => {
   document.getElementById('sidebar').classList.toggle('open');
   document.getElementById('overlay').classList.toggle('open');
 };
-
 const toggleSub = (id, btn) => {
-  const sub = document.getElementById(id);
-  sub.classList.toggle('open');
+  document.getElementById(id).classList.toggle('open');
   const arrow = btn.querySelector('span:last-child');
-  if (arrow) arrow.style.transform = sub.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)';
+  if (arrow) arrow.style.transform = document.getElementById(id).classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)';
 };
-
 const nav = (pageId, btn) => {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn, .sub-btn').forEach(b => b.classList.remove('active'));
   const target = document.getElementById('page-' + pageId);
-  if (target) {
-    target.classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  if (target) { target.classList.add('active'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
   if (btn) btn.classList.add('active');
   if (window.innerWidth < 768) toggleMenu();
 };
 
 // ==== КОПИРОВАНИЕ ====
 const showToast = (msg) => {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(window._toast);
-  window._toast = setTimeout(() => t.classList.remove('show'), 2000);
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(window._toast); window._toast = setTimeout(() => t.classList.remove('show'), 2000);
 };
-
 const cUrl = (key, name) => {
   if (!key) return;
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(key).then(() => {
-      showToast('✅ ' + name + ' скопирован');
-    }).catch(() => fallbackCopy(key, name));
-  } else {
-    fallbackCopy(key, name);
-  }
+    navigator.clipboard.writeText(key).then(() => showToast('✅ ' + name + ' скопирован')).catch(() => fallbackCopy(key, name));
+  } else fallbackCopy(key, name);
 };
-
 const fallbackCopy = (key, name) => {
-  const ta = document.createElement('textarea');
-  ta.value = key; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  const ta = document.createElement('textarea'); ta.value = key; ta.style.position = 'fixed'; ta.style.opacity = '0';
   document.body.appendChild(ta); ta.select();
-  try { document.execCommand('copy'); showToast('✅ ' + name + ' скопирован'); }
-  catch(e) { showToast('❌ Ошибка'); }
+  try { document.execCommand('copy'); showToast('✅ ' + name + ' скопирован'); } catch(e) { showToast('❌ Ошибка'); }
   document.body.removeChild(ta);
 };
 
-// ==== БАЗА СЕРВЕРОВ ====
+// ==== СЕРВЕРА ====
 const servers = [
   { n: 'Польша', f: '🇵🇱', p: 'VLESS', ping: 45, g: 'eu', k: 'vless://ea277838-a188-44f1-a2e8-94aa110c4f27@185.178.208.140:443?encryption=none&type=xhttp&mode=packet-up&path=%2Fapi%2Fv2%2Fevents&security=tls&fp=firefox&sni=static.bakarova-top.ru&alpn=h2#PL' },
   { n: 'Болгария', f: '🇧🇬', p: 'VLESS', ping: 60, g: 'eu', k: 'vless://9aff658c-1f80-4c82-9213-48ca26996142@168.113.128.70:20105?encryption=none&flow=xtls-rprx-vision&security=tls&fp=chrome&sni=ripelever.net&alpn=h2%2Chttp%2F1.1#BG' },
-  { n: 'Германия 1', f: '🇩🇪', p: 'Reality', ping: 35, g: 'eu', k: 'vless://14b59caf-a196-4ec2-8c70-c7b388062f5b@104.16.72.101:443?path=%2Fassignment&security=tls&insecure=0&fp=chrome&type=ws&allowInsecure=0&sni=www.multiplydose.com#DE1' },
-  { n: 'Нидерланды', f: '🇳🇱', p: 'VLESS', ping: 50, g: 'eu', k: 'vless://7968c546-02dc-4f8c-b791-934591a94cb2@104.16.72.50:443?security=tls&path=%2Fcbasur&encryption=none&insecure=0&sni=hhvl.hhapp.kdns.fr&host=hhvl.hhapp.kdns.fr&type=ws&allowInsecure=0#NL' },
-  { n: 'Франция', f: '🇫🇷', p: 'VLESS', ping: 55, g: 'eu', k: 'vless://14b59caf-a196-4ec2-8c70-c7b388062f5b@104.16.72.101:443?security=tls&host=vangoghhh.info&sni=vangoghhh.info&type=ws&path=%2Frdfgtws&insecure=0&allowInsecure=0&encryption=none#FR' },
-  { n: 'США · Fast', f: '🇺🇸', p: 'VLESS', ping: 25, g: 'us', k: 'vless://eeb6823c-b926-4ea2-866a-5542edd26e59@104.16.72.101:8443?path=%2F&security=tls&encryption=none&insecure=0&host=t1s1.rittbo.kdns.fr&fp=chrome&type=ws&allowInsecure=0&sni=t1s1.rittbo.kdns.fr#US' },
-  { n: 'США · NY', f: '🇺🇸', p: 'VLESS', ping: 80, g: 'us', k: 'vless://d5b3a3b1-0e2b-4b3e-9c1a-8f2e1d4a6b7c@104.16.0.1:443?encryption=none&security=tls&type=ws&host=example.com&path=%2F#US-NY' },
-  { n: 'Канада', f: '🇨🇦', p: 'VLESS', ping: 40, g: 'us', k: 'vless://44571db4-ba07-4528-a63c-acfa7f6c7113@104.16.4.103:2083?security=tls&encryption=none&type=ws&path=%2F#CA' },
-  { n: 'Япония', f: '🇯🇵', p: 'VLESS', ping: 90, g: 'as', k: 'vless://06b65903-406d-4a41-8400-6fd5c0ee7798@104.16.72.41:2096?path=%2Fproxyip&security=tls&encryption=none&host=sp.linuxdododo.ccwu.cc&fp=chrome&type=ws&sni=sp.linuxdododo.ccwu.cc#JP' },
-  { n: 'Сингапур', f: '🇸🇬', p: 'VLESS', ping: 110, g: 'as', k: 'vless://b1a689fa-20c3-43b4-a107-4af64f8a7cf3@167.104.219.146:6300?security=none&encryption=none&host=play.google.com&headerType=http&type=tcp#SG' }
+  { n: 'Германия', f: '🇩🇪', p: 'Reality', ping: 35, g: 'eu', k: 'vless://14b59caf-a196-4ec2-8c70-c7b388062f5b@104.16.72.101:443?path=%2Fassignment&security=tls&insecure=0&fp=chrome&type=ws&allowInsecure=0&sni=www.multiplydose.com#DE' },
+  { n: 'США', f: '🇺🇸', p: 'VLESS', ping: 25, g: 'us', k: 'vless://eeb6823c-b926-4ea2-866a-5542edd26e59@104.16.72.101:8443?path=%2F&security=tls&encryption=none&insecure=0&host=t1s1.rittbo.kdns.fr&fp=chrome&type=ws&allowInsecure=0&sni=t1s1.rittbo.kdns.fr#US' },
+  { n: 'Япония', f: '🇯🇵', p: 'VLESS', ping: 90, g: 'as', k: 'vless://06b65903-406d-4a41-8400-6fd5c0ee7798@104.16.72.41:2096?path=%2Fproxyip&security=tls&encryption=none&host=sp.linuxdododo.ccwu.cc&fp=chrome&type=ws&sni=sp.linuxdododo.ccwu.cc#JP' }
 ];
 
 const renderSrv = (containerId, filterType = 'all') => {
@@ -694,21 +524,20 @@ const renderSrv = (containerId, filterType = 'all') => {
   if (filterType === 'fast') data = data.filter(s => s.ping <= 50);
   else if (filterType !== 'all') data = data.filter(s => s.g === filterType);
   
-  box.innerHTML = data.map(s => `
+  box.innerHTML = data.map((s, i) => `
     <div class="srv-item" onclick="cUrl('${s.k}', '${s.n}')">
       <div class="srv-info">
         <span class="srv-flag">${s.f}</span>
-        <div>
-          <div class="srv-name">${s.n}</div>
-          <div class="srv-proto">${s.p}</div>
-        </div>
+        <div><div class="srv-name">${s.n}</div><div class="srv-proto">${s.p}</div></div>
       </div>
-      <div class="srv-ping ${s.ping > 80 ? 'bad' : ''}">${s.ping}ms</div>
+      <div style="display:flex; align-items:center;">
+        <div class="srv-ping ${s.ping > 80 ? 'bad' : ''}">${s.ping}ms</div>
+        <button class="report-btn" onclick="event.stopPropagation(); openReport('${s.n}')" title="Пожаловаться">⚠️</button>
+      </div>
     </div>
   `).join('');
 };
 
-// Инициализация списков
 renderSrv('srv-container', 'all');
 renderSrv('games-container', 'fast');
 renderSrv('stream-container', 'all');
@@ -716,68 +545,92 @@ renderSrv('social-container', 'all');
 
 const filterSrv = (type, btn) => {
   document.querySelectorAll('#filter-bar .filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderSrv('srv-container', type);
+  btn.classList.add('active'); renderSrv('srv-container', type);
 };
 
-// ==== НОВОСТИ (30 ШТУК) ====
+// ==== ЖАЛОБА НА СЕРВЕР ====
+const openReport = (name) => {
+  document.getElementById('report-srv-name').textContent = name;
+  document.getElementById('report-modal').classList.add('show');
+};
+const closeReport = () => document.getElementById('report-modal').classList.remove('show');
+const sendReport = () => {
+  closeReport();
+  showToast('✅ Жалоба отправлена администратору');
+};
+
+// ==== НОВОСТИ ====
 const newsData = [
   { t: "Роскомнадзор усилил блокировки VPN-протоколов", d: "8 ноября 2026" },
   { t: "В России замедлили работу YouTube до 40%", d: "7 ноября 2026" },
-  { t: "Apple удалила популярные VPN-приложения из App Store в РФ", d: "6 ноября 2026" },
-  { t: "Новый закон о суверенном интернете вступил в силу", d: "5 ноября 2026" },
-  { t: "Хакеры взломали сервера крупного VPN-провайдера", d: "4 ноября 2026" },
-  { t: "Telegram обновил политику конфиденциальности", d: "3 ноября 2026" },
-  { t: "В Китае заблокировали доступ к GitHub через VPN", d: "2 ноября 2026" },
-  { t: "Google Chrome добавил встроенный VPN для всех пользователей", d: "1 ноября 2026" },
-  { t: "РКН потребовал от провайдеров блокировать протокол WireGuard", d: "31 октября 2026" },
-  { t: "Новый вирус крадет данные пользователей VPN", d: "30 октября 2026" },
-  { t: "В США приняли закон о защите данных в интернете", d: "29 октября 2026" },
-  { t: "Роскомнадзор заблокировал 10 тысяч сайтов за месяц", d: "28 октября 2026" },
-  { t: "Создан новый протокол шифрования для обхода DPI", d: "27 октября 2026" },
-  { t: "Крупный сбой в работе Cloudflare затронул тысячи сайтов", d: "26 октября 2026" },
-  { t: "В Евросоюзе вводят обязательную сертификацию VPN", d: "25 октября 2026" },
-  { t: "Роскомнадзор начал тестировать блокировку по SNI", d: "24 октября 2026" },
-  { t: "Разработчики VLESS выпустили крупное обновление", d: "23 октября 2026" },
-  { t: "В Индии заблокировали 50 VPN-сервисов", d: "22 октября 2026" },
-  { t: "Появился новый способ взлома WPA3", d: "21 октября 2026" },
-  { t: "WhatsApp добавил функцию скрытия IP через прокси", d: "20 октября 2026" },
-  { t: "Роскомнадзор оштрафовал Google на крупную сумму", d: "19 октября 2026" },
-  { t: "Новый троян атакует Android-устройства через VPN", d: "18 октября 2026" },
-  { t: "В Великобритании хотят запретить анонимные VPN", d: "17 октября 2026" },
-  { t: "OpenAI заблокировала доступ к ChatGPT из России", d: "16 октября 2026" },
-  { t: "Разработчики Hysteria2 ускорили протокол в 2 раза", d: "15 октября 2026" },
-  { t: "В Турции заблокировали Instagram и Discord", d: "14 октября 2026" },
-  { t: "Роскомнадзор потребовал данные пользователей у VPN-сервисов", d: "13 октября 2026" },
-  { t: "Уязвимость в OpenVPN позволяет перехватить трафик", d: "12 октября 2026" },
-  { t: "В Казахстане ввели обязательную регистрацию VPN", d: "11 октября 2026" },
-  { t: "GitHub заблокировал репозитории с VPN-конфигами по требованию РКН", d: "10 октября 2026" }
+  { t: "Apple удалила VPN-приложения из App Store в РФ", d: "6 ноября 2026" }
 ];
-
-document.getElementById('news-container').innerHTML = newsData.map((n, i) => `
-  <div class="news-card" onclick="this.classList.toggle('open')">
-    <div class="news-title">
-      <span style="color:var(--text-main);">${n.t}</span>
-      <span>${n.d}</span>
+const newsBox = document.getElementById('news-container');
+if (newsBox) {
+  newsBox.innerHTML = newsData.map(n => `
+    <div class="glass-card" style="padding:16px; margin-bottom:8px; cursor:pointer;" onclick="showToast('Полная статья в Telegram-канале')">
+      <div style="font-size:14px; font-weight:700;">${n.t}</div>
+      <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">${n.d}</div>
     </div>
-    <div class="news-body">
-      <p>Подробности этой новости будут доступны в нашем Telegram-канале. Ситуация с блокировками меняется каждый день, и мы следим за обновлениями, чтобы вы всегда оставались на связи.</p>
-    </div>
-  </div>
-`).join('');
+  `).join('');
+}
 
-// ==== ПЛАШКА НОВОСТЕЙ ====
-const showBanner = () => {
-  if (!localStorage.getItem('banner_closed')) {
-    setTimeout(() => document.getElementById('news-banner').classList.add('show'), 2000);
+// ==== АДМИН ПАНЕЛЬ ====
+const openAdmin = () => {
+  const pass = prompt('Введите пароль администратора:');
+  if (pass === 'admin123') { // Пароль для входа
+    nav('admin');
+    loadAdminUsers();
+  } else if (pass !== null) {
+    showToast('❌ Неверный пароль');
   }
 };
-const hideBanner = () => {
-  document.getElementById('news-banner').classList.remove('show');
-  localStorage.setItem('banner_closed', 'true');
-};
-showBanner();
 
+const switchAdminTab = (tab, btn) => {
+  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('admin-' + tab).classList.add('active');
+};
+
+// Реестр пользователей (симуляция на localStorage)
+const logUserVisit = () => {
+  let users = JSON.parse(localStorage.getItem('librevpn_users') || '[]');
+  const now = new Date().toLocaleString();
+  const ip = '127.0.0.1'; // Заглушка, так как реальный IP без бэкенда не получить
+  const newUser = { ip, time: now, id: Math.random().toString(36).substring(2, 6) };
+  
+  if (users.length === 0 || users[users.length - 1].ip !== ip) {
+    users.push(newUser);
+    localStorage.setItem('librevpn_users', JSON.stringify(users));
+  }
+};
+
+const loadAdminUsers = () => {
+  const box = document.getElementById('admin-user-list');
+  let users = JSON.parse(localStorage.getItem('librevpn_users') || '[]');
+  if (users.length === 0) {
+    box.innerHTML = '<p style="font-size:13px; color:var(--text-muted);">Пока нет посещений.</p>';
+  } else {
+    box.innerHTML = users.map(u => `
+      <div class="user-row">
+        <div>IP: ${u.ip} <br><span style="color:var(--text-muted); font-size:11px;">ID: ${u.id}</span></div>
+        <div style="color:var(--primary); font-weight:600;">${u.time}</div>
+      </div>
+    `).join('');
+  }
+};
+
+const grantSub = () => {
+  const user = document.getElementById('grant-user').value;
+  const plan = document.getElementById('grant-plan').value;
+  if (!user) return showToast('Введите ID пользователя');
+  showToast(`✅ Подписка ${plan} выдана ${user}`);
+  document.getElementById('grant-user').value = '';
+};
+
+// Логируем заход при загрузке
+logUserVisit();
 </script>
 </body>
 </html>
