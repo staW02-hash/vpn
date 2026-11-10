@@ -1,250 +1,597 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>LibreVPN — Свобода в каждой точке</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b0714">
+  <meta name="description" content="LibreVPN — демонстрационная VPN-платформа с серверами, приложениями и управлением.">
+  <title>LibreVPN — Свобода в каждой точке</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
 </head>
+
 <body>
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
 
-<canvas id="bg-canvas"></canvas>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo-area" onclick="nav('home')" role="button" tabindex="0">
+      <img
+        src="https://i.ibb.co/3WqXGqZ/logo.png"
+        class="logo-img"
+        alt="LibreVPN"
+      >
+      <div class="logo-text">LibreVPN</div>
+    </div>
 
-<!-- ШАПКА -->
-<header class="header">
-  <div class="logo-area" onclick="nav('home')">
-    <img src="https://i.ibb.co/3WqXGqZ/logo.png" class="logo-img" alt="Logo">
-    <div class="logo-text">LibreVPN</div>
+    <div class="header-actions">
+      <button class="icon-btn" type="button" onclick="togglePalette()" aria-label="Выбрать цвет">🎨</button>
+      <button class="icon-btn" type="button" onclick="toggleMenu()" aria-label="Открыть меню">☰</button>
+    </div>
+  </header>
+
+  <!-- COLOR PALETTE -->
+  <div id="palette" class="palette">
+    <button class="color-opt" style="background:#8b5cf6" onclick="setColor('purple')" aria-label="Фиолетовый"></button>
+    <button class="color-opt" style="background:#3b82f6" onclick="setColor('blue')" aria-label="Синий"></button>
+    <button class="color-opt" style="background:#10b981" onclick="setColor('green')" aria-label="Зелёный"></button>
+    <button class="color-opt" style="background:#ef4444" onclick="setColor('red')" aria-label="Красный"></button>
+    <button class="color-opt" style="background:#f97316" onclick="setColor('orange')" aria-label="Оранжевый"></button>
+    <button class="color-opt" style="background:#ec4899" onclick="setColor('pink')" aria-label="Розовый"></button>
+    <button class="color-opt" style="background:#06b6d4" onclick="setColor('cyan')" aria-label="Бирюзовый"></button>
+    <button class="color-opt" style="background:#eab308" onclick="setColor('yellow')" aria-label="Жёлтый"></button>
+    <button class="color-opt" style="background:#84cc16" onclick="setColor('lime')" aria-label="Лаймовый"></button>
+    <button class="color-opt" style="background:#6366f1" onclick="setColor('indigo')" aria-label="Индиго"></button>
   </div>
-  <div class="header-actions" style="position:relative;">
-    <button class="icon-btn" onclick="togglePalette()">🎨</button>
-    <button class="icon-btn" onclick="toggleMenu()">☰</button>
-  </div>
-</header>
 
-<!-- ПАЛИТРА ЦВЕТОВ (10 ШТУК) -->
-<div id="palette" class="palette">
-  <div class="color-opt" style="background:#8b5cf6;" onclick="setColor('purple')"></div>
-  <div class="color-opt" style="background:#3b82f6;" onclick="setColor('blue')"></div>
-  <div class="color-opt" style="background:#10b981;" onclick="setColor('green')"></div>
-  <div class="color-opt" style="background:#ef4444;" onclick="setColor('red')"></div>
-  <div class="color-opt" style="background:#f97316;" onclick="setColor('orange')"></div>
-  <div class="color-opt" style="background:#ec4899;" onclick="setColor('pink')"></div>
-  <div class="color-opt" style="background:#06b6d4;" onclick="setColor('cyan')"></div>
-  <div class="color-opt" style="background:#eab308;" onclick="setColor('yellow')"></div>
-  <div class="color-opt" style="background:#84cc16;" onclick="setColor('lime')"></div>
-  <div class="color-opt" style="background:#6366f1;" onclick="setColor('indigo')"></div>
-</div>
+  <!-- SIDEBAR -->
+  <div class="sidebar-overlay" id="overlay" onclick="toggleMenu()"></div>
 
-<!-- БОКОВОЕ МЕНЮ -->
-<div class="sidebar-overlay" id="overlay" onclick="toggleMenu()"></div>
-<nav class="sidebar" id="sidebar">
-  <div class="s-header">
-    <img src="https://i.ibb.co/3WqXGqZ/logo.png" style="width:32px;height:32px;border-radius:8px;" alt="Logo">
-    <h2 style="font-size:18px;font-weight:800;">LibreVPN</h2>
-  </div>
-  <div class="s-nav">
-    <button class="nav-btn admin-btn" onclick="askAdminPass()">🛡️ АДМИН-ПАНЕЛЬ</button>
-    <button class="nav-btn active" onclick="nav('home', this)">🏠 Главная</button>
-    <button class="nav-btn" onclick="nav('servers', this)">⚡ Сервера</button>
-    <button class="nav-btn" onclick="nav('plans', this)">💎 Тарифы</button>
-    <button class="nav-btn" onclick="nav('news', this)">📰 Новости</button>
-    <button class="nav-btn" onclick="nav('vpn-info', this)">📖 Что такое VPN</button>
-    <button class="nav-btn" onclick="nav('about', this)">🌐 О проекте</button>
-    
-    <!-- АККОРДЕОН ПРИЛОЖЕНИЙ -->
-    <button class="nav-btn" onclick="toggleSub('sub-apps', this)">📱 Приложения <span style="font-size:10px;">▼</span></button>
-    <div class="submenu" id="sub-apps">
-      <button class="sub-btn" onclick="nav('app-str', this)">Streisand</button>
-      <button class="sub-btn" onclick="nav('app-hap', this)">Happ</button>
-      <button class="sub-btn" onclick="nav('app-v2', this)">v2rayNG</button>
-      <button class="sub-btn" onclick="nav('app-out', this)">Outline</button>
+  <nav class="sidebar" id="sidebar">
+    <div class="s-header">
+      <img src="https://i.ibb.co/3WqXGqZ/logo.png" alt="LibreVPN" style="width:32px;height:32px;border-radius:9px">
+      <h2 style="font-size:18px;font-weight:800">LibreVPN</h2>
     </div>
 
-    <button class="nav-btn" onclick="nav('keys', this)">🔑 Ключи</button>
-    <button class="nav-btn" onclick="nav('help', this)">❓ Помощь</button>
-    <button class="nav-btn" onclick="nav('legal', this)">📜 Права</button>
-    <button class="nav-btn" onclick="nav('support', this)">💬 Поддержка</button>
-  </div>
-</nav>
+    <div class="s-nav">
+      <button class="nav-btn admin-btn" onclick="askAdminPass()">🛡️ Админ-панель</button>
 
-<!-- ОСНОВНОЙ КОНТЕНТ -->
-<main class="main-content">
+      <button class="nav-btn active" onclick="nav('home', this)">🏠 Главная</button>
+      <button class="nav-btn" onclick="nav('servers', this)">⚡ Серверы</button>
+      <button class="nav-btn" onclick="nav('plans', this)">💎 Тарифы</button>
+      <button class="nav-btn" onclick="nav('keys', this)">🔑 Мои ключи</button>
+      <button class="nav-btn" onclick="nav('news', this)">📰 Новости</button>
 
-  <!-- ГЛАВНАЯ -->
-  <section id="page-home" class="page active">
-    <h1 class="h-title">LibreVPN — Свобода в каждой точке</h1>
-    <p class="h-desc">Мы стираем границы и возвращаем тебе контроль над интернетом. Быстрые сервера, надежное шифрование и полная анонимность без компромиссов.</p>
-    
-    <div class="glass-card">
-      <h2 style="font-size:18px; margin-bottom:12px; color:var(--primary);">Почему выбирают нас?</h2>
-      <div class="article-text" style="font-size:14px;">
-        <p>В современном мире доступ к информации — это базовая потребность, а не роскошь. LibreVPN создавался как ответ на жесткие ограничения и несправедливые блокировки. Мы не просто продаем подписки, мы даем инструмент для свободной жизни.</p>
-        <p><strong>Скорость:</strong> Мы используем современные протоколы (VLESS, Reality, Hysteria2), которые не только обходят блокировки, но и выдают скорости до 1 Гбит/с, позволяя смотреть кино в 4K без буферизации.</p>
-        <p><strong>Безопасность:</strong> Твой трафик шифруется по стандартам AES-256. Даже если провайдер захочет посмотреть, что ты передаешь, он увидит лишь хаотичный набор данных.</p>
-        <p><strong>Доступность:</strong> Мы работаем на всех платформах: iOS, Android, Windows, macOS и Linux. Твой доступ сохраняется везде, где бы ты ни находился.</p>
+      <button class="nav-btn" onclick="toggleSub('sub-apps', this)">
+        📱 Приложения <span>▼</span>
+      </button>
+
+      <div class="submenu" id="sub-apps">
+        <button class="sub-btn" onclick="nav('app-str', this)">Streisand · iOS</button>
+        <button class="sub-btn" onclick="nav('app-hap', this)">Happ</button>
+        <button class="sub-btn" onclick="nav('app-v2', this)">v2rayNG · Android</button>
+        <button class="sub-btn" onclick="nav('app-out', this)">Outline</button>
       </div>
-    </div>
-  </section>
 
-  <!-- СЕРВЕРА -->
-  <section id="page-servers" class="page">
-    <h1 class="h-title">Сервера</h1>
-    <p class="h-desc">Больше серверов еще будут добавляться. Нажми на сервер, чтобы скопировать ключ.</p>
-    
-    <div class="accordion open">
-      <div class="acc-header" onclick="this.parentElement.classList.toggle('open')">
-        <span>🇪🇺 Европа (Fast)</span><span class="arrow">▼</span>
-      </div>
-      <div class="acc-body" id="srv-eu"></div>
+      <button class="nav-btn" onclick="nav('vpn-info', this)">📖 Что такое VPN</button>
+      <button class="nav-btn" onclick="nav('about', this)">🌐 О проекте</button>
+      <button class="nav-btn" onclick="nav('help', this)">❓ Помощь</button>
+      <button class="nav-btn" onclick="nav('legal', this)">📜 Правовая информация</button>
+      <button class="nav-btn" onclick="nav('support', this)">💬 Поддержка</button>
     </div>
 
-    <div class="accordion">
-      <div class="acc-header" onclick="this.parentElement.classList.toggle('open')">
-        <span>🇺🇸 Америка</span><span class="arrow">▼</span>
-      </div>
-      <div class="acc-body" id="srv-us"></div>
+    <div style="padding:16px 20px;border-top:1px solid var(--border-glass);color:var(--text-muted);font-size:11px">
+      LibreVPN · Demo Platform
     </div>
+  </nav>
 
-    <div class="accordion">
-      <div class="acc-header" onclick="this.parentElement.classList.toggle('open')">
-        <span>🌏 Азия</span><span class="arrow">▼</span>
-      </div>
-      <div class="acc-body" id="srv-as"></div>
-    </div>
-  </section>
+  <!-- MAIN -->
+  <main class="main-content">
 
-  <!-- ПРИЛОЖЕНИЯ -->
-  <section id="page-app-str" class="page">
-    <h1 class="h-title">Streisand (iOS)</h1>
-    <div class="app-card">
-      <div class="app-header"><div class="app-icon">📱</div><div><div class="app-title">Streisand</div><div style="font-size:12px; color:var(--text-muted);">Мощный клиент для iOS</div></div></div>
-      <button class="btn" onclick="nav('servers')">Подключиться</button>
-      <div class="app-history">
-        <strong>История создания:</strong><br>
-        Streisand был разработан в 2023 году как альтернатива перегруженным клиентам. Его главная особенность — поддержка множества протоколов (VLESS, VMess, Trojan) в одном интерфейсе. Название отсылает к фильму «The Streisand Effect», символизируя свободу информации.
-      </div>
-    </div>
-  </section>
-
-  <section id="page-app-hap" class="page">
-    <h1 class="h-title">Happ</h1>
-    <div class="app-card">
-      <div class="app-header"><div class="app-icon">💜</div><div><div class="app-title">Happ</div><div style="font-size:12px; color:var(--text-muted);">Кроссплатформенный клиент</div></div></div>
-      <button class="btn" onclick="nav('servers')">Подключиться</button>
-      <div class="app-history">
-        <strong>История создания:</strong><br>
-        Happ появился как проект энтузиастов, которые хотели объединить удобство iOS и гибкость Android. Он поддерживает Reality и Hysteria2, что делает его одним из самых быстрых клиентов на рынке. Разработка ведется открыто, а сообщество активно помогает с тестированием.
-      </div>
-    </div>
-  </section>
-
-  <!-- ТАРИФЫ -->
-  <section id="page-plans" class="page">
-    <h1 class="h-title">Тарифные планы</h1>
-    <p class="h-desc">Выбери свой уровень свободы.</p>
-    
-    <div class="accordion">
-      <div class="acc-header" onclick="this.parentElement.classList.toggle('open')"><span>Libre Free</span><span style="color:var(--primary);">0 ₽</span></div>
-      <div class="acc-body"><p>5 серверов, базовая поддержка, автотест.</p></div>
-    </div>
-    <div class="accordion">
-      <div class="acc-header" onclick="this.parentElement.classList.toggle('open')"><span>Libre Plus</span><span style="color:var(--primary);">90 ₽</span></div>
-      <div class="acc-body"><p>10 серверов, приоритетная поддержка, обновление каждый день.</p></div>
-    </div>
-    <div class="accordion" style="border-color:var(--accent);">
-      <div class="acc-header" onclick="this.parentElement.classList.toggle('open')"><span>Black Plus</span><span style="color:#fbbf24;">299 ₽</span></div>
-      <div class="acc-body">
-        <p>20 серверов, супер-поддержка, обновление каждый час, выделенный IP.</p>
-        <p style="margin-top:10px;"><strong>Как получить:</strong> Обратитесь в Telegram <a href="https://t.me/IibreVpn" style="color:var(--primary);">@IibreVpn</a>.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- НОВОСТИ -->
-  <section id="page-news" class="page">
-    <h1 class="h-title">Новости</h1>
-    <div id="news-container" class="glass-card">Загрузка...</div>
-  </section>
-
-  <!-- ОСТАЛЬНЫЕ РАЗДЕЛЫ -->
-  <section id="page-vpn-info" class="page">
-    <h1 class="h-title">Что такое VPN</h1>
-    <div class="glass-card article-text">
-      <p>VPN (Virtual Private Network) — это технология, которая создаёт зашифрованное соединение между вашим устройством и удалённым сервером. Это защищённый туннель для вашего трафика.</p>
-      <h3>Протоколы шифрования</h3>
-      <p><strong>VLESS</strong> — современный протокол, полагается на TLS. Очень быстрый.</p>
-      <p><strong>Reality</strong> — технология маскировки, делает трафик похожим на обычное посещение сайта.</p>
-    </div>
-  </section>
-
-  <section id="page-about" class="page">
-    <h1 class="h-title">О проекте</h1>
-    <div class="glass-card article-text">
-      <p>Проект <strong>LibreVPN</strong> был основан в <strong>октябре 2026 года</strong> небольшой командой энтузиастов.</p>
-      <p>Идея родилась спонтанно: мы хотели создать место, где каждый пользователь мог бы получить быстрый и безопасный доступ к сети. Первая версия сайта появилась 15 октября 2026 года.</p>
-    </div>
-  </section>
-
-  <section id="page-keys" class="page"><h1 class="h-title">Ключи</h1><div class="glass-card">Здесь будут подписки.</div></section>
-  <section id="page-help" class="page"><h1 class="h-title">Помощь</h1><div class="glass-card">Инструкция по подключению.</div></section>
-  <section id="page-legal" class="page"><h1 class="h-title">Права</h1><div class="glass-card">Все бесплатные ключи взяты из открытых источников.</div></section>
-  <section id="page-support" class="page"><h1 class="h-title">Поддержка</h1><div class="glass-card">Telegram: <a href="https://t.me/IibreVpn">@IibreVpn</a></div></section>
-
-  <!-- АДМИН ПАНЕЛЬ (СКРЫТА) -->
-  <section id="page-admin" class="page">
-    <h1 class="h-title" style="color:#ef4444;">Админ-панель</h1>
-    <div class="admin-stats">
-      <div class="stat-box"><div class="stat-val" id="stat-users">0</div><div class="stat-lbl">Юзеров</div></div>
-      <div class="stat-box"><div class="stat-val" id="stat-servers">0</div><div class="stat-lbl">Серверов</div></div>
-      <div class="stat-box"><div class="stat-val" id="stat-news">0</div><div class="stat-lbl">Новостей</div></div>
-    </div>
-
-    <div class="admin-tabs">
-      <div class="admin-tab active" onclick="switchAdmin('users', this)">Юзеры</div>
-      <div class="admin-tab" onclick="switchAdmin('servers', this)">Сервера</div>
-      <div class="admin-tab" onclick="switchAdmin('news', this)">Новости</div>
-      <div class="admin-tab" onclick="switchAdmin('banner', this)">Баннеры</div>
-    </div>
-
-    <div id="admin-users" class="admin-section active"><div id="admin-user-list">Загрузка...</div></div>
-    
-    <div id="admin-servers" class="admin-section">
+    <!-- HOME -->
+    <section id="page-home" class="page active">
       <div class="glass-card">
-        <h3>Добавить сервер</h3>
-        <input type="text" id="s-name" class="admin-input" placeholder="Название">
-        <input type="text" id="s-country" class="admin-input" placeholder="Флаг">
-        <input type="text" id="s-proto" class="admin-input" placeholder="Протокол">
-        <input type="text" id="s-key" class="admin-input" placeholder="Ключ">
-        <button class="btn" onclick="addServer()">Добавить</button>
-      </div>
-      <div id="admin-srv-list">Загрузка...</div>
-    </div>
+        <div style="font-size:12px;color:var(--primary);font-weight:800;letter-spacing:2px;margin-bottom:14px">
+          PRIVATE NETWORK PLATFORM
+        </div>
 
-    <div id="admin-news" class="admin-section">
+        <h1 class="h-title" style="font-size:clamp(30px,7vw,46px);line-height:1.12">
+          Твой интернет.<br>
+          Твои правила.
+        </h1>
+
+        <p class="h-desc" style="margin-top:16px">
+          LibreVPN — демонстрационная платформа для управления VPN-серверами,
+          конфигурациями и новостями проекта.
+        </p>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn" style="flex:1;min-width:140px" onclick="nav('servers')">
+            Смотреть серверы
+          </button>
+          <button class="btn" style="flex:1;min-width:140px;background:var(--bg-glass-card);border:1px solid var(--border-glass)" onclick="nav('plans')">
+            Тарифы
+          </button>
+        </div>
+      </div>
+
+      <div class="admin-stats">
+        <div class="stat-box">
+          <div class="stat-val">🌍</div>
+          <div class="stat-lbl">Глобальная сеть</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">🔐</div>
+          <div class="stat-lbl">Шифрование</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">📱</div>
+          <div class="stat-lbl">Разные устройства</div>
+        </div>
+      </div>
+
+      <h2 class="h-title" style="font-size:20px">Возможности LibreVPN</h2>
+
       <div class="glass-card">
-        <h3>Добавить новость</h3>
-        <input type="text" id="n-title" class="admin-input" placeholder="Заголовок">
-        <input type="text" id="n-body" class="admin-input" placeholder="Текст">
-        <button class="btn" onclick="addNews()">Опубликовать</button>
+        <h3 style="color:var(--primary);margin-bottom:10px">⚡ Управление серверами</h3>
+        <p class="article-text">Просматривай добавленные серверы и копируй доступные конфигурации.</p>
       </div>
-      <div id="admin-news-list">Загрузка...</div>
-    </div>
 
-    <div id="admin-banner" class="admin-section">
       <div class="glass-card">
-        <h3>Добавить баннер на весь экран</h3>
-        <input type="text" id="b-text" class="admin-input" placeholder="Текст баннера">
-        <button class="btn" onclick="createBanner()">Создать баннер</button>
+        <h3 style="color:var(--primary);margin-bottom:10px">📱 Поддержка приложений</h3>
+        <p class="article-text">Информация о клиентах для разных устройств и операционных систем.</p>
       </div>
-    </div>
-  </section>
 
-</main>
+      <div class="glass-card">
+        <h3 style="color:var(--primary);margin-bottom:10px">🛡️ Панель управления</h3>
+        <p class="article-text">Администратор может управлять серверами, новостями, пользователями и баннерами.</p>
+      </div>
+    </section>
 
-<div id="toast" class="toast">Готово</div>
+    <!-- SERVERS -->
+    <section id="page-servers" class="page">
+      <h1 class="h-title">Серверы</h1>
+      <p class="h-desc">
+        Здесь отображаются активные конфигурации, добавленные администратором.
+        Статус сервера не означает, что его подключение уже проверено.
+      </p>
 
-<script src="app.js"></script>
+      <div class="accordion open">
+        <div class="acc-header" onclick="this.parentElement.classList.toggle('open')">
+          <span>🇪🇺 Европа</span><span class="arrow">▼</span>
+        </div>
+        <div class="acc-body" id="srv-eu">
+          <p class="empty-state">Загрузка серверов...</p>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-header" onclick="this.parentElement.classList.toggle('open')">
+          <span>🇺🇸 Америка</span><span class="arrow">▼</span>
+        </div>
+        <div class="acc-body" id="srv-us">
+          <p class="empty-state">Загрузка серверов...</p>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-header" onclick="this.parentElement.classList.toggle('open')">
+          <span>🌏 Азия</span><span class="arrow">▼</span>
+        </div>
+        <div class="acc-body" id="srv-as">
+          <p class="empty-state">Загрузка серверов...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLANS -->
+    <section id="page-plans" class="page">
+      <h1 class="h-title">Тарифы</h1>
+      <p class="h-desc">Демонстрационные варианты подписок LibreVPN.</p>
+
+      <div class="glass-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div>
+            <h2 style="font-size:22px">Libre Free</h2>
+            <p style="color:var(--text-muted);font-size:13px;margin-top:5px">Базовый доступ</p>
+          </div>
+          <strong style="font-size:25px;color:var(--primary)">0 ₽</strong>
+        </div>
+        <ul style="padding-left:20px;line-height:2;margin-top:18px">
+          <li>Доступ к бесплатным конфигурациям</li>
+          <li>Базовые возможности платформы</li>
+          <li>Общая поддержка</li>
+        </ul>
+        <button class="btn" style="margin-top:18px" onclick="nav('servers')">Посмотреть серверы</button>
+      </div>
+
+      <div class="glass-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div>
+            <h2 style="font-size:22px">Libre Plus</h2>
+            <p style="color:var(--text-muted);font-size:13px;margin-top:5px">Расширенный доступ</p>
+          </div>
+          <strong style="font-size:25px;color:var(--primary)">90 ₽</strong>
+        </div>
+        <ul style="padding-left:20px;line-height:2;margin-top:18px">
+          <li>Расширенный набор серверов</li>
+          <li>Приоритетная поддержка</li>
+          <li>Дополнительные возможности</li>
+        </ul>
+        <p style="color:var(--text-muted);font-size:12px;margin-top:16px">Демонстрационный тариф. Оплата и выдача подписки не подключены.</p>
+      </div>
+
+      <div class="glass-card" style="border-color:var(--primary)">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div>
+            <h2 style="font-size:22px">Black Plus</h2>
+            <p style="color:var(--text-muted);font-size:13px;margin-top:5px">Максимальный уровень</p>
+          </div>
+          <strong style="font-size:25px;color:#fbbf24">299 ₽</strong>
+        </div>
+        <ul style="padding-left:20px;line-height:2;margin-top:18px">
+          <li>Расширенный набор конфигураций</li>
+          <li>Дополнительная поддержка</li>
+          <li>Приоритетные возможности</li>
+        </ul>
+        <p style="color:var(--text-muted);font-size:12px;margin-top:16px">Демонстрационный тариф. Оплата и выдача подписки не подключены.</p>
+      </div>
+    </section>
+
+    <!-- KEYS -->
+    <section id="page-keys" class="page">
+      <h1 class="h-title">Мои ключи</h1>
+      <div class="glass-card">
+        <h3 style="margin-bottom:10px">🔑 Конфигурации</h3>
+        <p class="article-text">
+          Сейчас платформа позволяет копировать конфигурации из раздела серверов.
+          Персональные подписки и автоматическая выдача ключей пока не реализованы.
+        </p>
+        <button class="btn" style="margin-top:18px" onclick="nav('servers')">Перейти к серверам</button>
+      </div>
+    </section>
+
+    <!-- NEWS -->
+    <section id="page-news" class="page">
+      <h1 class="h-title">Новости проекта</h1>
+      <p class="h-desc">Обновления и объявления LibreVPN.</p>
+      <div id="news-container" class="glass-card">
+        Загрузка новостей...
+      </div>
+    </section>
+
+    <!-- STREISAND -->
+    <section id="page-app-str" class="page">
+      <h1 class="h-title">Streisand</h1>
+      <p class="h-desc">VPN-клиент для устройств Apple.</p>
+
+      <div class="app-card">
+        <div class="app-header">
+          <div class="app-icon">🍎</div>
+          <div>
+            <div class="app-title">Streisand</div>
+            <div style="font-size:12px;color:var(--text-muted)">iPhone · iPad</div>
+          </div>
+        </div>
+        <p class="article-text">
+          Клиент для работы с поддерживаемыми VPN-конфигурациями.
+          Перед импортом убедись, что конфигурация получена из доверенного источника.
+        </p>
+        <button class="btn" style="margin-top:16px" onclick="nav('servers')">Перейти к конфигурациям</button>
+      </div>
+    </section>
+
+    <!-- HAPP -->
+    <section id="page-app-hap" class="page">
+      <h1 class="h-title">Happ</h1>
+      <p class="h-desc">Клиент для подключения к поддерживаемым конфигурациям.</p>
+
+      <div class="app-card">
+        <div class="app-header">
+          <div class="app-icon">💜</div>
+          <div>
+            <div class="app-title">Happ</div>
+            <div style="font-size:12px;color:var(--text-muted)">Мобильные устройства и ПК</div>
+          </div>
+        </div>
+        <p class="article-text">
+          Приложение для работы с VPN-подключениями. Совместимость зависит
+          от версии приложения и типа конфигурации.
+        </p>
+        <button class="btn" style="margin-top:16px" onclick="nav('servers')">Перейти к конфигурациям</button>
+      </div>
+    </section>
+
+    <!-- V2RAYNG -->
+    <section id="page-app-v2" class="page">
+      <h1 class="h-title">v2rayNG</h1>
+      <p class="h-desc">Клиент для Android.</p>
+
+      <div class="app-card">
+        <div class="app-header">
+          <div class="app-icon">🤖</div>
+          <div>
+            <div class="app-title">v2rayNG</div>
+            <div style="font-size:12px;color:var(--text-muted)">Android</div>
+          </div>
+        </div>
+        <p class="article-text">
+          Приложение для подключения к совместимым конфигурациям.
+          Убедись, что используемый формат поддерживается установленной версией клиента.
+        </p>
+        <button class="btn" style="margin-top:16px" onclick="nav('servers')">Перейти к конфигурациям</button>
+      </div>
+    </section>
+
+    <!-- OUTLINE -->
+    <section id="page-app-out" class="page">
+      <h1 class="h-title">Outline</h1>
+      <p class="h-desc">Клиент для подключения по совместимым ключам Outline.</p>
+
+      <div class="app-card">
+        <div class="app-header">
+          <div class="app-icon">🔷</div>
+          <div>
+            <div class="app-title">Outline</div>
+            <div style="font-size:12px;color:var(--text-muted)">iOS · Android · Desktop</div>
+          </div>
+        </div>
+        <p class="article-text">
+          Outline использует собственный формат ключей доступа.
+          Не каждая конфигурация из списка серверов совместима с Outline.
+        </p>
+        <button class="btn" style="margin-top:16px" onclick="nav('servers')">Перейти к конфигурациям</button>
+      </div>
+    </section>
+
+    <!-- VPN INFO -->
+    <section id="page-vpn-info" class="page">
+      <h1 class="h-title">Что такое VPN?</h1>
+
+      <div class="glass-card article-text">
+        <p>
+          VPN — технология, которая создаёт защищённое соединение между
+          устройством пользователя и удалённым сервером.
+        </p>
+
+        <h3>Как это работает?</h3>
+        <p>
+          Данные передаются через зашифрованное соединение. Это помогает
+          защитить трафик в некоторых сетях и скрыть его содержимое от
+          локального наблюдателя.
+        </p>
+
+        <h3>Популярные протоколы</h3>
+        <p><strong>VLESS</strong> — протокол, используемый в экосистеме Xray.</p>
+        <p><strong>VMess</strong> — протокол передачи данных из экосистемы V2Ray.</p>
+        <p><strong>Shadowsocks</strong> — зашифрованный прокси-протокол.</p>
+        <p><strong>WireGuard</strong> — современный VPN-протокол.</p>
+
+        <h3>Важно</h3>
+        <p>
+          VPN не гарантирует полную анонимность и не защищает от всех видов
+          угроз. Используй доверенные серверы и не передавай конфиденциальные
+          данные неизвестным поставщикам.
+        </p>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="page-about" class="page">
+      <h1 class="h-title">О LibreVPN</h1>
+
+      <div class="glass-card article-text">
+        <p>
+          <strong>LibreVPN</strong> — демонстрационный проект веб-платформы
+          для отображения VPN-серверов и управления содержимым сайта.
+        </p>
+
+        <h3>Наша идея</h3>
+        <p>
+          Создать удобный интерфейс, в котором можно просматривать серверы,
+          читать новости проекта и получать информацию о поддерживаемых клиентах.
+        </p>
+
+        <h3>Технологии</h3>
+        <p>Frontend: HTML, CSS и JavaScript.</p>
+        <p>Backend: Node.js и Express.</p>
+        <p>Хранение данных: PostgreSQL.</p>
+      </div>
+    </section>
+
+    <!-- HELP -->
+    <section id="page-help" class="page">
+      <h1 class="h-title">Помощь</h1>
+
+      <div class="glass-card article-text">
+        <h3>Как посмотреть серверы?</h3>
+        <p>Открой раздел «Серверы» в меню сайта.</p>
+
+        <h3>Как скопировать конфигурацию?</h3>
+        <p>Нажми кнопку копирования на карточке сервера, если конфигурация добавлена.</p>
+
+        <h3>Почему ключ не работает?</h3>
+        <p>
+          Конфигурация может быть устаревшей, отключённой или несовместимой
+          с приложением. Доступность сервера необходимо проверять отдельно.
+        </p>
+
+        <h3>Где получить помощь?</h3>
+        <p>Свяжись с командой проекта через раздел поддержки.</p>
+      </div>
+    </section>
+
+    <!-- LEGAL -->
+    <section id="page-legal" class="page">
+      <h1 class="h-title">Правовая информация</h1>
+
+      <div class="glass-card article-text">
+        <p>
+          LibreVPN в текущей версии является демонстрационной платформой.
+          Наличие конфигурации на сайте не означает, что её безопасность,
+          происхождение или работоспособность подтверждены.
+        </p>
+
+        <h3>Ответственное использование</h3>
+        <p>
+          Пользователь самостоятельно проверяет источник конфигураций,
+          соблюдает законодательство своей страны и правила используемых сервисов.
+        </p>
+
+        <h3>Персональные данные</h3>
+        <p>
+          Не добавляй в конфигурации, сообщения или формы пароли и другие
+          конфиденциальные сведения.
+        </p>
+      </div>
+    </section>
+
+    <!-- SUPPORT -->
+    <section id="page-support" class="page">
+      <h1 class="h-title">Поддержка</h1>
+
+      <div class="glass-card">
+        <div style="font-size:38px;margin-bottom:12px">💬</div>
+        <h2 style="margin-bottom:10px">Нужна помощь?</h2>
+        <p class="article-text" style="margin-bottom:18px">
+          По вопросам работы платформы можно обратиться к команде проекта.
+        </p>
+        <a
+          class="btn"
+          href="https://t.me/IibreVpn"
+          target="_blank"
+          rel="noopener noreferrer"
+          style="display:block;text-align:center;text-decoration:none"
+        >
+          Открыть Telegram
+        </a>
+      </div>
+    </section>
+
+    <!-- ADMIN PANEL -->
+    <section id="page-admin" class="page">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px">
+        <div>
+          <div style="font-size:11px;color:#ef4444;font-weight:800;letter-spacing:2px">CONTROL CENTER</div>
+          <h1 class="h-title" style="margin-top:5px">Админ-панель</h1>
+        </div>
+        <div style="font-size:28px">🛡️</div>
+      </div>
+
+      <p class="h-desc">
+        Управление данными и содержимым LibreVPN.
+      </p>
+
+      <!-- STATS -->
+      <div class="admin-stats">
+        <div class="stat-box">
+          <div class="stat-val" id="stat-users">0</div>
+          <div class="stat-lbl">Записи / визиты</div>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-val" id="stat-servers">0</div>
+          <div class="stat-lbl">Серверы</div>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-val" id="stat-news">0</div>
+          <div class="stat-lbl">Новости</div>
+        </div>
+      </div>
+
+      <!-- ADMIN TABS -->
+      <div class="admin-tabs">
+        <button class="admin-tab active" type="button" onclick="switchAdmin('users', this)">Пользователи</button>
+        <button class="admin-tab" type="button" onclick="switchAdmin('servers', this)">Серверы</button>
+        <button class="admin-tab" type="button" onclick="switchAdmin('news', this)">Новости</button>
+        <button class="admin-tab" type="button" onclick="switchAdmin('banner', this); loadAdminBanners()">Баннеры</button>
+      </div>
+
+      <!-- USERS -->
+      <div id="admin-users" class="admin-section active">
+        <div class="glass-card">
+          <h3 style="margin-bottom:8px">Пользователи</h3>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">
+            Здесь отображаются записи, создаваемые текущей системой учёта визитов.
+          </p>
+          <div id="admin-user-list">Загрузка...</div>
+        </div>
+      </div>
+
+      <!-- SERVERS -->
+      <div id="admin-servers" class="admin-section">
+        <div class="glass-card">
+          <h3 style="margin-bottom:14px">Добавить сервер</h3>
+
+          <label for="s-name">Название</label>
+          <input type="text" id="s-name" class="admin-input" placeholder="Например: Amsterdam #1" maxlength="120">
+
+          <label for="s-country">Страна / регион</label>
+          <input type="text" id="s-country" class="admin-input" placeholder="🇳🇱 Нидерланды" maxlength="100">
+
+          <label for="s-proto">Протокол</label>
+          <input type="text" id="s-proto" class="admin-input" placeholder="VLESS / WireGuard / Shadowsocks" maxlength="50">
+
+          <label for="s-key">Конфигурация</label>
+          <textarea id="s-key" class="admin-input" rows="4" placeholder="Вставь конфигурацию сервера"></textarea>
+
+          <button class="btn" type="button" onclick="addServer()">＋ Добавить сервер</button>
+        </div>
+
+        <div class="glass-card">
+          <h3 style="margin-bottom:14px">Список серверов</h3>
+          <div id="admin-srv-list">Загрузка...</div>
+        </div>
+      </div>
+
+      <!-- NEWS -->
+      <div id="admin-news" class="admin-section">
+        <div class="glass-card">
+          <h3 style="margin-bottom:14px">Опубликовать новость</h3>
+
+          <label for="n-title">Заголовок</label>
+          <input type="text" id="n-title" class="admin-input" placeholder="Заголовок новости" maxlength="200">
+
+          <label for="n-body">Текст новости</label>
+          <textarea id="n-body" class="admin-input" rows="5" placeholder="Текст публикации"></textarea>
+
+          <button class="btn" type="button" onclick="addNews()">Опубликовать</button>
+        </div>
+
+        <div class="glass-card">
+          <h3 style="margin-bottom:14px">Опубликованные новости</h3>
+          <div id="admin-news-list">Загрузка...</div>
+        </div>
+      </div>
+
+      <!-- BANNERS -->
+      <div id="admin-banner" class="admin-section">
+        <div class="glass-card">
+          <h3 style="margin-bottom:14px">Создать баннер</h3>
+
+          <label for="b-text">Текст объявления</label>
+          <textarea id="b-text" class="admin-input" rows="3" placeholder="Текст баннера" maxlength="1000"></textarea>
+
+          <button class="btn" type="button" onclick="createBanner()">＋ Опубликовать баннер</button>
+        </div>
+
+        <div class="glass-card">
+          <h3 style="margin-bottom:14px">Активные баннеры</h3>
+          <div id="banner-list">Нажми вкладку «Баннеры» для загрузки.</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast" role="status" aria-live="polite">Готово</div>
+
+  <script src="/app.js" defer></script>
 </body>
 </html>
