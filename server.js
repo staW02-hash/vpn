@@ -12,7 +12,7 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-// Создание таблиц
+// Инициализация таблиц
 const initDB = async () => {
   try {
     await pool.query(`
@@ -45,10 +45,6 @@ app.post('/api/grant', async (req, res) => {
 });
 app.post('/api/ban', async (req, res) => {
   await pool.query('UPDATE users SET status = $1 WHERE id = $2', [req.body.status, req.body.id]);
-  res.json({ ok: true });
-});
-app.post('/api/del-user', async (req, res) => {
-  await pool.query('DELETE FROM users WHERE id = $1', [req.body.id]);
   res.json({ ok: true });
 });
 
