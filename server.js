@@ -13,7 +13,7 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-// Инициализация базы (добавил новые поля)
+// Инициализация всех таблиц
 const initDB = async () => {
   try {
     await pool.query(`
@@ -39,59 +39,70 @@ const initDB = async () => {
         body TEXT,
         date VARCHAR(50)
       );
+      CREATE TABLE IF NOT EXISTS settings (
+        key VARCHAR(50) PRIMARY KEY,
+        value TEXT
+      );
+      CREATE TABLE IF NOT EXISTS broadcast (
+        id SERIAL PRIMARY KEY,
+        message TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
     `);
-    // Добавляем колонки, если база уже была создана старой версией
+    // Добавление колонок, если таблицы были созданы ранее
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'active';`);
     await pool.query(`ALTER TABLE custom_servers ADD COLUMN IF NOT EXISTS active BOOLEAN DEFAULT TRUE;`);
-    console.log("Database initialized");
-  } catch (err) {
-    console.error("DB Init Error", err);
-  }
+    console.log("DB Ready");
+  } catch (err) { console.error("DB Error", err); }
 };
 initDB();
 
-// Логирование
+// ==== ЗАХОДЫ ====
 app.post('/api/visit', async (req, res) => {
   try {
     const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
-    const userAgent = req.headers['user-agent'] || 'unknown';
-    await pool.query('INSERT INTO users (ip, user_agent) VALUES ($1, $2)', [ip, userAgent]);
+    const ua = req.headers['user-agent'] || 'unknown';
+    await pool.query('INSERT INTO users (ip, user_agent) VALUES ($1, $2)', [ip, ua]);
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// АДМИН: Пользователи
+// ==== АДМИН: ПОЛЬЗОВАТЕЛИ ====
 app.get('/api/admin/users', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM users ORDER BY created_at DESC LIMIT 200');
-    res.json(result.rows);
+    const r = await pool.query('SELECT * FROM users ORDER BY created_at DESC');
+    res.json(r.rows);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.post('/api/admin/grant', async (req, res) => {
-  const { userId, plan } = req.body;
   try {
-    await pool.query('UPDATE users SET plan = $1 WHERE id = $2', [plan, userId]);
+    await pool.query('UPDATE users SET plan = $1 WHERE id = $2', [req.body.plan, req.body.id]);
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.post('/api/admin/ban', async (req, res) => {
-  const { userId, status } = req.body;
   try {
-    await pool.query('UPDATE users SET status = $1 WHERE id = $2', [status, userId]);
+    await pool.query('UPDATE users SET status = $1 WHERE id = $2', [req.body.status, req.body.id]);
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// АДМИН: Сервера
+app.post('/api/admin/delete-user', async (req, res) => {
+  try {
+    await pool.query('DELETE FROM users WHERE id = $1', [req.body.id]);
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// ==== АДМИН: СЕРВЕРА ====
 app.get('/api/servers', async (req, res) => {
   try {
-    // Для сайта отдаем только активные, для админки — все (сделаем проверку по query параметру)
     const isAdmin = req.query.admin === 'true';
     const q = isAdmin ? 'SELECT * FROM custom_servers' : 'SELECT * FROM custom_servers WHERE active = TRUE';
-    const result = await pool.query(q);
-    res.json(result.rows);
+    const r = await pool.query(q);
+    res.json(r.rows);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -104,9 +115,8 @@ app.post('/api/admin/servers', async (req, res) => {
 });
 
 app.put('/api/admin/servers/:id', async (req, res) => {
-  const { active } = req.body;
   try {
-    await pool.query('UPDATE custom_servers SET active = $1 WHERE id = $2', [active, req.params.id]);
+    await pool.query('UPDATE custom_servers SET active = $1 WHERE id = $2', [req.body.active, req.params.id]);
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -118,18 +128,17 @@ app.delete('/api/admin/servers/:id', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// АДМИН: Новости
+// ==== АДМИН: НОВОСТИ ====
 app.get('/api/news', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM news ORDER BY id DESC LIMIT 20');
-    res.json(result.rows);
+    const r = await pool.query('SELECT * FROM news ORDER BY id DESC');
+    res.json(r.rows);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.post('/api/admin/news', async (req, res) => {
-  const { title, body, date } = req.body;
   try {
-    await pool.query('INSERT INTO news (title, body, date) VALUES ($1, $2, $3)', [title, body, date]);
+    await pool.query('INSERT INTO news (title, body, date) VALUES ($1, $2, $3)', [req.body.title, req.body.body, req.body.date]);
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -141,4 +150,28 @@ app.delete('/api/admin/news/:id', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.listen(port, () => console.log(`Server running on port ${port}`));
+// ==== АДМИН: РАССЫЛКА ====
+app.post('/api/admin/broadcast', async (req, res) => {
+  try {
+    await pool.query('INSERT INTO broadcast (message) VALUES ($1)', [req.body.message]);
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// ==== АДМИН: НАСТРОЙКИ ====
+app.get('/api/admin/settings', async (req, res) => {
+  try {
+    const r = await pool.query('SELECT * FROM settings');
+    res.json(r.rows);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/admin/settings', async (req, res) => {
+  const { key, value } = req.body;
+  try {
+    await pool.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value', [key, value]);
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.listen(port, () => console.log(`Server live on ${port}`));
