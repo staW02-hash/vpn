@@ -73,6 +73,13 @@
   .article-text h3 { font-size: 18px; margin: 24px 0 12px; color: var(--primary); }
 
   /* Сервера */
+  .accordion { background: var(--bg-glass-card); border: 1px solid var(--border-glass); border-radius: 20px; margin-bottom: 12px; overflow: hidden; transition: 0.3s; }
+  .acc-header { padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 700; font-size: 16px; }
+  .acc-header .arrow { transition: transform 0.3s; color: var(--text-muted); }
+  .accordion.open .acc-header .arrow { transform: rotate(180deg); }
+  .acc-body { display: none; padding: 0 20px 20px; }
+  .accordion.open .acc-body { display: block; animation: slideDown 0.3s; }
+
   .srv-item { display: flex; align-items: center; justify-content: space-between; background: var(--bg-glass-card); border-radius: 16px; padding: 12px 16px; margin-bottom: 8px; cursor: pointer; border: 1px solid transparent; }
   .srv-item:active { transform: scale(0.98); border-color: var(--primary); }
   .srv-info { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; }
@@ -131,7 +138,7 @@
 
 <div class="header">
   <div class="logo-area" onclick="nav('home')">
-    <img src="https://i.ibb.co/3WqXGqZ/logo.png" alt="LibreVPN" class="logo-img">
+    <img src="https://i.ibb.co/3WqXGqZ/logo.png" class="logo-img">
     <div class="logo-text">LibreVPN</div>
   </div>
   <div class="header-actions">
@@ -149,7 +156,7 @@
   <div class="s-nav">
     <button class="nav-btn admin-btn" onclick="askAdminPass()">🛡️ АДМИН-ПАНЕЛЬ</button>
     <button class="nav-btn active" onclick="nav('home', this)">🏠 Главная</button>
-    <button class="nav-btn" onclick="nav('srv-all', this)">⚡ Сервера</button>
+    <button class="nav-btn" onclick="nav('servers', this)">⚡ Сервера</button>
     <button class="nav-btn" onclick="nav('plans', this)">💎 Тарифы</button>
     <button class="nav-btn" onclick="nav('news', this)">📰 Новости</button>
     <button class="nav-btn" onclick="nav('about', this)">🌐 О проекте</button>
@@ -163,42 +170,95 @@
   <div id="page-home" class="page active">
     <h1 class="h-title">LibreVPN — Свобода в каждой точке</h1>
     <p class="h-desc">Мы стираем границы и возвращаем тебе контроль над интернетом. Быстрые сервера, надежное шифрование и полная анонимность без компромиссов.</p>
-    
     <div class="glass-card">
       <h2 style="font-size:18px; margin-bottom:12px;">Почему выбирают нас?</h2>
       <div class="article-text" style="font-size:14px;">
-        <p>В современном мире доступ к информации — это базовая потребность, а не роскошь. LibreVPN создавался как ответ на жесткие ограничения и несправедливые блокировки. Мы не просто продаем подписки, мы даем инструмент для свободной жизни.</p>
-        <p><strong>Скорость:</strong> Мы используем современные протоколы (VLESS, Reality, Hysteria2), которые не только обходят блокировки, но и выдают скорости до 1 Гбит/с, позволяя смотреть кино в 4K без буферизации.</p>
+        <p>В современном мире доступ к информации — это базовая потребность, а не роскошь. LibreVPN создавался как ответ на жесткие ограничения и несправедливые блокировки.</p>
+        <p><strong>Скорость:</strong> Мы используем современные протоколы (VLESS, Reality, Hysteria2), которые не только обходят блокировки, но и выдают скорости до 1 Гбит/с.</p>
         <p><strong>Безопасность:</strong> Твой трафик шифруется по стандартам AES-256. Даже если провайдер захочет посмотреть, что ты передаешь, он увидит лишь хаотичный набор данных.</p>
-        <p><strong>Доступность:</strong> Мы работаем на всех платформах: iOS, Android, Windows, macOS и Linux. Твой доступ сохраняется везде, где бы ты ни находился.</p>
+        <p><strong>Доступность:</strong> Мы работаем на всех платформах: iOS, Android, Windows, macOS и Linux.</p>
       </div>
     </div>
   </div>
 
   <!-- СЕРВЕРА -->
-  <div id="page-srv-all" class="page">
+  <div id="page-servers" class="page">
     <h1 class="h-title">Сервера</h1>
     <p class="h-desc">Нажми на сервер, чтобы скопировать ключ.</p>
-    <div id="srv-container">Загрузка...</div>
+    
+    <div class="accordion open">
+      <div class="acc-header" onclick="this.parentElement.classList.toggle('open')">
+        <span>🇪🇺 Европа (Fast)</span>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="acc-body" id="srv-eu"></div>
+    </div>
+
+    <div class="accordion">
+      <div class="acc-header" onclick="this.parentElement.classList.toggle('open')">
+        <span>🇺🇸 Америка</span>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="acc-body" id="srv-us"></div>
+    </div>
+
+    <div class="accordion">
+      <div class="acc-header" onclick="this.parentElement.classList.toggle('open')">
+        <span>🌏 Азия</span>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="acc-body" id="srv-as"></div>
+    </div>
   </div>
 
   <!-- ТАРИФЫ -->
   <div id="page-plans" class="page">
     <h1 class="h-title">Тарифные планы</h1>
+    <p class="h-desc">Выбери свой уровень свободы.</p>
+    
     <div class="plan-card" onclick="this.classList.toggle('open')">
-      <div class="plan-header"><div><div class="plan-name">Libre Free</div></div><div class="plan-price">0 ₽</div></div>
-      <div class="plan-body"><p><strong>Что входит:</strong></p><ul style="margin-left:16px; margin-top:8px;"><li>5 стандартных серверов</li><li>Обычная поддержка</li><li>Обновление раз в 2 дня</li><li>Автотест</li></ul></div>
-    </div>
-    <div class="plan-card" onclick="this.classList.toggle('open')">
-      <div class="plan-header"><div><div class="plan-name">Libre Plus</div></div><div class="plan-price">90 ₽</div></div>
-      <div class="plan-body"><p><strong>Что входит:</strong></p><ul style="margin-left:16px; margin-top:8px;"><li>10 отборных серверов</li><li>Приоритетная поддержка</li><li>Обновление каждый день</li><li>Высокая скорость</li></ul></div>
-    </div>
-    <div class="plan-card black-plan" onclick="this.classList.toggle('open')">
-      <div class="plan-header"><div><div class="plan-name" style="color:#fbbf24;">Black Plus</div></div><div class="plan-price">299 ₽</div></div>
+      <div class="plan-header"><div><div class="plan-name">Libre Free</div><div style="font-size:12px; color:var(--text-muted);">Для базовых задач</div></div><div class="plan-price">0 ₽</div></div>
       <div class="plan-body">
         <p><strong>Что входит:</strong></p>
-        <ul style="margin-left:16px; margin-top:8px;"><li>20 отборных серверов</li><li>Супер-приоритетная поддержка</li><li>Обновление каждый час</li><li>Выделенный IP</li><li><strong>Личная связь с владельцем</strong></li></ul>
-        <div style="margin-top:16px; padding:12px; background:rgba(139,92,246,0.1); border-radius:12px; font-size:13px;"><strong>Как получить:</strong> Обратитесь в Telegram @IibreVpn к владельцу.</div>
+        <ul style="margin-left:16px; margin-top:8px;">
+          <li>5 стандартных серверов</li>
+          <li>Обычная поддержка (ответ в течение 24ч)</li>
+          <li>Обновление серверов раз в 2 дня</li>
+          <li>Автоматический тест серверов</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="plan-card" onclick="this.classList.toggle('open')">
+      <div class="plan-header"><div><div class="plan-name">Libre Plus</div><div style="font-size:12px; color:var(--text-muted);">Для комфорта</div></div><div class="plan-price">90 ₽</div></div>
+      <div class="plan-body">
+        <p><strong>Что входит:</strong></p>
+        <ul style="margin-left:16px; margin-top:8px;">
+          <li>10 отборных серверов</li>
+          <li>Приоритетная поддержка (ответ в течение 2ч)</li>
+          <li>Обновление серверов каждый день</li>
+          <li>Высокая скорость без лимитов</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="plan-card black-plan" onclick="this.classList.toggle('open')">
+      <div class="plan-header"><div><div class="plan-name" style="color:#fbbf24;">Black Plus</div><div style="font-size:12px; color:var(--accent);">Максимум возможностей</div></div><div class="plan-price">299 ₽</div></div>
+      <div class="plan-body">
+        <p><strong>Что входит:</strong></p>
+        <ul style="margin-left:16px; margin-top:8px;">
+          <li>20 отборных серверов</li>
+          <li>Супер-приоритетная поддержка (личный менеджер)</li>
+          <li>Обновление серверов каждый час</li>
+          <li>Выделенный IP-адрес</li>
+          <li><strong>Личная связь с владельцем сайта</strong></li>
+        </ul>
+        <div style="margin-top:16px; padding:12px; background:rgba(139,92,246,0.1); border-radius:12px; font-size:13px;">
+          <strong>Как получить:</strong> Обратитесь в наш <a href="https://t.me/IibreVpn" target="_blank" style="color:var(--primary);">Telegram-канал</a> к владельцу или помощникам.
+        </div>
+        <div style="margin-top:12px; font-size:13px;">
+          <strong>Способы оплаты:</strong> Озон Банк, любая криптовалюта (BTC, USDT, TON), Telegram-звёзды, NFT.
+        </div>
       </div>
     </div>
   </div>
@@ -214,8 +274,8 @@
     <h1 class="h-title">О проекте</h1>
     <div class="glass-card">
       <div class="article-text">
-        <p>Проект <strong>LibreVPN</strong> был основан в <strong>октябре 2026 года</strong> небольшой командой энтузиастов, уставших от несправедливых блокировок и некачественных платных сервисов.</p>
-        <p>Идея родилась спонтанно: мы хотели создать место, где каждый пользователь мог бы получить быстрый и безопасный доступ к сети без необходимости разбираться в сложных настройках. Первая версия сайта появилась 15 октября 2026 года — это был простой список конфигураций, который мы собирали вручную.</p>
+        <p>Проект <strong>LibreVPN</strong> был основан в <strong>октябре 2026 года</strong> небольшой командой энтузиастов.</p>
+        <p>Идея родилась спонтанно: мы хотели создать место, где каждый пользователь мог бы получить быстрый и безопасный доступ к сети. Первая версия сайта появилась 15 октября 2026 года — это был простой список конфигураций, который мы собирали вручную.</p>
         <p>За месяц проект вырос. Мы добавили разделы с приложениями, настроили автоматическое обновление серверов, внедрили современные протоколы. Сегодня LibreVPN — это сообщество людей, ценящих свободу.</p>
       </div>
     </div>
@@ -223,27 +283,26 @@
 
   <!-- ЧТО ТАКОЕ VPN -->
   <div id="page-vpn-info" class="page">
-    <h1 class="h-title">Что такое VPN и как он работает</h1>
+    <h1 class="h-title">Что такое VPN</h1>
     <div class="glass-card">
       <div class="article-text">
         <p><strong>Введение</strong></p>
-        <p>VPN (Virtual Private Network) — это технология, которая создаёт зашифрованное соединение между вашим устройством и удалённым сервером. Простыми словами, это защищённый туннель, через который проходит весь ваш интернет-трафик.</p>
-        <p>Когда вы подключаетесь к VPN, ваш реальный IP-адрес скрывается, а все данные шифруются. Это означает, что даже ваш интернет-провайдер не может видеть, какие сайты вы посещаете.</p>
+        <p>VPN (Virtual Private Network) — это технология, которая создаёт зашифрованное соединение между вашим устройством и удалённым сервером. Это защищённый туннель для вашего трафика.</p>
+        <p>Когда вы подключаетесь к VPN, ваш реальный IP-адрес скрывается, а все данные шифруются. Даже провайдер не может видеть, какие сайты вы посещаете.</p>
         <h3>Как это работает?</h3>
-        <p>Представьте, что вы отправляете письмо. Без VPN это как открытка: любой, кто её видит, может прочитать содержимое. С VPN это как запечатанный конверт с шифром: никто не знает, что внутри.</p>
         <p>Процесс выглядит так:</p>
         <ul style="margin-left:20px; margin-bottom:16px;">
-          <li>1. Ваше устройство подключается к VPN-серверу.</li>
+          <li>1. Ваше устройство подключается к серверу.</li>
           <li>2. Создаётся зашифрованный туннель.</li>
           <li>3. Весь трафик идёт через этот туннель.</li>
           <li>4. Сайты видят IP сервера, а не ваш.</li>
         </ul>
         <h3>Протоколы шифрования</h3>
-        <p><strong>VLESS</strong> — современный протокол, который не использует собственное шифрование, полагаясь на TLS. Это делает его очень быстрым.</p>
-        <p><strong>Reality</strong> — технология маскировки, которая делает ваш трафик похожим на обычное посещение легитимного сайта.</p>
-        <p><strong>Hysteria2</strong> — протокол на базе QUIC, который обеспечивает максимальную скорость даже при плохом соединении.</p>
+        <p><strong>VLESS</strong> — современный протокол, полагается на TLS. Очень быстрый.</p>
+        <p><strong>Reality</strong> — технология маскировки, делает трафик похожим на обычное посещение сайта.</p>
+        <p><strong>Hysteria2</strong> — протокол на базе QUIC, максимальная скорость.</p>
         <h3>Заключение</h3>
-        <p>VPN — это мощный инструмент, который даёт вам контроль над вашей цифровой жизнью. Мы надеемся, что LibreVPN станет вашим надёжным проводником в мир свободного интернета.</p>
+        <p>VPN — это мощный инструмент, который даёт вам контроль над вашей цифровой жизнью.</p>
       </div>
     </div>
   </div>
@@ -265,7 +324,6 @@
     </div>
 
     <div id="admin-users" class="admin-section active">
-      <input type="text" class="admin-input" placeholder="Поиск по IP или ID..." oninput="filterUsers(this.value)">
       <div id="admin-user-list">Загрузка...</div>
     </div>
 
@@ -276,12 +334,9 @@
         <input type="text" id="srv-country" class="admin-input" placeholder="Флаг (🇺🇸)">
         <input type="text" id="srv-proto" class="admin-input" placeholder="Протокол (VLESS)">
         <input type="text" id="srv-key" class="admin-input" placeholder="Ключ (vless://...)">
-        <button class="btn" onclick="addServer()">Добавить сервер</button>
+        <button class="btn" onclick="addServer()">Добавить</button>
       </div>
-      <div class="glass-card">
-        <h3 style="margin-bottom:12px;">Список серверов</h3>
-        <div id="admin-srv-list">Загрузка...</div>
-      </div>
+      <div id="admin-srv-list">Загрузка...</div>
     </div>
 
     <div id="admin-news" class="admin-section">
@@ -291,10 +346,7 @@
         <input type="text" id="news-body" class="admin-input" placeholder="Текст новости">
         <button class="btn" onclick="addNews()">Опубликовать</button>
       </div>
-      <div class="glass-card">
-        <h3 style="margin-bottom:12px;">Последние новости</h3>
-        <div id="admin-news-list">Загрузка...</div>
-      </div>
+      <div id="admin-news-list">Загрузка...</div>
     </div>
   </div>
 
@@ -312,10 +364,7 @@ const toggleTheme = () => {
 if (localStorage.getItem('theme') === 'dark') { document.body.setAttribute('data-theme', 'dark'); document.getElementById('theme-btn').textContent = '☀️'; }
 
 // ==== НАВИГАЦИЯ ====
-const toggleMenu = () => {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('overlay').classList.toggle('open');
-};
+const toggleMenu = () => { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('open'); };
 const nav = (pageId, btn) => {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -342,16 +391,16 @@ const switchAdmin = (tab, btn) => {
 
 const loadAdminData = async () => {
   try {
-    const res = await fetch('/api/admin/users');
+    const res = await fetch('/api/users');
     adminUsersData = await res.json();
     renderUsers(adminUsersData);
     document.getElementById('stat-visits').textContent = adminUsersData.length;
     document.getElementById('stat-unique').textContent = new Set(adminUsersData.map(u => u.ip)).size;
     document.getElementById('stat-subs').textContent = adminUsersData.filter(u => u.plan !== 'Free').length;
-  } catch (e) { console.error(e); }
+  } catch (e) {}
 
   try {
-    const res = await fetch('/api/servers?admin=true');
+    const res = await fetch('/api/servers?all=true');
     const servers = await res.json();
     document.getElementById('admin-srv-list').innerHTML = servers.map(s => `
       <div class="user-row">
@@ -361,8 +410,8 @@ const loadAdminData = async () => {
           <button class="btn-ban" onclick="deleteServer(${s.id})">Удалить</button>
         </div>
       </div>
-    `).join('') || '<p>Нет серверов</p>';
-  } catch (e) { console.error(e); }
+    `).join('');
+  } catch (e) {}
 
   try {
     const res = await fetch('/api/news');
@@ -373,8 +422,8 @@ const loadAdminData = async () => {
         <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">${n.body}</div>
         <div class="user-actions"><button class="btn-ban" onclick="deleteNews(${n.id})">Удалить</button></div>
       </div>
-    `).join('') || '<p>Нет новостей</p>';
-  } catch (e) { console.error(e); }
+    `).join('');
+  } catch (e) {}
 };
 
 const renderUsers = (users) => {
@@ -403,8 +452,8 @@ const filterUsers = (query) => {
   renderUsers(filtered);
 };
 
-const grantSub = async (id, plan) => { await fetch('/api/admin/grant', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: id, plan }) }); showToast(`✅ Выдан тариф ${plan}`); loadAdminData(); };
-const banUser = async (id, status) => { await fetch('/api/admin/ban', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: id, status }) }); showToast(status === 'banned' ? '❌ Забанен' : '✅ Разбанен'); loadAdminData(); };
+const grantSub = async (id, plan) => { await fetch('/api/grant', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, plan }) }); showToast(`✅ Выдан тариф ${plan}`); loadAdminData(); };
+const banUser = async (id, status) => { await fetch('/api/ban', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status }) }); showToast(status === 'banned' ? '❌ Забанен' : '✅ Разбанен'); loadAdminData(); };
 
 const addServer = async () => {
   const name = document.getElementById('srv-name').value;
@@ -412,26 +461,27 @@ const addServer = async () => {
   const protocol = document.getElementById('srv-proto').value;
   const key = document.getElementById('srv-key').value;
   if (!name || !key) return showToast('Заполните поля');
-  await fetch('/api/admin/servers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, country, protocol, key }) });
+  await fetch('/api/add-server', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, country, protocol, key }) });
   showToast('✅ Сервер добавлен');
   loadAdminData();
+  loadSite();
 };
 
-const toggleServer = async (id, active) => { await fetch('/api/admin/servers/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ active }) }); loadAdminData(); };
-const deleteServer = async (id) => { await fetch('/api/admin/servers/' + id, { method: 'DELETE' }); showToast('🗑️ Удален'); loadAdminData(); };
+const toggleServer = async (id, active) => { await fetch('/api/toggle-server', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, active }) }); loadAdminData(); };
+const deleteServer = async (id) => { await fetch('/api/del-server', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) }); showToast('🗑️ Удален'); loadAdminData(); loadSite(); };
 
 const addNews = async () => {
   const title = document.getElementById('news-title').value;
   const body = document.getElementById('news-body').value;
-  const date = new Date().toLocaleDateString();
   if (!title) return showToast('Введите заголовок');
-  await fetch('/api/admin/news', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, body, date }) });
+  await fetch('/api/add-news', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, body }) });
   showToast('✅ Новость добавлена');
   document.getElementById('news-title').value = '';
   document.getElementById('news-body').value = '';
   loadAdminData();
+  loadSite();
 };
-const deleteNews = async (id) => { await fetch('/api/admin/news/' + id, { method: 'DELETE' }); showToast('🗑️ Удалена'); loadAdminData(); };
+const deleteNews = async (id) => { await fetch('/api/del-news', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) }); showToast('🗑️ Удалена'); loadAdminData(); loadSite(); };
 
 // ==== ЗАГРУЗКА НА САЙТ ====
 fetch('/api/visit', { method: 'POST' }).catch(e => console.log('Offline'));
@@ -440,29 +490,32 @@ const loadSite = async () => {
   try {
     const res = await fetch('/api/servers');
     const servers = await res.json();
-    document.getElementById('srv-container').innerHTML = servers.map(s => `
-      <div class="glass-card" style="padding:12px; margin-bottom:8px; cursor:pointer;" onclick="cUrl('${s.key}', '${s.name}')">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <span style="font-size:20px;">${s.country || '🌍'}</span>
-          <div>
-            <div style="font-size:14px; font-weight:700;">${s.name}</div>
-            <div style="font-size:10px; color:var(--primary); font-weight:800; margin-top:2px;">${s.protocol || 'VLESS'}</div>
-          </div>
+    const renderSrv = (list) => list.map(s => `
+      <div class="srv-item" onclick="cUrl('${s.key}', '${s.name}')">
+        <div class="srv-info">
+          <span class="srv-flag">${s.country || '🌍'}</span>
+          <div><div class="srv-name">${s.name}</div><div class="srv-proto">${s.protocol || 'VLESS'}</div></div>
         </div>
-      </div>
-    `).join('') || '<p style="text-align:center; color:var(--text-muted);">Серверов пока нет. Добавьте их в админке.</p>';
+      </div>`).join('');
+    
+    document.getElementById('srv-eu').innerHTML = renderSrv(servers.filter(s => s.country === '🇪🇺' || s.country === '🇩🇪' || s.country === '🇫🇷' || s.country === '🇬🇧' || s.country === '🇵🇱')) || '<p style="font-size:12px; color:var(--text-muted);">Нет серверов в этом регионе</p>';
+    document.getElementById('srv-us').innerHTML = renderSrv(servers.filter(s => s.country === '🇺🇸' || s.country === '🇨🇦')) || '<p style="font-size:12px; color:var(--text-muted);">Нет серверов в этом регионе</p>';
+    document.getElementById('srv-as').innerHTML = renderSrv(servers.filter(s => s.country === '🇯🇵' || s.country === '🇸🇬' || s.country === '🇰🇷' || s.country === '🇭🇰')) || '<p style="font-size:12px; color:var(--text-muted);">Нет серверов в этом регионе</p>';
   } catch(e) {}
 
   try {
     const res = await fetch('/api/news');
     const news = await res.json();
-    document.getElementById('news-container').innerHTML = news.map(n => `
-      <div class="glass-card" style="padding:16px; margin-bottom:8px;">
-        <div style="font-size:14px; font-weight:700;">${n.title}</div>
-        <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">${n.body}</div>
-        <div style="font-size:10px; color:var(--primary); margin-top:4px;">${n.date}</div>
-      </div>
-    `).join('') || '<p style="text-align:center; color:var(--text-muted);">Новостей пока нет</p>';
+    if (news.length > 0) {
+      document.getElementById('news-container').innerHTML = news.map(n => `
+        <div class="news-card" onclick="this.classList.toggle('open')">
+          <div class="news-title"><span style="color:var(--text-main);">${n.title}</span><span>${n.date}</span></div>
+          <div class="news-body">${n.body}</div>
+        </div>
+      `).join('');
+    } else {
+      document.getElementById('news-container').innerHTML = '<p style="text-align:center; color:var(--text-muted);">Новостей пока нет. Добавьте их в админке.</p>';
+    }
   } catch(e) {}
 };
 
