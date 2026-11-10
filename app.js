@@ -1,284 +1,851 @@
-// ==================== ТЕМА И ПАЛИТРА ====================
-const setColor = (color) => {
+
+'use strict';
+
+// ================================================
+// LIBREVPN — ОСНОВНОЙ КЛИЕНТ
+// ================================================
+
+const TOKEN_KEY = 'librevpn_admin_token';
+
+// Безопасная работа с API
+async function api(url, options = {}) {
+  const token = sessionStorage.getItem(TOKEN_KEY);
+
+  const headers = {
+    ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...(options.headers || {})
+  };
+
+  const response = await fetch(url, {
+    ...options,
+    headers
+  });
+
+  const type = response.headers.get('content-type') || '';
+
+  if (!response.ok) {
+    let message = `Ошибка ${response.status}`;
+
+    if (type.includes('application/json')) {
+      const data = await response.json();
+      message = data.error || message;
+    }
+
+    throw new Error(message);
+  }
+
+  return type.includes('application/json')
+    ? response.json()
+    : response;
+}
+
+// Безопасное создание элементов
+function el(tag, className = '', text = '') {
+  const node = document.createElement(tag);
+
+  if (className) node.className = className;
+  if (text !== undefined && text !== null) {
+    node.textContent = String(text);
+  }
+
+  return node;
+}
+
+// Уведомления
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  if (!toast) return;
+
+  toast.textContent = message;
+  toast.classList.add('show');
+
+  clearTimeout(window._toastTimer);
+
+  window._toastTimer = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 2500);
+}
+
+// ================================================
+// ТЕМА И ЦВЕТА
+// ================================================
+
+function setColor(color) {
   document.body.setAttribute('data-color', color);
   localStorage.setItem('siteColor', color);
-  document.getElementById('palette').classList.remove('show');
-  showToast('🎨 Цвет изменен');
-};
 
-// Загрузка сохраненного цвета
-if (localStorage.getItem('siteColor')) {
-  document.body.setAttribute('data-color', localStorage.getItem('siteColor'));
+  document.getElementById('palette')?.classList.remove('show');
+
+  showToast('🎨 Цвет изменён');
 }
 
-const togglePalette = () => {
-  document.getElementById('palette').classList.toggle('show');
-};
+function togglePalette() {
+  document.getElementById('palette')?.classList.toggle('show');
+}
 
-// ==================== НАВИГАЦИЯ ====================
-const toggleMenu = () => {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('overlay').classList.toggle('open');
-};
+const savedColor = localStorage.getItem('siteColor');
 
-const toggleSub = (id, btn) => {
-  const sub = document.getElementById(id);
-  sub.classList.toggle('open');
-  const arrow = btn.querySelector('span');
-  if (arrow) arrow.style.transform = sub.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)';
-};
+if (savedColor) {
+  document.body.setAttribute('data-color', savedColor);
+}
 
-const nav = (id, btn) => {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn, .sub-btn').forEach(b => b.classList.remove('active'));
-  
-  const target = document.getElementById('page-' + id);
-  if (target) {
-    target.classList.add('active');
+// ================================================
+// НАВИГАЦИЯ
+// ================================================
+
+function toggleMenu() {
+  document.getElementById('sidebar')?.classList.toggle('open');
+  document.getElementById('overlay')?.classList.toggle('open');
+}
+
+function toggleSub(id, button) {
+  const submenu = document.getElementById(id);
+  if (!submenu) return;
+
+  submenu.classList.toggle('open');
+
+  const arrow = button?.querySelector('span');
+
+  if (arrow) {
+    arrow.style.transform = submenu.classList.contains('open')
+      ? 'rotate(180deg)'
+      : 'rotate(0)';
+  }
+}
+
+function nav(id, button) {
+  document.querySelectorAll('.page').forEach(page => {
+    page.classList.remove('active');
+  });
+
+  document.querySelectorAll('.nav-btn, .sub-btn').forEach(item => {
+    item.classList.remove('active');
+  });
+
+  const page = document.getElementById('page-' + id);
+
+  if (page) {
+    page.classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-  if (btn) btn.classList.add('active');
-  
-  if (window.innerWidth < 768) toggleMenu();
-};
 
-// ==================== АДМИНКА (ВХОД) ====================
-const askAdminPass = () => {
-  const pass = prompt('Введите пароль администратора:');
-  if (pass === '1742staW02') {
-    nav('admin');
-    loadAdminData();
-  } else if (pass !== null) {
-    showToast('❌ Неверный пароль');
+  if (button) button.classList.add('active');
+
+  if (
+    window.innerWidth < 768 &&
+    document.getElementById('sidebar')?.classList.contains('open')
+  ) {
+    toggleMenu();
   }
-};
+}
 
-const switchAdmin = (tab, btn) => {
-  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('admin-' + tab).classList.add('active');
-};
+// ================================================
+// АДМИН-ПАНЕЛЬ: АВТОРИЗАЦИЯ
+// ================================================
 
-// ==================== ЗАГРУЗКА ДАННЫХ АДМИНКИ ====================
-const loadAdminData = async () => {
-  // Юзеры
+async function askAdminPass() {
+  const password = prompt('Введите пароль администратора:');
+
+  if (password === null) return;
+
   try {
-    const res = await fetch('/api/users');
-    const users = await res.json();
-    document.getElementById('stat-users').textContent = users.length;
-    document.getElementById('admin-user-list').innerHTML = users.map(u => `
-      <div class="user-row">
-        <div class="user-header">
-          <div>IP: ${u.ip}</div>
-          <div style="font-weight:800; color:var(--primary);">${u.plan}</div>
-        </div>
-        <div style="font-size:11px; color:var(--text-muted);">${new Date(u.created_at).toLocaleString()} | Статус: ${u.status === 'banned' ? '❌ Забанен' : '✅ Активен'}</div>
-      </div>
-    `).join('') || '<p>Нет юзеров</p>';
-  } catch(e) {}
+    const result = await api('/api/admin/login', {
+      method: 'POST',
+      body: JSON.stringify({ password })
+    });
 
-  // Сервера
-  try {
-    const res = await fetch('/api/servers?all=true');
-    const servers = await res.json();
-    document.getElementById('stat-servers').textContent = servers.length;
-    document.getElementById('admin-srv-list').innerHTML = servers.map(s => `
-      <div class="user-row">
-        <div class="user-header"><div>${s.country} ${s.name}</div></div>
-        <div style="font-size:11px; color:var(--text-muted);">${s.protocol}</div>
-      </div>
-    `).join('') || '<p>Нет серверов</p>';
-  } catch(e) {}
-
-  // Новости
-  try {
-    const res = await fetch('/api/news');
-    const news = await res.json();
-    document.getElementById('stat-news').textContent = news.length;
-    document.getElementById('admin-news-list').innerHTML = news.map(n => `
-      <div class="user-row">
-        <div class="user-header"><div>${n.title}</div></div>
-        <div style="font-size:11px; color:var(--text-muted);">${n.body}</div>
-      </div>
-    `).join('') || '<p>Нет новостей</p>';
-  } catch(e) {}
-};
-
-// ==================== ДОБАВЛЕНИЕ СЕРВЕРА ====================
-const addServer = async () => {
-  const name = document.getElementById('s-name').value;
-  const country = document.getElementById('s-country').value;
-  const protocol = document.getElementById('s-proto').value;
-  const key = document.getElementById('s-key').value;
-  
-  if (!name || !key) return showToast('Заполните поля');
-  
-  await fetch('/api/add-server', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, country, protocol, key })
-  });
-  
-  showToast('✅ Сервер добавлен');
-  loadAdminData();
-  loadSite(); // Принудительное обновление сайта
-};
-
-// ==================== ДОБАВЛЕНИЕ НОВОСТИ ====================
-const addNews = async () => {
-  const title = document.getElementById('n-title').value;
-  const body = document.getElementById('n-body').value;
-  
-  if (!title) return showToast('Введите заголовок');
-  
-  await fetch('/api/add-news', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title, body })
-  });
-  
-  showToast('✅ Новость добавлена');
-  loadAdminData();
-  loadSite(); // Принудительное обновление сайта
-};
-
-// ==================== БАННЕР ====================
-const createBanner = () => {
-  const text = document.getElementById('b-text').value;
-  if (!text) return showToast('Введите текст');
-  showToast('✅ Баннер создан!');
-  document.getElementById('b-text').value = '';
-};
-
-// ==================== ЗАГРУЗКА НА САЙТ ====================
-const loadSite = async () => {
-  try {
-    const res = await fetch('/api/servers');
-    const servers = await res.json();
-    
-    // Твои добавленные сервера
-    const extraServers = [
-      { name: 'Польша', country: '🇵🇱', protocol: 'VLESS', key: 'vless://2232d904-8e6a-4202-8240-6efd8aec02e9@185.178.208.167:443?type=ws&host=lorettmay.top&path=/blog/posts&security=tls&sni=lorettmay.top&fp=chrome' },
-      { name: 'Болгария', country: '🇧🇬', protocol: 'VLESS', key: 'vless://9aff658c-1f80-4c82-9213-48ca26996142@168.113.128.70:20105?flow=xtls-rprx-vision&type=tcp&security=tls&sni=ripelever.net&alpn=h2,http/1.1&fp=firefox' },
-      { name: 'Канада', country: '🇨🇦', protocol: 'VLESS', key: 'vless://b48e1596-e835-4547-bdae-31daadf9ea17@5.53.124.191:8008?type=xhttp&host=&path=/&mode=auto&security=none' },
-      { name: 'Кувейт', country: '🇰🇼', protocol: 'VLESS', key: 'vless://ea277838-a188-44f1-a2e8-94aa110c4f27@185.178.208.140:443?type=xhttp&host=static.bakarova-top.ru&path=/api/v2/events&mode=packet-up&security=tls&sni=static.bakarova-top.ru&fp=chrome' }
-    ];
-    
-    const allServers = [...servers, ...extraServers];
-    
-    const render = (list) => list.map(s => `
-      <div class="srv-item" onclick="copyKey('${s.key}', '${s.name}')">
-        <div class="srv-info">
-          <span class="srv-flag">${s.country}</span>
-          <div>
-            <div class="srv-name">${s.name}</div>
-            <div class="srv-proto">${s.protocol}</div>
-          </div>
-        </div>
-      </div>
-    `).join('');
-    
-    document.getElementById('srv-eu').innerHTML = render(allServers.filter(s => ['🇵🇱','🇧🇬','🇩🇪','🇫🇷','🇬🇧'].includes(s.country))) || '<p style="font-size:12px; color:var(--text-muted);">Нет серверов</p>';
-    document.getElementById('srv-us').innerHTML = render(allServers.filter(s => ['🇺🇸','🇨🇦'].includes(s.country))) || '<p style="font-size:12px; color:var(--text-muted);">Нет серверов</p>';
-    document.getElementById('srv-as').innerHTML = render(allServers.filter(s => ['🇯🇵','🇸🇬','🇰🇷','🇭🇰','🇰🇼'].includes(s.country))) || '<p style="font-size:12px; color:var(--text-muted);">Нет серверов</p>';
-  } catch(e) {}
-
-  // Новости
-  try {
-    const res = await fetch('/api/news');
-    const news = await res.json();
-    if (news.length > 0) {
-      document.getElementById('news-container').innerHTML = news.map(n => `
-        <div style="margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--border-glass);">
-          <div style="font-weight:700; font-size:16px; margin-bottom:4px; color:var(--primary);">${n.title}</div>
-          <div style="font-size:14px; color:var(--text-main); line-height:1.6;">${n.body}</div>
-          <div style="font-size:11px; color:var(--text-muted); margin-top:8px;">${n.date}</div>
-        </div>
-      `).join('');
-    } else {
-      document.getElementById('news-container').innerHTML = '<p style="text-align:center; color:var(--text-muted);">Новостей пока нет. Добавьте их в админке.</p>';
+    if (!result.token) {
+      throw new Error('Не получен токен авторизации.');
     }
-  } catch(e) {}
-};
 
-// ==================== КОПИРОВАНИЕ (С ЗАЩИТОЙ ОТ БАГОВ) ====================
-const copyKey = (key, name) => {
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(key)
-      .then(() => showToast('✅ ' + name + ' скопирован'))
-      .catch(() => fallbackCopy(key, name));
-  } else {
-    fallbackCopy(key, name);
+    sessionStorage.setItem(TOKEN_KEY, result.token);
+
+    nav('admin');
+    await loadAdminData();
+
+    showToast('✅ Авторизация успешна');
+  } catch (error) {
+    showToast('❌ ' + error.message);
   }
-};
+}
 
-const fallbackCopy = (text, name) => {
-  const ta = document.createElement('textarea');
-  ta.value = text;
-  ta.style.position = 'fixed';
-  ta.style.opacity = '0';
-  document.body.appendChild(ta);
-  ta.select();
+async function adminLogout() {
   try {
-    document.execCommand('copy');
-    showToast('✅ ' + name + ' скопирован');
-  } catch(e) {
-    showToast('❌ Ошибка копирования');
+    await api('/api/admin/logout', {
+      method: 'POST'
+    });
+  } catch (error) {
+    console.warn(error);
   }
-  document.body.removeChild(ta);
-};
 
-// ==================== УВЕДОМЛЕНИЯ ====================
-const showToast = (msg) => {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(window._toast);
-  window._toast = setTimeout(() => t.classList.remove('show'), 2000);
-};
+  sessionStorage.removeItem(TOKEN_KEY);
+  nav('home');
 
-// ==================== АНИМИРОВАННЫЙ ФОН ====================
-const canvas = document.getElementById('bg-canvas');
-const ctx = canvas.getContext('2d');
-let particles = [];
+  showToast('Вы вышли из админки');
+}
 
-const resize = () => { 
-  canvas.width = window.innerWidth; 
-  canvas.height = window.innerHeight; 
-};
-window.addEventListener('resize', resize); 
-resize();
+function switchAdmin(tab, button) {
+  document.querySelectorAll('.admin-tab').forEach(item => {
+    item.classList.remove('active');
+  });
 
-for (let i = 0; i < 40; i++) {
-  particles.push({
-    x: Math.random() * canvas.width, 
-    y: Math.random() * canvas.height, 
-    vx: (Math.random() - 0.5) * 0.5, 
-    vy: (Math.random() - 0.5) * 0.5, 
-    r: Math.random() * 2 + 1
+  document.querySelectorAll('.admin-section').forEach(item => {
+    item.classList.remove('active');
+  });
+
+  button?.classList.add('active');
+
+  document.getElementById('admin-' + tab)?.classList.add('active');
+}
+
+// ================================================
+// ЗАГРУЗКА АДМИН-ПАНЕЛИ
+// ================================================
+
+async function loadAdminData() {
+  try {
+    const [users, servers, news, stats] = await Promise.all([
+      api('/api/users'),
+      api('/api/servers?all=true'),
+      api('/api/news'),
+      api('/api/admin/stats')
+    ]);
+
+    document.getElementById('stat-users').textContent =
+      stats.total_users ?? users.length;
+
+    document.getElementById('stat-servers').textContent =
+      stats.total_servers ?? servers.length;
+
+    document.getElementById('stat-news').textContent =
+      stats.total_news ?? news.length;
+
+    renderUsers(users);
+    renderServers(servers);
+    renderNewsAdmin(news);
+
+  } catch (error) {
+    showToast('❌ ' + error.message);
+
+    if (error.message.includes('401')) {
+      sessionStorage.removeItem(TOKEN_KEY);
+    }
+  }
+}
+
+// ================================================
+// ПОЛЬЗОВАТЕЛИ
+// ================================================
+
+function renderUsers(users) {
+  const container = document.getElementById('admin-user-list');
+  if (!container) return;
+
+  container.replaceChildren();
+
+  if (!users.length) {
+    container.append(el('p', '', 'Пользователей пока нет.'));
+    return;
+  }
+
+  users.forEach(user => {
+    const row = el('div', 'user-row');
+    const header = el('div', 'user-header');
+
+    header.append(
+      el('strong', '', `Пользователь #${user.id}`),
+      el('span', '', user.plan || 'Free')
+    );
+
+    const status = el(
+      'div',
+      '',
+      user.status === 'banned' ? '❌ Заблокирован' : '✅ Активен'
+    );
+
+    const date = el(
+      'small',
+      '',
+      `Регистрация: ${new Date(user.created_at).toLocaleString()}`
+    );
+
+    const actions = el('div');
+
+    const banButton = el(
+      'button',
+      'btn',
+      user.status === 'banned' ? 'Разблокировать' : 'Заблокировать'
+    );
+
+    banButton.type = 'button';
+
+    banButton.addEventListener('click', async () => {
+      try {
+        await api('/api/ban', {
+          method: 'POST',
+          body: JSON.stringify({
+            id: user.id,
+            status: user.status === 'banned' ? 'active' : 'banned'
+          })
+        });
+
+        showToast('Статус пользователя изменён');
+        await loadAdminData();
+
+      } catch (error) {
+        showToast('❌ ' + error.message);
+      }
+    });
+
+    actions.append(banButton);
+    row.append(header, status, date, actions);
+    container.append(row);
   });
 }
 
-const animate = () => {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  particles.forEach(p => {
-    p.x += p.vx; 
-    p.y += p.vy;
-    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--primary').trim() + '80';
-    ctx.fill();
+// ================================================
+// СЕРВЕРЫ В АДМИН-ПАНЕЛИ
+// ================================================
+
+function renderServers(servers) {
+  const container = document.getElementById('admin-srv-list');
+  if (!container) return;
+
+  container.replaceChildren();
+
+  if (!servers.length) {
+    container.append(el('p', '', 'Серверов пока нет.'));
+    return;
+  }
+
+  servers.forEach(server => {
+    const row = el('div', 'server-row');
+    const info = el('div');
+
+    info.append(
+      el('strong', '', server.name),
+      el('p', '', `${server.country} · ${server.protocol}`),
+      el('small', '', server.active ? 'Активен' : 'Выключен')
+    );
+
+    const actions = el('div');
+
+    const toggle = el(
+      'button',
+      'btn',
+      server.active ? 'Выключить' : 'Включить'
+    );
+
+    toggle.type = 'button';
+
+    toggle.addEventListener('click', async () => {
+      try {
+        await api('/api/toggle-server', {
+          method: 'POST',
+          body: JSON.stringify({
+            id: server.id,
+            active: !server.active
+          })
+        });
+
+        showToast('Статус сервера изменён');
+        await loadAdminData();
+      } catch (error) {
+        showToast('❌ ' + error.message);
+      }
+    });
+
+    const remove = el('button', 'btn', 'Удалить');
+    remove.type = 'button';
+
+    remove.addEventListener('click', async () => {
+      if (!confirm(`Удалить сервер «${server.name}»?`)) return;
+
+      try {
+        await api('/api/del-server', {
+          method: 'POST',
+          body: JSON.stringify({ id: server.id })
+        });
+
+        showToast('Сервер удалён');
+        await loadAdminData();
+      } catch (error) {
+        showToast('❌ ' + error.message);
+      }
+    });
+
+    actions.append(toggle, remove);
+    row.append(info, actions);
+    container.append(row);
   });
-  requestAnimationFrame(animate);
-};
-animate();
+}
 
-// ==================== ИНИЦИАЛИЗАЦИЯ ====================
-// Отправляем сигнал о заходе на сервер
-fetch('/api/visit', { method: 'POST' }).catch(e => console.log('Offline'));
+// ================================================
+// ДОБАВЛЕНИЕ СЕРВЕРА
+// ================================================
 
-// Загружаем сервера и новости на сайт
-loadSite();
+async function addServer() {
+  const name = document.getElementById('s-name')?.value.trim();
+  const country = document.getElementById('s-country')?.value.trim();
+  const protocol = document.getElementById('s-proto')?.value.trim();
+  const key = document.getElementById('s-key')?.value.trim();
+
+  if (!name || !country || !protocol || !key) {
+    showToast('Заполни все обязательные поля');
+    return;
+  }
+
+  try {
+    await api('/api/add-server', {
+      method: 'POST',
+      body: JSON.stringify({
+        name,
+        country,
+        protocol,
+        key
+      })
+    });
+
+    ['s-name', 's-country', 's-proto', 's-key'].forEach(id => {
+      const input = document.getElementById(id);
+      if (input) input.value = '';
+    });
+
+    showToast('Сервер добавлен');
+    await loadAdminData();
+  } catch (error) {
+    showToast('❌ ' + error.message);
+  }
+}
+
+// ================================================
+// НОВОСТИ В АДМИН-ПАНЕЛИ
+// ================================================
+
+function renderNewsAdmin(news) {
+  const container = document.getElementById('admin-news-list');
+  if (!container) return;
+
+  container.replaceChildren();
+
+  if (!news.length) {
+    container.append(el('p', '', 'Новостей пока нет.'));
+    return;
+  }
+
+  news.forEach(item => {
+    const row = el('div', 'news-row');
+    const info = el('div');
+
+    info.append(
+      el('strong', '', item.title),
+      el('p', '', item.date || '')
+    );
+
+    const remove = el('button', 'btn', 'Удалить');
+    remove.type = 'button';
+
+    remove.addEventListener('click', async () => {
+      if (!confirm(`Удалить новость «${item.title}»?`)) return;
+
+      try {
+        await api('/api/del-news', {
+          method: 'POST',
+          body: JSON.stringify({ id: item.id })
+        });
+
+        showToast('Новость удалена');
+        await loadAdminData();
+        await loadSite();
+      } catch (error) {
+        showToast('❌ ' + error.message);
+      }
+    });
+
+    row.append(info, remove);
+    container.append(row);
+  });
+}
+
+// ================================================
+// ДОБАВЛЕНИЕ НОВОСТИ
+// ================================================
+
+async function addNews() {
+  const title = document.getElementById('n-title')?.value.trim();
+  const body = document.getElementById('n-body')?.value.trim();
+
+  if (!title || !body) {
+    showToast('Заполни заголовок и текст новости');
+    return;
+  }
+
+  try {
+    await api('/api/add-news', {
+      method: 'POST',
+      body: JSON.stringify({ title, body })
+    });
+
+    document.getElementById('n-title').value = '';
+    document.getElementById('n-body').value = '';
+
+    showToast('Новость опубликована');
+
+    await loadAdminData();
+    await loadSite();
+  } catch (error) {
+    showToast('❌ ' + error.message);
+  }
+}
+
+// ================================================
+// БАННЕРЫ
+// ================================================
+
+async function createBanner() {
+  const input = document.getElementById('b-text');
+  const text = input?.value.trim();
+
+  if (!text) {
+    showToast('Введи текст баннера');
+    return;
+  }
+
+  try {
+    await api('/api/banners', {
+      method: 'POST',
+      body: JSON.stringify({ text })
+    });
+
+    input.value = '';
+
+    showToast('Баннер опубликован');
+    await loadBanners();
+  } catch (error) {
+    showToast('❌ ' + error.message);
+  }
+}
+
+async function deleteBanner(id) {
+  if (!confirm('Удалить этот баннер?')) return;
+
+  try {
+    await api('/api/banners/delete', {
+      method: 'POST',
+      body: JSON.stringify({ id })
+    });
+
+    showToast('Баннер удалён');
+    await loadBanners();
+  } catch (error) {
+    showToast('❌ ' + error.message);
+  }
+}
+
+async function loadBanners() {
+  try {
+    const banners = await api('/api/banners');
+    displayBanners(banners);
+  } catch (error) {
+    console.error('Banner loading error:', error);
+  }
+}
+
+function displayBanners(banners) {
+  const main = document.querySelector('main');
+  if (!main) return;
+
+  let container = document.getElementById('site-banners');
+
+  if (!container) {
+    container = el('div', 'site-banners');
+    container.id = 'site-banners';
+    main.prepend(container);
+  }
+
+  container.replaceChildren();
+
+  banners.forEach(banner => {
+    const item = el('div', 'site-banner');
+    item.append(el('span', '', banner.text));
+    container.append(item);
+  });
+}
+
+// ================================================
+// АДМИНСКИЙ СПИСОК БАННЕРОВ
+// ================================================
+
+async function loadAdminBanners() {
+  const section = document.getElementById('admin-banner');
+  if (!section) return;
+
+  let container = document.getElementById('banner-list');
+
+  if (!container) {
+    container = el('div', 'banner-list');
+    container.id = 'banner-list';
+    section.append(container);
+  }
+
+  try {
+    const banners = await api('/api/banners');
+    container.replaceChildren();
+
+    if (!banners.length) {
+      container.append(el('p', '', 'Активных баннеров нет.'));
+      return;
+    }
+
+    banners.forEach(banner => {
+      const row = el('div', 'banner-row');
+      const label = el('span', '', banner.text);
+      const remove = el('button', 'btn', 'Удалить');
+
+      remove.type = 'button';
+      remove.addEventListener('click', () => deleteBanner(banner.id));
+
+      row.append(label, remove);
+      container.append(row);
+    });
+  } catch (error) {
+    console.error('Admin banners error:', error);
+  }
+}
+
+// ================================================
+// ПУБЛИЧНЫЕ СЕРВЕРЫ
+// ================================================
+
+function renderPublicServers(servers) {
+  const groups = {
+    'srv-eu': [],
+    'srv-us': [],
+    'srv-as': []
+  };
+
+  servers.forEach(server => {
+    const country = String(server.country || '').toLowerCase();
+
+    if (
+      country.includes('🇺🇸') ||
+      country.includes('сша') ||
+      country.includes('usa') ||
+      country.includes('america')
+    ) {
+      groups['srv-us'].push(server);
+    } else if (
+      country.includes('🇯🇵') ||
+      country.includes('🇸🇬') ||
+      country.includes('🇰🇷') ||
+      country.includes('япония') ||
+      country.includes('сингапур') ||
+      country.includes('корея') ||
+      country.includes('asia')
+    ) {
+      groups['srv-as'].push(server);
+    } else {
+      groups['srv-eu'].push(server);
+    }
+  });
+
+  Object.entries(groups).forEach(([id, items]) => {
+    const container = document.getElementById(id);
+    if (!container) return;
+
+    container.replaceChildren();
+
+    if (!items.length) {
+      container.append(el('p', 'empty-state', 'Пока нет доступных серверов.'));
+      return;
+    }
+
+    items.forEach(server => {
+      const card = el('article', 'server-card');
+
+      card.append(
+        el('h3', '', server.name),
+        el('p', '', `${server.country} · ${server.protocol}`),
+        el('p', 'server-description', server.description || 'VPN-сервер LibreVPN')
+      );
+
+      const status = el(
+        'span',
+        'server-status',
+        server.status === 'online' ? '● Онлайн' : '● Доступен'
+      );
+
+      const copy = el('button', 'btn', 'Скопировать ключ');
+      copy.type = 'button';
+
+      copy.addEventListener('click', () => copyKey(server.key));
+
+      card.append(status, copy);
+      container.append(card);
+    });
+  });
+}
+
+// ================================================
+// КОПИРОВАНИЕ КЛЮЧЕЙ
+// ================================================
+
+async function copyKey(value) {
+  if (!value) {
+    showToast('Конфигурация отсутствует');
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(value);
+    showToast('✅ Конфигурация скопирована');
+  } catch {
+    const textarea = el('textarea');
+    textarea.value = value;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+
+    document.body.append(textarea);
+    textarea.select();
+
+    const copied = document.execCommand('copy');
+    textarea.remove();
+
+    showToast(
+      copied ? '✅ Конфигурация скопирована' : 'Не удалось скопировать'
+    );
+  }
+}
+
+// ================================================
+// ПУБЛИЧНЫЕ НОВОСТИ
+// ================================================
+
+function renderPublicNews(news) {
+  const container = document.getElementById('news-container');
+  if (!container) return;
+
+  container.replaceChildren();
+
+  if (!news.length) {
+    container.append(el('p', '', 'Новостей пока нет.'));
+    return;
+  }
+
+  news.forEach(item => {
+    const card = el('article', 'news-card');
+
+    card.append(
+      el('h3', '', item.title),
+      el('small', '', item.date || ''),
+      el('p', '', item.body)
+    );
+
+    container.append(card);
+  });
+}
+
+// ================================================
+// ЗАГРУЗКА САЙТА
+// ================================================
+
+async function loadSite() {
+  try {
+    const [servers, news] = await Promise.all([
+      api('/api/servers'),
+      api('/api/news')
+    ]);
+
+    renderPublicServers(servers);
+    renderPublicNews(news);
+
+    await loadBanners();
+
+  } catch (error) {
+    console.error('Site loading error:', error);
+    showToast('Не удалось загрузить данные сайта');
+  }
+}
+
+// ================================================
+// ВИЗИТЫ
+// ================================================
+
+async function registerVisit() {
+  try {
+    await api('/api/visit', {
+      method: 'POST'
+    });
+  } catch (error) {
+    console.warn('Visit registration failed:', error);
+  }
+}
+
+// ================================================
+// АДМИНКА: ДОПОЛНИТЕЛЬНЫЕ КНОПКИ
+// ================================================
+
+function setupAdminControls() {
+  const admin = document.getElementById('page-admin');
+  if (!admin) return;
+
+  if (!document.getElementById('admin-logout')) {
+    const button = el('button', 'btn', 'Выйти из админки');
+    button.id = 'admin-logout';
+    button.type = 'button';
+    button.addEventListener('click', adminLogout);
+
+    admin.prepend(button);
+  }
+}
+
+// ================================================
+// ВОССТАНОВЛЕНИЕ СЕССИИ
+// ================================================
+
+async function restoreAdminSession() {
+  const token = sessionStorage.getItem(TOKEN_KEY);
+  if (!token) return;
+
+  try {
+    await api('/api/admin/me');
+    setupAdminControls();
+  } catch {
+    sessionStorage.removeItem(TOKEN_KEY);
+  }
+}
+
+// ================================================
+// ЗАПУСК ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
+// ================================================
+
+document.addEventListener('DOMContentLoaded', async () => {
+  setupAdminControls();
+
+  await registerVisit();
+  await loadSite();
+  await restoreAdminSession();
+
+  console.log('LibreVPN client initialized');
+});
+
+// ================================================
+// СОВМЕСТИМОСТЬ С HTML
+// ================================================
+
+window.toggleMenu = toggleMenu;
+window.toggleSub = toggleSub;
+window.nav = nav;
+window.setColor = setColor;
+window.togglePalette = togglePalette;
+window.askAdminPass = askAdminPass;
+window.switchAdmin = switchAdmin;
+window.addServer = addServer;
+window.addNews = addNews;
+window.createBanner = createBanner;
+window.loadAdminData = loadAdminData;
+window.loadBanners = loadBanners;
+window.loadAdminBanners = loadAdminBanners;
+window.adminLogout = adminLogout;
+window.copyKey = copyKey;
