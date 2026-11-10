@@ -5,152 +5,43 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>LibreVPN — Свобода в каждой точке</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  
-  :root {
-    --bg-base: #f5f6fa; --bg-glass: rgba(255, 255, 255, 0.55); --bg-glass-heavy: rgba(255, 255, 255, 0.85);
-    --bg-glass-card: rgba(255, 255, 255, 0.4); --border-glass: rgba(255, 255, 255, 0.9);
-    --text-main: #1a1a2e; --text-muted: #5e6472; --primary: #6366f1; --primary-glow: #818cf8;
-    --accent: #8b5cf6; --shadow: 0 8px 32px rgba(31, 38, 135, 0.08); --blur: blur(24px); --radius: 24px;
-  }
-  
-  [data-theme="dark"] {
-    --bg-base: #0b0714; --bg-glass: rgba(20, 15, 35, 0.55); --bg-glass-heavy: rgba(25, 18, 45, 0.85);
-    --bg-glass-card: rgba(255, 255, 255, 0.04); --border-glass: rgba(255, 255, 255, 0.08);
-    --text-main: #f8fafc; --text-muted: #94a3b8; --primary: #8b5cf6; --primary-glow: #a78bfa;
-    --accent: #6366f1; --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  }
-
-  body {
-    font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-main);
-    min-height: 100vh; overflow-x: hidden; transition: background-color 0.5s, color 0.5s;
-  }
-
-  #bg-canvas { position: fixed; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; }
-
-  /* Шапка */
-  .header {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center;
-    padding: 16px 20px; background: var(--bg-glass); backdrop-filter: var(--blur);
-    border-bottom: 1px solid var(--border-glass); transition: background 0.4s;
-  }
-  .logo-area { display: flex; align-items: center; gap: 12px; cursor: pointer; }
-  .logo-img { width: 40px; height: 40px; border-radius: 12px; object-fit: cover; background: var(--primary); padding: 4px; }
-  .logo-text { font-size: 20px; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .header-actions { display: flex; gap: 10px; align-items: center; }
-  .icon-btn { background: var(--bg-glass-card); border: 1px solid var(--border-glass); color: var(--text-main); width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; backdrop-filter: var(--blur); }
-  .icon-btn:active { transform: scale(0.9); }
-
-  /* Меню */
-  .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 998; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(4px); }
-  .sidebar-overlay.open { opacity: 1; pointer-events: auto; }
-  .sidebar {
-    position: fixed; top: 0; left: 0; width: 290px; height: 100vh; z-index: 999;
-    background: var(--bg-glass-heavy); backdrop-filter: blur(30px);
-    border-right: 1px solid var(--border-glass); transform: translateX(-100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    display: flex; flex-direction: column; box-shadow: var(--shadow);
-  }
-  .sidebar.open { transform: translateX(0); }
-  .s-header { padding: 24px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-glass); }
-  .s-nav { flex: 1; overflow-y: auto; padding: 20px 16px; display: flex; flex-direction: column; gap: 6px; }
-  .nav-btn { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 16px; border-radius: 16px; border: none; background: transparent; color: var(--text-main); font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: left; }
-  .nav-btn.active { background: var(--bg-glass-card); color: var(--primary); border: 1px solid var(--border-glass); }
-  
-  .admin-btn { background: linear-gradient(135deg, #ef4444, #b91c1c) !important; color: #fff !important; font-weight: 800; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); margin-bottom: 15px; border: 1px solid #f87171 !important; }
-  .admin-btn:active { transform: scale(0.97); }
-
-  /* Контент */
-  .main-content { padding: 100px 20px 40px; max-width: 700px; margin: 0 auto; }
-  .page { display: none; opacity: 0; transform: translateY(20px); transition: all 0.4s ease-out; }
-  .page.active { display: block; opacity: 1; transform: translateY(0); }
-
-  .glass-card { background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; backdrop-filter: var(--blur); box-shadow: var(--shadow); }
-  .h-title { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
-  .h-desc { font-size: 15px; color: var(--text-muted); line-height: 1.7; margin-bottom: 20px; }
-  .article-text { font-size: 15px; color: var(--text-main); line-height: 1.8; }
-  .article-text p { margin-bottom: 16px; }
-  .article-text h3 { font-size: 18px; margin: 24px 0 12px; color: var(--primary); }
-
-  /* Сервера */
-  .accordion { background: var(--bg-glass-card); border: 1px solid var(--border-glass); border-radius: 20px; margin-bottom: 12px; overflow: hidden; transition: 0.3s; }
-  .acc-header { padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 700; font-size: 16px; }
-  .acc-header .arrow { transition: transform 0.3s; color: var(--text-muted); }
-  .accordion.open .acc-header .arrow { transform: rotate(180deg); }
-  .acc-body { display: none; padding: 0 20px 20px; }
-  .accordion.open .acc-body { display: block; animation: slideDown 0.3s; }
-
-  .srv-item { display: flex; align-items: center; justify-content: space-between; background: var(--bg-glass-card); border-radius: 16px; padding: 12px 16px; margin-bottom: 8px; cursor: pointer; border: 1px solid transparent; }
-  .srv-item:active { transform: scale(0.98); border-color: var(--primary); }
-  .srv-info { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; }
-  .srv-flag { font-size: 20px; }
-  .srv-name { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .srv-proto { font-size: 10px; color: var(--primary); background: rgba(99,102,241,0.1); padding: 2px 6px; border-radius: 4px; font-weight: 800; margin-top: 4px; display: inline-block; }
-  
-  /* Тарифы */
-  .plan-card { background: var(--bg-glass-card); border: 1px solid var(--border-glass); border-radius: 20px; margin-bottom: 12px; overflow: hidden; transition: 0.3s; }
-  .plan-header { padding: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-  .plan-name { font-size: 18px; font-weight: 800; }
-  .plan-price { font-size: 20px; font-weight: 800; color: var(--primary); }
-  .plan-body { display: none; padding: 0 20px 20px; border-top: 1px solid var(--border-glass); padding-top: 16px; font-size: 14px; color: var(--text-muted); line-height: 1.7; }
-  .plan-card.open .plan-body { display: block; animation: slideDown 0.3s; }
-  .plan-card.open .plan-header { background: rgba(99,102,241,0.05); }
-  .black-plan { border: 1px solid var(--accent); box-shadow: 0 0 20px rgba(139, 92, 246, 0.2); }
-
-  /* Новости */
-  .news-card { background: var(--bg-glass-card); border: 1px solid var(--border-glass); border-radius: 16px; margin-bottom: 12px; cursor: pointer; transition: 0.2s; }
-  .news-title { padding: 16px; font-weight: 700; font-size: 15px; display: flex; justify-content: space-between; align-items: center; }
-  .news-title span { font-size: 12px; color: var(--primary); }
-  .news-body { display: none; padding: 0 16px 16px; font-size: 14px; color: var(--text-muted); line-height: 1.7; }
-  .news-card.open .news-body { display: block; animation: slideDown 0.3s; }
-
-  /* Админка */
-  .admin-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-  .stat-box { background: var(--bg-glass-card); border: 1px solid var(--border-glass); border-radius: 16px; padding: 12px; text-align: center; }
-  .stat-val { font-size: 20px; font-weight: 800; color: var(--primary); }
-  .stat-lbl { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
-  .admin-tabs { display: flex; gap: 6px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; }
-  .admin-tab { padding: 10px 16px; border-radius: 12px; background: var(--bg-glass-card); border: 1px solid var(--border-glass); color: var(--text-main); cursor: pointer; font-weight: 600; white-space: nowrap; font-size: 13px; }
-  .admin-tab.active { background: #ef4444; color: #fff; }
-  .admin-section { display: none; }
-  .admin-section.active { display: block; }
-  
-  .user-row { display: flex; flex-direction: column; gap: 8px; padding: 12px; background: var(--bg-glass-card); border-radius: 12px; margin-bottom: 8px; font-size: 13px; border: 1px solid var(--border-glass); }
-  .user-header { display: flex; justify-content: space-between; align-items: center; }
-  .user-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-  .user-actions button, .user-actions select { padding: 6px 10px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 11px; }
-  .btn-grant { background: #10b981; color: #fff; }
-  .btn-ban { background: #ef4444; color: #fff; }
-  .btn-unban { background: #f59e0b; color: #fff; }
-  
-  .admin-input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border-glass); background: var(--bg-glass); color: var(--text-main); margin-bottom: 12px; outline: none; }
-  .btn { display: flex; align-items: center; justify-content: center; width: 100%; padding: 16px; border-radius: 16px; border: none; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; }
-  
-  .toast { position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 20px); background: var(--text-main); color: var(--bg-base); padding: 14px 28px; border-radius: 30px; font-weight: 700; opacity: 0; transition: 0.3s; z-index: 2000; pointer-events: none; }
-  .toast.show { opacity: 1; transform: translate(-50%, 0); }
-
-  @keyframes slideDown { from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);} }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <canvas id="bg-canvas"></canvas>
 
-<div class="header">
+<!-- ШАПКА -->
+<header class="header">
   <div class="logo-area" onclick="nav('home')">
-    <img src="https://i.ibb.co/3WqXGqZ/logo.png" class="logo-img">
+    <img src="https://i.ibb.co/3WqXGqZ/logo.png" class="logo-img" alt="Logo">
     <div class="logo-text">LibreVPN</div>
   </div>
-  <div class="header-actions">
-    <button class="icon-btn" onclick="toggleTheme()" id="theme-btn">🌙</button>
+  <div class="header-actions" style="position:relative;">
+    <button class="icon-btn" onclick="togglePalette()">🎨</button>
     <button class="icon-btn" onclick="toggleMenu()">☰</button>
   </div>
+</header>
+
+<!-- ПАЛИТРА ЦВЕТОВ (10 ШТУК) -->
+<div id="palette" class="palette">
+  <div class="color-opt" style="background:#8b5cf6;" onclick="setColor('purple')"></div>
+  <div class="color-opt" style="background:#3b82f6;" onclick="setColor('blue')"></div>
+  <div class="color-opt" style="background:#10b981;" onclick="setColor('green')"></div>
+  <div class="color-opt" style="background:#ef4444;" onclick="setColor('red')"></div>
+  <div class="color-opt" style="background:#f97316;" onclick="setColor('orange')"></div>
+  <div class="color-opt" style="background:#ec4899;" onclick="setColor('pink')"></div>
+  <div class="color-opt" style="background:#06b6d4;" onclick="setColor('cyan')"></div>
+  <div class="color-opt" style="background:#eab308;" onclick="setColor('yellow')"></div>
+  <div class="color-opt" style="background:#84cc16;" onclick="setColor('lime')"></div>
+  <div class="color-opt" style="background:#6366f1;" onclick="setColor('indigo')"></div>
 </div>
 
+<!-- БОКОВОЕ МЕНЮ -->
 <div class="sidebar-overlay" id="overlay" onclick="toggleMenu()"></div>
-<div class="sidebar" id="sidebar">
+<nav class="sidebar" id="sidebar">
   <div class="s-header">
-    <img src="https://i.ibb.co/3WqXGqZ/logo.png" style="width:32px;height:32px;border-radius:8px;">
+    <img src="https://i.ibb.co/3WqXGqZ/logo.png" style="width:32px;height:32px;border-radius:8px;" alt="Logo">
     <h2 style="font-size:18px;font-weight:800;">LibreVPN</h2>
   </div>
   <div class="s-nav">
@@ -159,181 +50,173 @@
     <button class="nav-btn" onclick="nav('servers', this)">⚡ Сервера</button>
     <button class="nav-btn" onclick="nav('plans', this)">💎 Тарифы</button>
     <button class="nav-btn" onclick="nav('news', this)">📰 Новости</button>
-    <button class="nav-btn" onclick="nav('about', this)">🌐 О проекте</button>
     <button class="nav-btn" onclick="nav('vpn-info', this)">📖 Что такое VPN</button>
-  </div>
-</div>
+    <button class="nav-btn" onclick="nav('about', this)">🌐 О проекте</button>
+    
+    <!-- АККОРДЕОН ПРИЛОЖЕНИЙ -->
+    <button class="nav-btn" onclick="toggleSub('sub-apps', this)">📱 Приложения <span style="font-size:10px;">▼</span></button>
+    <div class="submenu" id="sub-apps">
+      <button class="sub-btn" onclick="nav('app-str', this)">Streisand</button>
+      <button class="sub-btn" onclick="nav('app-hap', this)">Happ</button>
+      <button class="sub-btn" onclick="nav('app-v2', this)">v2rayNG</button>
+      <button class="sub-btn" onclick="nav('app-out', this)">Outline</button>
+    </div>
 
-<div class="main-content">
+    <button class="nav-btn" onclick="nav('keys', this)">🔑 Ключи</button>
+    <button class="nav-btn" onclick="nav('help', this)">❓ Помощь</button>
+    <button class="nav-btn" onclick="nav('legal', this)">📜 Права</button>
+    <button class="nav-btn" onclick="nav('support', this)">💬 Поддержка</button>
+  </div>
+</nav>
+
+<!-- ОСНОВНОЙ КОНТЕНТ -->
+<main class="main-content">
 
   <!-- ГЛАВНАЯ -->
-  <div id="page-home" class="page active">
+  <section id="page-home" class="page active">
     <h1 class="h-title">LibreVPN — Свобода в каждой точке</h1>
     <p class="h-desc">Мы стираем границы и возвращаем тебе контроль над интернетом. Быстрые сервера, надежное шифрование и полная анонимность без компромиссов.</p>
+    
     <div class="glass-card">
-      <h2 style="font-size:18px; margin-bottom:12px;">Почему выбирают нас?</h2>
+      <h2 style="font-size:18px; margin-bottom:12px; color:var(--primary);">Почему выбирают нас?</h2>
       <div class="article-text" style="font-size:14px;">
-        <p>В современном мире доступ к информации — это базовая потребность, а не роскошь. LibreVPN создавался как ответ на жесткие ограничения и несправедливые блокировки.</p>
-        <p><strong>Скорость:</strong> Мы используем современные протоколы (VLESS, Reality, Hysteria2), которые не только обходят блокировки, но и выдают скорости до 1 Гбит/с.</p>
+        <p>В современном мире доступ к информации — это базовая потребность, а не роскошь. LibreVPN создавался как ответ на жесткие ограничения и несправедливые блокировки. Мы не просто продаем подписки, мы даем инструмент для свободной жизни.</p>
+        <p><strong>Скорость:</strong> Мы используем современные протоколы (VLESS, Reality, Hysteria2), которые не только обходят блокировки, но и выдают скорости до 1 Гбит/с, позволяя смотреть кино в 4K без буферизации.</p>
         <p><strong>Безопасность:</strong> Твой трафик шифруется по стандартам AES-256. Даже если провайдер захочет посмотреть, что ты передаешь, он увидит лишь хаотичный набор данных.</p>
-        <p><strong>Доступность:</strong> Мы работаем на всех платформах: iOS, Android, Windows, macOS и Linux.</p>
+        <p><strong>Доступность:</strong> Мы работаем на всех платформах: iOS, Android, Windows, macOS и Linux. Твой доступ сохраняется везде, где бы ты ни находился.</p>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- СЕРВЕРА -->
-  <div id="page-servers" class="page">
+  <section id="page-servers" class="page">
     <h1 class="h-title">Сервера</h1>
-    <p class="h-desc">Нажми на сервер, чтобы скопировать ключ.</p>
+    <p class="h-desc">Больше серверов еще будут добавляться. Нажми на сервер, чтобы скопировать ключ.</p>
     
     <div class="accordion open">
       <div class="acc-header" onclick="this.parentElement.classList.toggle('open')">
-        <span>🇪🇺 Европа (Fast)</span>
-        <span class="arrow">▼</span>
+        <span>🇪🇺 Европа (Fast)</span><span class="arrow">▼</span>
       </div>
       <div class="acc-body" id="srv-eu"></div>
     </div>
 
     <div class="accordion">
       <div class="acc-header" onclick="this.parentElement.classList.toggle('open')">
-        <span>🇺🇸 Америка</span>
-        <span class="arrow">▼</span>
+        <span>🇺🇸 Америка</span><span class="arrow">▼</span>
       </div>
       <div class="acc-body" id="srv-us"></div>
     </div>
 
     <div class="accordion">
       <div class="acc-header" onclick="this.parentElement.classList.toggle('open')">
-        <span>🌏 Азия</span>
-        <span class="arrow">▼</span>
+        <span>🌏 Азия</span><span class="arrow">▼</span>
       </div>
       <div class="acc-body" id="srv-as"></div>
     </div>
-  </div>
+  </section>
+
+  <!-- ПРИЛОЖЕНИЯ -->
+  <section id="page-app-str" class="page">
+    <h1 class="h-title">Streisand (iOS)</h1>
+    <div class="app-card">
+      <div class="app-header"><div class="app-icon">📱</div><div><div class="app-title">Streisand</div><div style="font-size:12px; color:var(--text-muted);">Мощный клиент для iOS</div></div></div>
+      <button class="btn" onclick="nav('servers')">Подключиться</button>
+      <div class="app-history">
+        <strong>История создания:</strong><br>
+        Streisand был разработан в 2023 году как альтернатива перегруженным клиентам. Его главная особенность — поддержка множества протоколов (VLESS, VMess, Trojan) в одном интерфейсе. Название отсылает к фильму «The Streisand Effect», символизируя свободу информации.
+      </div>
+    </div>
+  </section>
+
+  <section id="page-app-hap" class="page">
+    <h1 class="h-title">Happ</h1>
+    <div class="app-card">
+      <div class="app-header"><div class="app-icon">💜</div><div><div class="app-title">Happ</div><div style="font-size:12px; color:var(--text-muted);">Кроссплатформенный клиент</div></div></div>
+      <button class="btn" onclick="nav('servers')">Подключиться</button>
+      <div class="app-history">
+        <strong>История создания:</strong><br>
+        Happ появился как проект энтузиастов, которые хотели объединить удобство iOS и гибкость Android. Он поддерживает Reality и Hysteria2, что делает его одним из самых быстрых клиентов на рынке. Разработка ведется открыто, а сообщество активно помогает с тестированием.
+      </div>
+    </div>
+  </section>
 
   <!-- ТАРИФЫ -->
-  <div id="page-plans" class="page">
+  <section id="page-plans" class="page">
     <h1 class="h-title">Тарифные планы</h1>
     <p class="h-desc">Выбери свой уровень свободы.</p>
     
-    <div class="plan-card" onclick="this.classList.toggle('open')">
-      <div class="plan-header"><div><div class="plan-name">Libre Free</div><div style="font-size:12px; color:var(--text-muted);">Для базовых задач</div></div><div class="plan-price">0 ₽</div></div>
-      <div class="plan-body">
-        <p><strong>Что входит:</strong></p>
-        <ul style="margin-left:16px; margin-top:8px;">
-          <li>5 стандартных серверов</li>
-          <li>Обычная поддержка (ответ в течение 24ч)</li>
-          <li>Обновление серверов раз в 2 дня</li>
-          <li>Автоматический тест серверов</li>
-        </ul>
+    <div class="accordion">
+      <div class="acc-header" onclick="this.parentElement.classList.toggle('open')"><span>Libre Free</span><span style="color:var(--primary);">0 ₽</span></div>
+      <div class="acc-body"><p>5 серверов, базовая поддержка, автотест.</p></div>
+    </div>
+    <div class="accordion">
+      <div class="acc-header" onclick="this.parentElement.classList.toggle('open')"><span>Libre Plus</span><span style="color:var(--primary);">90 ₽</span></div>
+      <div class="acc-body"><p>10 серверов, приоритетная поддержка, обновление каждый день.</p></div>
+    </div>
+    <div class="accordion" style="border-color:var(--accent);">
+      <div class="acc-header" onclick="this.parentElement.classList.toggle('open')"><span>Black Plus</span><span style="color:#fbbf24;">299 ₽</span></div>
+      <div class="acc-body">
+        <p>20 серверов, супер-поддержка, обновление каждый час, выделенный IP.</p>
+        <p style="margin-top:10px;"><strong>Как получить:</strong> Обратитесь в Telegram <a href="https://t.me/IibreVpn" style="color:var(--primary);">@IibreVpn</a>.</p>
       </div>
     </div>
-
-    <div class="plan-card" onclick="this.classList.toggle('open')">
-      <div class="plan-header"><div><div class="plan-name">Libre Plus</div><div style="font-size:12px; color:var(--text-muted);">Для комфорта</div></div><div class="plan-price">90 ₽</div></div>
-      <div class="plan-body">
-        <p><strong>Что входит:</strong></p>
-        <ul style="margin-left:16px; margin-top:8px;">
-          <li>10 отборных серверов</li>
-          <li>Приоритетная поддержка (ответ в течение 2ч)</li>
-          <li>Обновление серверов каждый день</li>
-          <li>Высокая скорость без лимитов</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="plan-card black-plan" onclick="this.classList.toggle('open')">
-      <div class="plan-header"><div><div class="plan-name" style="color:#fbbf24;">Black Plus</div><div style="font-size:12px; color:var(--accent);">Максимум возможностей</div></div><div class="plan-price">299 ₽</div></div>
-      <div class="plan-body">
-        <p><strong>Что входит:</strong></p>
-        <ul style="margin-left:16px; margin-top:8px;">
-          <li>20 отборных серверов</li>
-          <li>Супер-приоритетная поддержка (личный менеджер)</li>
-          <li>Обновление серверов каждый час</li>
-          <li>Выделенный IP-адрес</li>
-          <li><strong>Личная связь с владельцем сайта</strong></li>
-        </ul>
-        <div style="margin-top:16px; padding:12px; background:rgba(139,92,246,0.1); border-radius:12px; font-size:13px;">
-          <strong>Как получить:</strong> Обратитесь в наш <a href="https://t.me/IibreVpn" target="_blank" style="color:var(--primary);">Telegram-канал</a> к владельцу или помощникам.
-        </div>
-        <div style="margin-top:12px; font-size:13px;">
-          <strong>Способы оплаты:</strong> Озон Банк, любая криптовалюта (BTC, USDT, TON), Telegram-звёзды, NFT.
-        </div>
-      </div>
-    </div>
-  </div>
+  </section>
 
   <!-- НОВОСТИ -->
-  <div id="page-news" class="page">
+  <section id="page-news" class="page">
     <h1 class="h-title">Новости</h1>
-    <div id="news-container">Загрузка...</div>
-  </div>
+    <div id="news-container" class="glass-card">Загрузка...</div>
+  </section>
 
-  <!-- О ПРОЕКТЕ -->
-  <div id="page-about" class="page">
-    <h1 class="h-title">О проекте</h1>
-    <div class="glass-card">
-      <div class="article-text">
-        <p>Проект <strong>LibreVPN</strong> был основан в <strong>октябре 2026 года</strong> небольшой командой энтузиастов.</p>
-        <p>Идея родилась спонтанно: мы хотели создать место, где каждый пользователь мог бы получить быстрый и безопасный доступ к сети. Первая версия сайта появилась 15 октября 2026 года — это был простой список конфигураций, который мы собирали вручную.</p>
-        <p>За месяц проект вырос. Мы добавили разделы с приложениями, настроили автоматическое обновление серверов, внедрили современные протоколы. Сегодня LibreVPN — это сообщество людей, ценящих свободу.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ЧТО ТАКОЕ VPN -->
-  <div id="page-vpn-info" class="page">
+  <!-- ОСТАЛЬНЫЕ РАЗДЕЛЫ -->
+  <section id="page-vpn-info" class="page">
     <h1 class="h-title">Что такое VPN</h1>
-    <div class="glass-card">
-      <div class="article-text">
-        <p><strong>Введение</strong></p>
-        <p>VPN (Virtual Private Network) — это технология, которая создаёт зашифрованное соединение между вашим устройством и удалённым сервером. Это защищённый туннель для вашего трафика.</p>
-        <p>Когда вы подключаетесь к VPN, ваш реальный IP-адрес скрывается, а все данные шифруются. Даже провайдер не может видеть, какие сайты вы посещаете.</p>
-        <h3>Как это работает?</h3>
-        <p>Процесс выглядит так:</p>
-        <ul style="margin-left:20px; margin-bottom:16px;">
-          <li>1. Ваше устройство подключается к серверу.</li>
-          <li>2. Создаётся зашифрованный туннель.</li>
-          <li>3. Весь трафик идёт через этот туннель.</li>
-          <li>4. Сайты видят IP сервера, а не ваш.</li>
-        </ul>
-        <h3>Протоколы шифрования</h3>
-        <p><strong>VLESS</strong> — современный протокол, полагается на TLS. Очень быстрый.</p>
-        <p><strong>Reality</strong> — технология маскировки, делает трафик похожим на обычное посещение сайта.</p>
-        <p><strong>Hysteria2</strong> — протокол на базе QUIC, максимальная скорость.</p>
-        <h3>Заключение</h3>
-        <p>VPN — это мощный инструмент, который даёт вам контроль над вашей цифровой жизнью.</p>
-      </div>
+    <div class="glass-card article-text">
+      <p>VPN (Virtual Private Network) — это технология, которая создаёт зашифрованное соединение между вашим устройством и удалённым сервером. Это защищённый туннель для вашего трафика.</p>
+      <h3>Протоколы шифрования</h3>
+      <p><strong>VLESS</strong> — современный протокол, полагается на TLS. Очень быстрый.</p>
+      <p><strong>Reality</strong> — технология маскировки, делает трафик похожим на обычное посещение сайта.</p>
     </div>
-  </div>
+  </section>
 
-  <!-- АДМИН ПАНЕЛЬ -->
-  <div id="page-admin" class="page">
+  <section id="page-about" class="page">
+    <h1 class="h-title">О проекте</h1>
+    <div class="glass-card article-text">
+      <p>Проект <strong>LibreVPN</strong> был основан в <strong>октябре 2026 года</strong> небольшой командой энтузиастов.</p>
+      <p>Идея родилась спонтанно: мы хотели создать место, где каждый пользователь мог бы получить быстрый и безопасный доступ к сети. Первая версия сайта появилась 15 октября 2026 года.</p>
+    </div>
+  </section>
+
+  <section id="page-keys" class="page"><h1 class="h-title">Ключи</h1><div class="glass-card">Здесь будут подписки.</div></section>
+  <section id="page-help" class="page"><h1 class="h-title">Помощь</h1><div class="glass-card">Инструкция по подключению.</div></section>
+  <section id="page-legal" class="page"><h1 class="h-title">Права</h1><div class="glass-card">Все бесплатные ключи взяты из открытых источников.</div></section>
+  <section id="page-support" class="page"><h1 class="h-title">Поддержка</h1><div class="glass-card">Telegram: <a href="https://t.me/IibreVpn">@IibreVpn</a></div></section>
+
+  <!-- АДМИН ПАНЕЛЬ (СКРЫТА) -->
+  <section id="page-admin" class="page">
     <h1 class="h-title" style="color:#ef4444;">Админ-панель</h1>
-    
     <div class="admin-stats">
-      <div class="stat-box"><div class="stat-val" id="stat-visits">0</div><div class="stat-lbl">Заходов</div></div>
-      <div class="stat-box"><div class="stat-val" id="stat-unique">0</div><div class="stat-lbl">IP</div></div>
-      <div class="stat-box"><div class="stat-val" id="stat-subs">0</div><div class="stat-lbl">Подписок</div></div>
+      <div class="stat-box"><div class="stat-val" id="stat-users">0</div><div class="stat-lbl">Юзеров</div></div>
+      <div class="stat-box"><div class="stat-val" id="stat-servers">0</div><div class="stat-lbl">Серверов</div></div>
+      <div class="stat-box"><div class="stat-val" id="stat-news">0</div><div class="stat-lbl">Новостей</div></div>
     </div>
 
     <div class="admin-tabs">
       <div class="admin-tab active" onclick="switchAdmin('users', this)">Юзеры</div>
       <div class="admin-tab" onclick="switchAdmin('servers', this)">Сервера</div>
       <div class="admin-tab" onclick="switchAdmin('news', this)">Новости</div>
+      <div class="admin-tab" onclick="switchAdmin('banner', this)">Баннеры</div>
     </div>
 
-    <div id="admin-users" class="admin-section active">
-      <div id="admin-user-list">Загрузка...</div>
-    </div>
-
+    <div id="admin-users" class="admin-section active"><div id="admin-user-list">Загрузка...</div></div>
+    
     <div id="admin-servers" class="admin-section">
       <div class="glass-card">
-        <h3 style="margin-bottom:12px;">Добавить сервер</h3>
-        <input type="text" id="srv-name" class="admin-input" placeholder="Название (США)">
-        <input type="text" id="srv-country" class="admin-input" placeholder="Флаг (🇺🇸)">
-        <input type="text" id="srv-proto" class="admin-input" placeholder="Протокол (VLESS)">
-        <input type="text" id="srv-key" class="admin-input" placeholder="Ключ (vless://...)">
+        <h3>Добавить сервер</h3>
+        <input type="text" id="s-name" class="admin-input" placeholder="Название">
+        <input type="text" id="s-country" class="admin-input" placeholder="Флаг">
+        <input type="text" id="s-proto" class="admin-input" placeholder="Протокол">
+        <input type="text" id="s-key" class="admin-input" placeholder="Ключ">
         <button class="btn" onclick="addServer()">Добавить</button>
       </div>
       <div id="admin-srv-list">Загрузка...</div>
@@ -341,210 +224,27 @@
 
     <div id="admin-news" class="admin-section">
       <div class="glass-card">
-        <h3 style="margin-bottom:12px;">Добавить новость</h3>
-        <input type="text" id="news-title" class="admin-input" placeholder="Заголовок">
-        <input type="text" id="news-body" class="admin-input" placeholder="Текст новости">
+        <h3>Добавить новость</h3>
+        <input type="text" id="n-title" class="admin-input" placeholder="Заголовок">
+        <input type="text" id="n-body" class="admin-input" placeholder="Текст">
         <button class="btn" onclick="addNews()">Опубликовать</button>
       </div>
       <div id="admin-news-list">Загрузка...</div>
     </div>
-  </div>
 
-</div>
+    <div id="admin-banner" class="admin-section">
+      <div class="glass-card">
+        <h3>Добавить баннер на весь экран</h3>
+        <input type="text" id="b-text" class="admin-input" placeholder="Текст баннера">
+        <button class="btn" onclick="createBanner()">Создать баннер</button>
+      </div>
+    </div>
+  </section>
+
+</main>
 
 <div id="toast" class="toast">Готово</div>
 
-<script>
-// ==== ТЕМА ====
-const toggleTheme = () => {
-  const body = document.body; const btn = document.getElementById('theme-btn');
-  if (body.getAttribute('data-theme') === 'dark') { body.removeAttribute('data-theme'); btn.textContent = '🌙'; localStorage.setItem('theme', 'light'); }
-  else { body.setAttribute('data-theme', 'dark'); btn.textContent = '☀️'; localStorage.setItem('theme', 'dark'); }
-};
-if (localStorage.getItem('theme') === 'dark') { document.body.setAttribute('data-theme', 'dark'); document.getElementById('theme-btn').textContent = '☀️'; }
-
-// ==== НАВИГАЦИЯ ====
-const toggleMenu = () => { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('open'); };
-const nav = (pageId, btn) => {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  const target = document.getElementById('page-' + pageId);
-  if (target) { target.classList.add('active'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-  if (btn) btn.classList.add('active');
-  if (window.innerWidth < 768) toggleMenu();
-};
-
-// ==== АДМИНКА ====
-let adminUsersData = [];
-const askAdminPass = () => {
-  const pass = prompt('Введите пароль администратора:');
-  if (pass === '1742staW02') { nav('admin'); loadAdminData(); }
-  else if (pass !== null) showToast('❌ Неверный пароль');
-};
-
-const switchAdmin = (tab, btn) => {
-  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('admin-' + tab).classList.add('active');
-};
-
-const loadAdminData = async () => {
-  try {
-    const res = await fetch('/api/users');
-    adminUsersData = await res.json();
-    renderUsers(adminUsersData);
-    document.getElementById('stat-visits').textContent = adminUsersData.length;
-    document.getElementById('stat-unique').textContent = new Set(adminUsersData.map(u => u.ip)).size;
-    document.getElementById('stat-subs').textContent = adminUsersData.filter(u => u.plan !== 'Free').length;
-  } catch (e) {}
-
-  try {
-    const res = await fetch('/api/servers?all=true');
-    const servers = await res.json();
-    document.getElementById('admin-srv-list').innerHTML = servers.map(s => `
-      <div class="user-row">
-        <div class="user-header"><div>${s.country} ${s.name} (${s.protocol})</div><div style="color:${s.active ? '#10b981' : '#ef4444'}; font-weight:800;">${s.active ? 'Вкл' : 'Выкл'}</div></div>
-        <div class="user-actions">
-          <button class="btn-grant" style="background:${s.active ? '#f59e0b' : '#10b981'}" onclick="toggleServer(${s.id}, ${!s.active})">${s.active ? 'Выкл' : 'Вкл'}</button>
-          <button class="btn-ban" onclick="deleteServer(${s.id})">Удалить</button>
-        </div>
-      </div>
-    `).join('');
-  } catch (e) {}
-
-  try {
-    const res = await fetch('/api/news');
-    const news = await res.json();
-    document.getElementById('admin-news-list').innerHTML = news.map(n => `
-      <div class="user-row">
-        <div class="user-header"><div>${n.title}</div></div>
-        <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">${n.body}</div>
-        <div class="user-actions"><button class="btn-ban" onclick="deleteNews(${n.id})">Удалить</button></div>
-      </div>
-    `).join('');
-  } catch (e) {}
-};
-
-const renderUsers = (users) => {
-  document.getElementById('admin-user-list').innerHTML = users.map(u => `
-    <div class="user-row">
-      <div class="user-header">
-        <div><strong>ID: ${u.id}</strong> | IP: ${u.ip}</div>
-        <div style="font-weight:800; color:${u.plan === 'Free' ? 'var(--text-muted)' : '#10b981'};">${u.plan}</div>
-      </div>
-      <div style="font-size:11px; color:var(--text-muted);">${new Date(u.created_at).toLocaleString()} | Статус: ${u.status === 'banned' ? '❌ Забанен' : '✅ Активен'}</div>
-      <div class="user-actions">
-        <select onchange="grantSub(${u.id}, this.value)" style="padding:4px; border-radius:4px;">
-          <option value="" disabled selected>Выдать подписку</option>
-          <option value="Free">Free</option>
-          <option value="Plus">Plus</option>
-          <option value="Black">Black</option>
-        </select>
-        ${u.status === 'active' ? `<button class="btn-ban" onclick="banUser(${u.id}, 'banned')">Забанить</button>` : `<button class="btn-unban" onclick="banUser(${u.id}, 'active')">Разбанить</button>`}
-      </div>
-    </div>
-  `).join('') || '<p>Нет пользователей</p>';
-};
-
-const filterUsers = (query) => {
-  const filtered = adminUsersData.filter(u => u.ip.includes(query) || u.id.toString().includes(query));
-  renderUsers(filtered);
-};
-
-const grantSub = async (id, plan) => { await fetch('/api/grant', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, plan }) }); showToast(`✅ Выдан тариф ${plan}`); loadAdminData(); };
-const banUser = async (id, status) => { await fetch('/api/ban', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status }) }); showToast(status === 'banned' ? '❌ Забанен' : '✅ Разбанен'); loadAdminData(); };
-
-const addServer = async () => {
-  const name = document.getElementById('srv-name').value;
-  const country = document.getElementById('srv-country').value;
-  const protocol = document.getElementById('srv-proto').value;
-  const key = document.getElementById('srv-key').value;
-  if (!name || !key) return showToast('Заполните поля');
-  await fetch('/api/add-server', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, country, protocol, key }) });
-  showToast('✅ Сервер добавлен');
-  loadAdminData();
-  loadSite();
-};
-
-const toggleServer = async (id, active) => { await fetch('/api/toggle-server', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, active }) }); loadAdminData(); };
-const deleteServer = async (id) => { await fetch('/api/del-server', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) }); showToast('🗑️ Удален'); loadAdminData(); loadSite(); };
-
-const addNews = async () => {
-  const title = document.getElementById('news-title').value;
-  const body = document.getElementById('news-body').value;
-  if (!title) return showToast('Введите заголовок');
-  await fetch('/api/add-news', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, body }) });
-  showToast('✅ Новость добавлена');
-  document.getElementById('news-title').value = '';
-  document.getElementById('news-body').value = '';
-  loadAdminData();
-  loadSite();
-};
-const deleteNews = async (id) => { await fetch('/api/del-news', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) }); showToast('🗑️ Удалена'); loadAdminData(); loadSite(); };
-
-// ==== ЗАГРУЗКА НА САЙТ ====
-fetch('/api/visit', { method: 'POST' }).catch(e => console.log('Offline'));
-
-const loadSite = async () => {
-  try {
-    const res = await fetch('/api/servers');
-    const servers = await res.json();
-    const renderSrv = (list) => list.map(s => `
-      <div class="srv-item" onclick="cUrl('${s.key}', '${s.name}')">
-        <div class="srv-info">
-          <span class="srv-flag">${s.country || '🌍'}</span>
-          <div><div class="srv-name">${s.name}</div><div class="srv-proto">${s.protocol || 'VLESS'}</div></div>
-        </div>
-      </div>`).join('');
-    
-    document.getElementById('srv-eu').innerHTML = renderSrv(servers.filter(s => s.country === '🇪🇺' || s.country === '🇩🇪' || s.country === '🇫🇷' || s.country === '🇬🇧' || s.country === '🇵🇱')) || '<p style="font-size:12px; color:var(--text-muted);">Нет серверов в этом регионе</p>';
-    document.getElementById('srv-us').innerHTML = renderSrv(servers.filter(s => s.country === '🇺🇸' || s.country === '🇨🇦')) || '<p style="font-size:12px; color:var(--text-muted);">Нет серверов в этом регионе</p>';
-    document.getElementById('srv-as').innerHTML = renderSrv(servers.filter(s => s.country === '🇯🇵' || s.country === '🇸🇬' || s.country === '🇰🇷' || s.country === '🇭🇰')) || '<p style="font-size:12px; color:var(--text-muted);">Нет серверов в этом регионе</p>';
-  } catch(e) {}
-
-  try {
-    const res = await fetch('/api/news');
-    const news = await res.json();
-    if (news.length > 0) {
-      document.getElementById('news-container').innerHTML = news.map(n => `
-        <div class="news-card" onclick="this.classList.toggle('open')">
-          <div class="news-title"><span style="color:var(--text-main);">${n.title}</span><span>${n.date}</span></div>
-          <div class="news-body">${n.body}</div>
-        </div>
-      `).join('');
-    } else {
-      document.getElementById('news-container').innerHTML = '<p style="text-align:center; color:var(--text-muted);">Новостей пока нет. Добавьте их в админке.</p>';
-    }
-  } catch(e) {}
-};
-
-// ==== КОПИРОВАНИЕ И ТОСТ ====
-const showToast = (msg) => { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(window._toast); window._toast = setTimeout(() => t.classList.remove('show'), 2000); };
-const cUrl = (key, name) => { navigator.clipboard.writeText(key).then(() => showToast('✅ ' + name + ' скопирован')).catch(() => {}); };
-
-// ==== ФОН ====
-const canvas = document.getElementById('bg-canvas');
-const ctx = canvas.getContext('2d');
-let particles = [];
-const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
-window.addEventListener('resize', resize); resize();
-for(let i=0; i<40; i++) particles.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx: (Math.random()-0.5)*0.5, vy: (Math.random()-0.5)*0.5, r: Math.random()*2+1});
-const animate = () => {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  particles.forEach(p => {
-    p.x+=p.vx; p.y+=p.vy;
-    if(p.x<0||p.x>canvas.width) p.vx*=-1;
-    if(p.y<0||p.y>canvas.height) p.vy*=-1;
-    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    ctx.fillStyle = document.body.getAttribute('data-theme') === 'dark' ? 'rgba(139,92,246,0.5)' : 'rgba(99,102,241,0.2)';
-    ctx.fill();
-  });
-  requestAnimationFrame(animate);
-};
-animate();
-
-loadSite();
-</script>
+<script src="app.js"></script>
 </body>
 </html>
