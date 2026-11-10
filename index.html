@@ -29,38 +29,30 @@
 
   #bg-canvas { position: fixed; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; }
 
-  /* Шапка */
   .header {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center;
     padding: 16px 20px; background: var(--bg-glass); backdrop-filter: var(--blur);
-    border-bottom: 1px solid var(--border-glass); transition: background 0.4s;
+    border-bottom: 1px solid var(--border-glass);
   }
   .logo-area { display: flex; align-items: center; gap: 12px; cursor: pointer; }
   .logo-img { width: 40px; height: 40px; border-radius: 12px; object-fit: cover; background: var(--primary); padding: 4px; }
   .logo-text { font-size: 20px; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .header-actions { display: flex; gap: 10px; align-items: center; }
-  .icon-btn { background: var(--bg-glass-card); border: 1px solid var(--border-glass); color: var(--text-main); width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; backdrop-filter: var(--blur); }
+  .icon-btn { background: var(--bg-glass-card); border: 1px solid var(--border-glass); color: var(--text-main); width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
   .icon-btn:active { transform: scale(0.9); }
 
-  /* Меню */
   .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 998; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(4px); }
   .sidebar-overlay.open { opacity: 1; pointer-events: auto; }
-  .sidebar {
-    position: fixed; top: 0; left: 0; width: 290px; height: 100vh; z-index: 999;
-    background: var(--bg-glass-heavy); backdrop-filter: blur(30px);
-    border-right: 1px solid var(--border-glass); transform: translateX(-100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    display: flex; flex-direction: column; box-shadow: var(--shadow);
-  }
+  .sidebar { position: fixed; top: 0; left: 0; width: 290px; height: 100vh; z-index: 999; background: var(--bg-glass-heavy); backdrop-filter: blur(30px); border-right: 1px solid var(--border-glass); transform: translateX(-100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; box-shadow: var(--shadow); }
   .sidebar.open { transform: translateX(0); }
   .s-header { padding: 24px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-glass); }
   .s-nav { flex: 1; overflow-y: auto; padding: 20px 16px; display: flex; flex-direction: column; gap: 6px; }
   .nav-btn { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 16px; border-radius: 16px; border: none; background: transparent; color: var(--text-main); font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: left; }
   .nav-btn.active { background: var(--bg-glass-card); color: var(--primary); border: 1px solid var(--border-glass); }
   
-  .admin-btn { background: linear-gradient(135deg, #ef4444, #b91c1c) !important; color: #fff !important; font-weight: 800; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); margin-bottom: 10px; border: 1px solid #f87171 !important; }
+  .admin-btn { background: linear-gradient(135deg, #ef4444, #b91c1c) !important; color: #fff !important; font-weight: 800; margin-bottom: 10px; border: 1px solid #f87171 !important; }
   .admin-btn:active { transform: scale(0.97); }
 
-  /* Контент */
   .main-content { padding: 100px 20px 40px; max-width: 700px; margin: 0 auto; }
   .page { display: none; opacity: 0; transform: translateY(20px); transition: all 0.4s ease-out; }
   .page.active { display: block; opacity: 1; transform: translateY(0); }
@@ -74,16 +66,16 @@
   .stat-val { font-size: 20px; font-weight: 800; color: var(--primary); }
   .stat-lbl { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
 
-  .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; }
-  .admin-tab { padding: 10px 16px; border-radius: 12px; background: var(--bg-glass-card); border: 1px solid var(--border-glass); color: var(--text-main); cursor: pointer; font-weight: 600; white-space: nowrap; }
+  .admin-tabs { display: flex; gap: 6px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; }
+  .admin-tab { padding: 10px 16px; border-radius: 12px; background: var(--bg-glass-card); border: 1px solid var(--border-glass); color: var(--text-main); cursor: pointer; font-weight: 600; white-space: nowrap; font-size: 13px; }
   .admin-tab.active { background: #ef4444; color: #fff; }
   .admin-section { display: none; }
   .admin-section.active { display: block; }
   
-  .user-row { display: flex; flex-direction: column; gap: 8px; padding: 12px; background: var(--bg-glass-card); border-radius: 12px; margin-bottom: 8px; font-size: 13px; }
+  .user-row { display: flex; flex-direction: column; gap: 8px; padding: 12px; background: var(--bg-glass-card); border-radius: 12px; margin-bottom: 8px; font-size: 13px; border: 1px solid var(--border-glass); }
   .user-header { display: flex; justify-content: space-between; align-items: center; }
-  .user-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-  .user-actions button { padding: 6px 10px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 11px; }
+  .user-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .user-actions button, .user-actions select { padding: 6px 10px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 11px; }
   .btn-grant { background: #10b981; color: #fff; }
   .btn-ban { background: #ef4444; color: #fff; }
   .btn-unban { background: #f59e0b; color: #fff; }
@@ -120,47 +112,14 @@
     <button class="nav-btn admin-btn" onclick="askAdminPass()">🛡️ АДМИН-ПАНЕЛЬ</button>
     <button class="nav-btn active" onclick="nav('home', this)">🏠 Главная</button>
     <button class="nav-btn" onclick="nav('srv-all', this)">⚡ Сервера</button>
-    <button class="nav-btn" onclick="nav('plans', this)">💎 Тарифы</button>
-    <button class="nav-btn" onclick="nav('subs', this)">🔑 Ключи</button>
     <button class="nav-btn" onclick="nav('news', this)">📰 Новости</button>
-    <button class="nav-btn" onclick="nav('support', this)">💬 Поддержка</button>
   </div>
 </div>
 
 <div class="main-content">
-
-  <div id="page-home" class="page active">
-    <h1 class="h-title">LibreVPN — Свобода</h1>
-    <div class="glass-card">
-      <h2 style="font-size:18px; margin-bottom:12px;">Добро пожаловать!</h2>
-      <p>Сайт работает на сервере Node.js. База данных подключена и готова к работе.</p>
-    </div>
-  </div>
-
-  <div id="page-srv-all" class="page">
-    <h1 class="h-title">Сервера</h1>
-    <div id="srv-container">Загрузка серверов...</div>
-  </div>
-
-  <div id="page-plans" class="page">
-    <h1 class="h-title">Тарифы</h1>
-    <div class="glass-card">Здесь будут тарифы.</div>
-  </div>
-
-  <div id="page-subs" class="page">
-    <h1 class="h-title">Ключи</h1>
-    <div class="glass-card">Здесь будут ключи.</div>
-  </div>
-
-  <div id="page-news" class="page">
-    <h1 class="h-title">Новости</h1>
-    <div id="news-container">Загрузка новостей...</div>
-  </div>
-
-  <div id="page-support" class="page">
-    <h1 class="h-title">Поддержка</h1>
-    <div class="glass-card"><p>Наш Telegram: @IibreVpn</p></div>
-  </div>
+  <div id="page-home" class="page active"><h1 class="h-title">LibreVPN</h1><div class="glass-card"><p>Все системы работают.</p></div></div>
+  <div id="page-srv-all" class="page"><h1 class="h-title">Сервера</h1><div id="srv-container"></div></div>
+  <div id="page-news" class="page"><h1 class="h-title">Новости</h1><div id="news-container"></div></div>
 
   <!-- АДМИН ПАНЕЛЬ -->
   <div id="page-admin" class="page">
@@ -168,79 +127,76 @@
     
     <div class="admin-stats">
       <div class="stat-box"><div class="stat-val" id="stat-visits">0</div><div class="stat-lbl">Заходов</div></div>
-      <div class="stat-box"><div class="stat-val" id="stat-unique">0</div><div class="stat-lbl">Уникальных</div></div>
+      <div class="stat-box"><div class="stat-val" id="stat-unique">0</div><div class="stat-lbl">IP</div></div>
       <div class="stat-box"><div class="stat-val" id="stat-subs">0</div><div class="stat-lbl">Подписок</div></div>
     </div>
 
     <div class="admin-tabs">
-      <div class="admin-tab active" onclick="switchAdmin('users', this)">Пользователи</div>
+      <div class="admin-tab active" onclick="switchAdmin('users', this)">Юзеры</div>
       <div class="admin-tab" onclick="switchAdmin('servers', this)">Сервера</div>
       <div class="admin-tab" onclick="switchAdmin('news', this)">Новости</div>
+      <div class="admin-tab" onclick="switchAdmin('tools', this)">Инструменты</div>
     </div>
 
-    <!-- Пользователи -->
+    <!-- ЮЗЕРЫ -->
     <div id="admin-users" class="admin-section active">
-      <input type="text" class="admin-input" placeholder="Поиск по IP..." oninput="filterUsers(this.value)">
-      <div class="glass-card" style="padding:12px;">
-        <div id="admin-user-list">Загрузка...</div>
-      </div>
-      <button class="btn" style="background:#0284c7; margin-top:10px;" onclick="exportCSV()">📥 Скачать CSV</button>
+      <input type="text" class="admin-input" placeholder="Поиск по IP или ID..." oninput="filterUsers(this.value)">
+      <div id="admin-user-list">Загрузка...</div>
+      <button class="btn" style="background:#0284c7; margin-top:10px;" onclick="exportCSV()">📥 Экспорт в CSV</button>
     </div>
 
-    <!-- Сервера -->
+    <!-- СЕРВЕРА -->
     <div id="admin-servers" class="admin-section">
       <div class="glass-card">
-        <h3 style="margin-bottom:12px;">Добавить сервер</h3>
         <input type="text" id="srv-name" class="admin-input" placeholder="Название">
-        <input type="text" id="srv-country" class="admin-input" placeholder="Флаг (🇺🇸)">
-        <input type="text" id="srv-proto" class="admin-input" placeholder="Протокол (VLESS)">
-        <input type="text" id="srv-key" class="admin-input" placeholder="Ключ (vless://...)">
+        <input type="text" id="srv-country" class="admin-input" placeholder="Флаг">
+        <input type="text" id="srv-proto" class="admin-input" placeholder="Протокол">
+        <input type="text" id="srv-key" class="admin-input" placeholder="Ключ">
         <button class="btn" onclick="addServer()">Добавить</button>
       </div>
-      <div class="glass-card">
-        <h3 style="margin-bottom:12px;">Список серверов</h3>
-        <div id="admin-srv-list">Загрузка...</div>
-      </div>
+      <div id="admin-srv-list">Загрузка...</div>
     </div>
 
-    <!-- Новости -->
+    <!-- НОВОСТИ -->
     <div id="admin-news" class="admin-section">
       <div class="glass-card">
-        <h3 style="margin-bottom:12px;">Добавить новость</h3>
         <input type="text" id="news-title" class="admin-input" placeholder="Заголовок">
         <input type="text" id="news-body" class="admin-input" placeholder="Текст">
         <button class="btn" onclick="addNews()">Опубликовать</button>
       </div>
+      <div id="admin-news-list">Загрузка...</div>
+    </div>
+
+    <!-- ИНСТРУМЕНТЫ -->
+    <div id="admin-tools" class="admin-section">
       <div class="glass-card">
-        <h3 style="margin-bottom:12px;">Последние новости</h3>
-        <div id="admin-news-list">Загрузка...</div>
+        <h3 style="margin-bottom:12px;">Рассылка</h3>
+        <input type="text" id="bc-msg" class="admin-input" placeholder="Текст уведомления">
+        <button class="btn" onclick="sendBroadcast()">Отправить всем</button>
+      </div>
+      <div class="glass-card">
+        <h3 style="margin-bottom:12px;">Настройки сайта</h3>
+        <input type="text" id="set-title" class="admin-input" placeholder="Заголовок сайта">
+        <button class="btn" onclick="saveSettings()">Сохранить</button>
       </div>
     </div>
   </div>
-
 </div>
 
 <div id="toast" class="toast">Готово</div>
 
 <script>
-// ==== ТЕМА ====
+let isAdmin = false;
+let adminUsersData = [];
+
 const toggleTheme = () => {
   const body = document.body; const btn = document.getElementById('theme-btn');
-  if (body.getAttribute('data-theme') === 'dark') {
-    body.removeAttribute('data-theme'); btn.textContent = '🌙'; localStorage.setItem('theme', 'light');
-  } else {
-    body.setAttribute('data-theme', 'dark'); btn.textContent = '☀️'; localStorage.setItem('theme', 'dark');
-  }
+  if (body.getAttribute('data-theme') === 'dark') { body.removeAttribute('data-theme'); btn.textContent = '🌙'; localStorage.setItem('theme', 'light'); }
+  else { body.setAttribute('data-theme', 'dark'); btn.textContent = '☀️'; localStorage.setItem('theme', 'dark'); }
 };
-if (localStorage.getItem('theme') === 'dark') {
-  document.body.setAttribute('data-theme', 'dark'); document.getElementById('theme-btn').textContent = '☀️';
-}
+if (localStorage.getItem('theme') === 'dark') { document.body.setAttribute('data-theme', 'dark'); document.getElementById('theme-btn').textContent = '☀️'; }
 
-// ==== НАВИГАЦИЯ ====
-const toggleMenu = () => {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('overlay').classList.toggle('open');
-};
+const toggleMenu = () => { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('open'); };
 const nav = (pageId, btn) => {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -250,13 +206,14 @@ const nav = (pageId, btn) => {
   if (window.innerWidth < 768) toggleMenu();
 };
 
-// ==== АДМИНКА ====
-let adminUsersData = []; // Храним для поиска
-
+// ==== ВХОД В АДМИНКУ ====
 const askAdminPass = () => {
   const pass = prompt('Введите пароль администратора:');
-  if (pass === '1742staW02') { nav('admin'); loadAdminData(); }
-  else if (pass !== null) showToast('❌ Неверный пароль');
+  if (pass === '1742staW02') {
+    isAdmin = true;
+    nav('admin');
+    loadAdminData();
+  } else if (pass !== null) showToast('❌ Неверный пароль');
 };
 
 const switchAdmin = (tab, btn) => {
@@ -266,19 +223,17 @@ const switchAdmin = (tab, btn) => {
   document.getElementById('admin-' + tab).classList.add('active');
 };
 
+// ==== ЗАГРУЗКА ДАННЫХ ====
 const loadAdminData = async () => {
-  // Пользователи
+  // Юзеры
   try {
     const res = await fetch('/api/admin/users');
     adminUsersData = await res.json();
     renderUsers(adminUsersData);
     
-    // Статистика
     document.getElementById('stat-visits').textContent = adminUsersData.length;
-    const unique = new Set(adminUsersData.map(u => u.ip)).size;
-    document.getElementById('stat-unique').textContent = unique;
-    const subs = adminUsersData.filter(u => u.plan !== 'Free').length;
-    document.getElementById('stat-subs').textContent = subs;
+    document.getElementById('stat-unique').textContent = new Set(adminUsersData.map(u => u.ip)).size;
+    document.getElementById('stat-subs').textContent = adminUsersData.filter(u => u.plan !== 'Free').length;
   } catch (e) { console.error(e); }
 
   // Сервера
@@ -287,13 +242,13 @@ const loadAdminData = async () => {
     const servers = await res.json();
     document.getElementById('admin-srv-list').innerHTML = servers.map(s => `
       <div class="user-row">
-        <div class="user-header"><div>${s.country} ${s.name} <small>(${s.protocol})</small></div><div style="color:${s.active ? '#10b981' : '#ef4444'}; font-weight:800;">${s.active ? 'Вкл' : 'Выкл'}</div></div>
+        <div class="user-header"><div>${s.country} ${s.name} (${s.protocol})</div><div style="color:${s.active ? '#10b981' : '#ef4444'}; font-weight:800;">${s.active ? 'Вкл' : 'Выкл'}</div></div>
         <div class="user-actions">
-          <button class="btn-grant" onclick="toggleServer(${s.id}, ${!s.active})" style="background:${s.active ? '#f59e0b' : '#10b981'};">${s.active ? 'Отключить' : 'Включить'}</button>
+          <button class="btn-grant" style="background:${s.active ? '#f59e0b' : '#10b981'}" onclick="toggleServer(${s.id}, ${!s.active})">${s.active ? 'Выкл' : 'Вкл'}</button>
           <button class="btn-ban" onclick="deleteServer(${s.id})">Удалить</button>
         </div>
       </div>
-    `).join('') || '<p>Нет серверов</p>';
+    `).join('');
   } catch (e) { console.error(e); }
 
   // Новости
@@ -303,10 +258,10 @@ const loadAdminData = async () => {
     document.getElementById('admin-news-list').innerHTML = news.map(n => `
       <div class="user-row">
         <div class="user-header"><div>${n.title}</div></div>
-        <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">${n.body}</div>
+        <div style="font-size:11px; color:var(--text-muted);">${n.body}</div>
         <div class="user-actions"><button class="btn-ban" onclick="deleteNews(${n.id})">Удалить</button></div>
       </div>
-    `).join('') || '<p>Нет новостей</p>';
+    `).join('');
   } catch (e) { console.error(e); }
 };
 
@@ -317,38 +272,29 @@ const renderUsers = (users) => {
         <div><strong>ID: ${u.id}</strong> | IP: ${u.ip}</div>
         <div style="font-weight:800; color:${u.plan === 'Free' ? 'var(--text-muted)' : '#10b981'};">${u.plan}</div>
       </div>
-      <div style="font-size:11px; color:var(--text-muted);">${new Date(u.created_at).toLocaleString()} | Статус: ${u.status === 'banned' ? '❌ Забанен' : '✅ Активен'}</div>
+      <div style="font-size:11px; color:var(--text-muted);">${new Date(u.created_at).toLocaleString()} | Статус: ${u.status}</div>
       <div class="user-actions">
-        <select onchange="grantSub(${u.id}, this.value)" style="padding:4px; border-radius:4px;">
-          <option value="" disabled selected>Выдать подписку</option>
+        <select onchange="grantSub(${u.id}, this.value)">
+          <option value="" disabled selected>Выдать</option>
           <option value="Free">Free</option>
           <option value="Plus">Plus</option>
           <option value="Black">Black</option>
         </select>
-        ${u.status === 'active' 
-          ? `<button class="btn-ban" onclick="banUser(${u.id}, 'banned')">Забанить</button>` 
-          : `<button class="btn-unban" onclick="banUser(${u.id}, 'active')">Разбанить</button>`}
+        ${u.status === 'active' ? `<button class="btn-ban" onclick="banUser(${u.id}, 'banned')">Бан</button>` : `<button class="btn-unban" onclick="banUser(${u.id}, 'active')">Разбан</button>`}
+        <button class="btn-ban" style="background:#64748b;" onclick="deleteUser(${u.id})">Удалить</button>
       </div>
     </div>
-  `).join('') || '<p>Нет пользователей</p>';
+  `).join('');
 };
 
-const filterUsers = (query) => {
-  const filtered = adminUsersData.filter(u => u.ip.includes(query) || u.id.toString().includes(query));
-  renderUsers(filtered);
+const filterUsers = (q) => {
+  renderUsers(adminUsersData.filter(u => u.ip.includes(q) || u.id.toString().includes(q)));
 };
 
-const grantSub = async (id, plan) => {
-  await fetch('/api/admin/grant', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: id, plan }) });
-  showToast(`✅ Выдан тариф ${plan}`);
-  loadAdminData();
-};
-
-const banUser = async (id, status) => {
-  await fetch('/api/admin/ban', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: id, status }) });
-  showToast(status === 'banned' ? '❌ Пользователь забанен' : '✅ Пользователь разбанен');
-  loadAdminData();
-};
+// ==== ДЕЙСТВИЯ ====
+const grantSub = async (id, plan) => { await fetch('/api/admin/grant', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, plan }) }); showToast(`✅ Тариф ${plan} выдан`); loadAdminData(); };
+const banUser = async (id, status) => { await fetch('/api/admin/ban', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status }) }); showToast('✅ Статус обновлен'); loadAdminData(); };
+const deleteUser = async (id) => { if(confirm('Удалить?')) { await fetch('/api/admin/delete-user', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) }); loadAdminData(); } };
 
 const addServer = async () => {
   const name = document.getElementById('srv-name').value;
@@ -357,96 +303,65 @@ const addServer = async () => {
   const key = document.getElementById('srv-key').value;
   if (!name || !key) return showToast('Заполните поля');
   await fetch('/api/admin/servers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, country, protocol, key }) });
-  showToast('✅ Сервер добавлен');
   loadAdminData();
 };
 
-const toggleServer = async (id, active) => {
-  await fetch('/api/admin/servers/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ active }) });
-  loadAdminData();
-};
-
-const deleteServer = async (id) => {
-  await fetch('/api/admin/servers/' + id, { method: 'DELETE' });
-  showToast('🗑️ Сервер удален');
-  loadAdminData();
-};
+const toggleServer = async (id, active) => { await fetch('/api/admin/servers/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ active }) }); loadAdminData(); };
+const deleteServer = async (id) => { await fetch('/api/admin/servers/' + id, { method: 'DELETE' }); loadAdminData(); };
 
 const addNews = async () => {
   const title = document.getElementById('news-title').value;
   const body = document.getElementById('news-body').value;
-  const date = new Date().toLocaleDateString();
   if (!title) return showToast('Введите заголовок');
-  await fetch('/api/admin/news', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, body, date }) });
-  showToast('✅ Новость добавлена');
-  document.getElementById('news-title').value = '';
-  document.getElementById('news-body').value = '';
+  await fetch('/api/admin/news', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, body, date: new Date().toLocaleDateString() }) });
   loadAdminData();
 };
 
-const deleteNews = async (id) => {
-  await fetch('/api/admin/news/' + id, { method: 'DELETE' });
-  showToast('🗑️ Новость удалена');
-  loadAdminData();
+const deleteNews = async (id) => { await fetch('/api/admin/news/' + id, { method: 'DELETE' }); loadAdminData(); };
+
+const sendBroadcast = async () => {
+  const msg = document.getElementById('bc-msg').value;
+  if (!msg) return showToast('Введите текст');
+  await fetch('/api/admin/broadcast', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: msg }) });
+  showToast('✅ Рассылка отправлена');
+};
+
+const saveSettings = async () => {
+  const title = document.getElementById('set-title').value;
+  await fetch('/api/admin/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: 'site_title', value: title }) });
+  showToast('✅ Настройки сохранены');
 };
 
 const exportCSV = () => {
-  if (!adminUsersData.length) return showToast('Нет данных');
   const csv = "ID,IP,Тариф,Статус,Дата\n" + adminUsersData.map(u => `${u.id},${u.ip},${u.plan},${u.status},${new Date(u.created_at).toLocaleString()}`).join("\n");
   const blob = new Blob([csv], { type: 'text/csv' });
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'users.csv'; a.click();
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'users.csv'; a.click();
 };
 
-// ==== ЛОГИРОВАНИЕ ЗАХОДА ====
-fetch('/api/visit', { method: 'POST' }).catch(e => console.log('Offline'));
-
-// ==== РЕНДЕР НОВОСТЕЙ НА САЙТЕ ====
+// ==== ФРОНТ ====
+fetch('/api/visit', { method: 'POST' }).catch(() => {});
 const loadNews = async () => {
   try {
     const res = await fetch('/api/news');
     const news = await res.json();
-    document.getElementById('news-container').innerHTML = news.map(n => `
-      <div class="glass-card" style="padding:16px; margin-bottom:8px;">
-        <div style="font-size:14px; font-weight:700;">${n.title}</div>
-        <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">${n.body}</div>
-        <div style="font-size:10px; color:var(--primary); margin-top:4px;">${n.date}</div>
-      </div>
-    `).join('') || '<p style="text-align:center; color:var(--text-muted);">Новостей пока нет</p>';
+    document.getElementById('news-container').innerHTML = news.map(n => `<div class="glass-card"><div style="font-weight:700;">${n.title}</div><div style="font-size:12px; color:var(--text-muted);">${n.body}</div></div>`).join('');
   } catch(e) {}
 };
 loadNews();
 
-// ==== СЕРВЕРА НА САЙТЕ ====
 const loadSiteServers = async () => {
   try {
     const res = await fetch('/api/servers');
     const servers = await res.json();
-    document.getElementById('srv-container').innerHTML = servers.map(s => `
-      <div class="glass-card" style="padding:12px; margin-bottom:8px; cursor:pointer;" onclick="cUrl('${s.key}', '${s.name}')">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <span style="font-size:20px;">${s.country || '🌍'}</span>
-          <div>
-            <div style="font-size:14px; font-weight:700;">${s.name}</div>
-            <div style="font-size:10px; color:var(--primary); font-weight:800; margin-top:2px;">${s.protocol || 'VLESS'}</div>
-          </div>
-        </div>
-      </div>
-    `).join('') || '<p style="text-align:center; color:var(--text-muted);">Серверов пока нет. Добавьте их в админке.</p>';
+    document.getElementById('srv-container').innerHTML = servers.map(s => `<div class="glass-card" onclick="cUrl('${s.key}', '${s.name}')"><div style="font-weight:700;">${s.country} ${s.name}</div><div style="font-size:10px; color:var(--primary);">${s.protocol}</div></div>`).join('');
   } catch(e) {}
 };
 loadSiteServers();
 
-// ==== КОПИРОВАНИЕ ====
-const showToast = (msg) => {
-  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
-  clearTimeout(window._toast); window._toast = setTimeout(() => t.classList.remove('show'), 2000);
-};
-const cUrl = (key, name) => {
-  navigator.clipboard.writeText(key).then(() => showToast('✅ ' + name + ' скопирован')).catch(() => {});
-};
+const showToast = (msg) => { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); };
+const cUrl = (key, name) => { navigator.clipboard.writeText(key).then(() => showToast('✅ ' + name + ' скопирован')); };
 
-// ==== ФОН ====
+// Фон
 const canvas = document.getElementById('bg-canvas');
 const ctx = canvas.getContext('2d');
 let particles = [];
